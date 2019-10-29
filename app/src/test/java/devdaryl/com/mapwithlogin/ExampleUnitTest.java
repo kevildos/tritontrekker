@@ -1,4 +1,4 @@
-package codingwithmitch.com.googlemapsgoogleplaces;
+package devdaryl.com.mapwithlogin;
 
 import org.junit.Test;
 
