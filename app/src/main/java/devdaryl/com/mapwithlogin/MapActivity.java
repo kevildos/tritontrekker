@@ -34,7 +34,6 @@ public class MapActivity extends AppCompatActivity {
         accountButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "hey");
                 openLoginActivity();
             }
         });

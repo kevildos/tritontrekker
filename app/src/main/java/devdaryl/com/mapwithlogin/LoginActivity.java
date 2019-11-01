@@ -31,23 +31,30 @@ public class LoginActivity extends AppCompatActivity {
     private TextView statusTextView;
     GoogleSignInClient mGoogleSignInClient;
     private FirebaseAuth mAuth;
-
+    private static GoogleSignInOptions gso = null;
     private SignInButton signInButton;
     private Button signOutButton;
+
+    private GoogleSignInAccount account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        GoogleSignInOptions gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
-                .requestIdToken(getString(R.string.default_web_client_id))
-                .requestEmail()
-                .build();
+        if(gso == null) {
+            gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
+                    .requestIdToken(getString(R.string.default_web_client_id))
+                    .requestEmail()
+                    .build();
+        }
 
+        // get sign in and sign out text display
         statusTextView = (TextView) findViewById(R.id.statusTextView);
 
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
+
+        // sign in button
         signInButton = (SignInButton) findViewById(R.id.signInButton);
         signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -56,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
             }
         });
 
+        // sign out button
         signOutButton = (Button) findViewById(R.id.signOutButton);
         signOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -109,7 +117,13 @@ public class LoginActivity extends AppCompatActivity {
 
     // TODO update UI when a user is signed in
     private void updateUI(FirebaseUser user) {
-        statusTextView.setText("Hello, " + user.getDisplayName());
+
+        if(user != null) {
+            statusTextView.setText("Hello, " + user.getDisplayName());
+        }
+        else{
+            statusTextView.setText("There was a problem! Trying again.");
+        }
     }
 
     @Override
@@ -122,7 +136,7 @@ public class LoginActivity extends AppCompatActivity {
             // a listener.
             Task<GoogleSignInAccount> task = GoogleSignIn.getSignedInAccountFromIntent(data);
             try {
-                GoogleSignInAccount account = task.getResult(ApiException.class);
+                account = task.getResult(ApiException.class);
                 firebaseAuthWithGoogle(account);
             }
             catch (ApiException e){
