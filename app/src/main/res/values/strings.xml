@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">tritontekkers</string>
+    <string name="title_activity_maps">Map</string>
+
+    <string name="title_activity_add_poi">AddPOI</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
+</resources>
