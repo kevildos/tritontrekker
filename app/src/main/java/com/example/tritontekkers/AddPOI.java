@@ -5,7 +5,11 @@ import android.annotation.SuppressLint;
 import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.FragmentManager;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.graphics.drawable.BitmapDrawable;
@@ -29,6 +33,7 @@ import java.util.List;
 
 public class AddPOI extends AppCompatActivity {
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -49,31 +54,41 @@ public class AddPOI extends AppCompatActivity {
             getSupportActionBar().setHomeAsUpIndicator(R.drawable.ic_action_close);
         }
 
-        // Spinner entries
+        /*
+         *  DESCRIPTION SELECTOR SPINNER START
+         */
         Spinner spinner = findViewById(R.id.spinner);
 
-        List<String> spinnerArray =  new ArrayList<String>();
-        spinnerArray.add("item1");
-        spinnerArray.add("item2");
-        spinnerArray.add("Choose type");
-        final int listsize = spinnerArray.size() - 1;
+        List<String> spinnerDescriptionArray =  new ArrayList<String>();
+        spinnerDescriptionArray.add("Bathroom");
+        spinnerDescriptionArray.add("Lecture Hall");
+        spinnerDescriptionArray.add("Printer");
+        spinnerDescriptionArray.add("Trash Cans");
+        spinnerDescriptionArray.add("Other");
+        spinnerDescriptionArray.add("Choose type");
+        final int listsize = spinnerDescriptionArray.size() - 1;
 
 //        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
 //                android.R.layout.simple_spinner_item, spinnerArray);
 //        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 //        spinner.setAdapter(adapter);
 
-        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, spinnerArray) {
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, spinnerDescriptionArray) {
             @Override
             public int getCount() {
                 return(listsize); // Truncate the list
             }
         };
 
+
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
         spinner.setSelection(listsize);
 
+
+        /*
+         * PHOTO BUTTON MENU
+         */
 
 
         // Button initializations and listeners
@@ -82,14 +97,23 @@ public class AddPOI extends AppCompatActivity {
         Button confirm = (Button) findViewById(R.id.button2);
 //        Button cancel = (Button) findViewById(R.id.button3);
 
+
+        // Picture button Listener
         addPicture.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
-                startActivity(cameraIntent);
+
+                // USE THIS CODE FOR FUTURE CAMERA INTENT BUTTON
+//                Intent cameraIntent = new Intent(android.provider.MediaStore.ACTION_IMAGE_CAPTURE);
+//                startActivity(cameraIntent);
+                imageDialog dialog = new imageDialog();
+                dialog.show(getSupportFragmentManager(), "test");
+
+                // Make menu appear
             }
         });
 
+        // Submit button listener
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -98,23 +122,9 @@ public class AddPOI extends AppCompatActivity {
             }
         });
 
-        confirm.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                System.out.println(nameInput.getText());
-                finish();
-            }
-        });
-
-//        cancel.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                finish();
-//            }
-//        });
-
     }
 
+    // Handles X button click
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here
@@ -124,4 +134,6 @@ public class AddPOI extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }
