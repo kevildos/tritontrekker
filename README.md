@@ -12,3 +12,7 @@ they are clicked/unclicked.
 
 toggle_....: Tells the ToggleButtons which ic_thumb file they need to use as a background based on the 
 state of the button (checked/unchecked)
+
+# Things to improve/fix
+
+Right now the buttons can only be 1 or 0 because the total likes are only a local representation, and do not get likes from the database.
