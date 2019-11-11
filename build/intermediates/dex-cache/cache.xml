@@ -1,0 +1,320 @@
+<?xml version="1.0" encoding="utf-8"?>
+<items version="2" >
+
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\62cd1c9557a2fb8588c1613b35276abe1a9861d2\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="810f41e5b7fd99f196ebeabe865ba2c54e7e76dc">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_e3e975d1d64ade906162cc6757588492737a4cd2.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\3dfdfe1cab4a7e2667f8d85eeb22ba00bc0adb6e\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="8fe8a8f77d651982ce5e18f6187dc4daf914ac57">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_5118d43d8b0cd8705093954e5620052d9cf23b92.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\b0b288fdfad92caa5e994b2fdac78bff24acff0a\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="1a78298e7724d5440d210bcb946b3493250d354d">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_3285675e4321611f10e8f7ec922c11b39c82f6e9.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\7fc6f21c60414af42f018b5174f962ababf2af22\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="f2df436a8f02ce7e4d7d209671fc45f97c470f0e">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_31d1f96f7319ddfc1405b66c570e6a383f7feb62.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\36c4f946f54871f3a27b524f6280a0cd261e6802\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d358b3dd49a7c67844622dcbc9cf4339e13952ce">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_b2e5aba06c37838500e88e01783a2060df89e09b.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\85d15ab3cd512b5b435783dfda67f7186bfb4439\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="67eb33110dbacb46a48175b08ae0c96761d2c17d">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_f8f96fb272aad24448dbba8baed76c756e340360.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\ae41e1bad3dda6b24c78cc8b5856f74f52bbecfc\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="1c9f35e952b212c843f7bd2c7eec8e82ad95602e">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_c33c8de60e9f495f1ee9c9673af6f2d55ff1a9fe.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\b367d5b20236f11240fc1c0c7fd780f0cf08ec53\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="08d34b2d135c1cc96ab506fd8bf6916d1e2f391a">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_c8c8a2a73e5077904b2e448077b19d77070cda09.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\de6055d53b175e2cacef7c9457a3541bf818938a\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="0194a7409c40de94fb539d4ad9928ec5d47afeb7">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_f73d4b82ca4bf3afdee02b29b425058fed17c991.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\36c4f946f54871f3a27b524f6280a0cd261e6802\output\jars\libs\internal_impl-23.0.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="03d38bb042efe3e5ce27ba66b729a9523c36d8fe">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\internal_impl-23.0.0_af0d73e394210afcacccceba5628d9391bbb7b14.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\AppData\Local\Android\Sdk\extras\android\m2repository\com\android\support\support-annotations\25.2.0\support-annotations-25.2.0.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="4a5a82a027706397fff621b22fd6fa796e91d7c5">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\support-annotations-25.2.0_3426bff7ea5e6793d18aebe5dc4798a63b732be0.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\e2da501b19ac6ccf0b507c35be10be985e7eaefe\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="fa0446a14ed5dd3725047d6399ffea771a564b30">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_b7d194770b925295236d553f201a6ea666763b4e.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\7f7bbf711a3a542c559e9edcd0ea338056caec67\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="d7c42c80f6509b9ea4db28ca7859ffae08ec5741">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_70fb91a2d7623e6dd68481891d73a7cd7b448a47.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\1ec33ea747519fadaefa789ed67e8dc89ed27f59\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="702d339bc0a81d21354cd7e2cf2b67225fa4a16c">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_21e0374fbc97deb32667fa496570c94487533660.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\f6d934173b2adf3d06b3b9a93842786eac684108\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="a8412b654dab86d57bf90683367488211c8a81f1">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_164bb9a4851ff3d69ecca8fc841f1d77f038ed48.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\7406f62c89f99136525b6579b18d4b1a94d5b881\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="e820b7be8c035dd522da4bc822e8a76c8e27921a">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_f036ae492bb743816aab9f9e979f5ae6e7ee66c9.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\3c8618630efd42c4bcabd71af6bf025763a9d2f1\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="9fe026fb4c7fce21bc5142f6e1bdf844f28061ac">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_82ba3a7b1bfd51c08fae31406a1d7e794ef81e3d.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\ab3f9c71aa8eba5e49877507b763afef181f16ca\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="04de44f90606c77f3b28cf44861f306290505aac">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_81132e9aa19a5d796fe31d468e00d96fbea0b0c3.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\1df1375b74ea3c68651ce44d6cb161229cff8411\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="b5e7892fb0708e792e0e933c4c0a0ca0ac7831fb">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_eebcf6c8801c671ecea914da76045d28c52625a3.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\1821b538f154b08e84639347cf67a18b512c1133\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="e167a34eaca0b31704212f43f9576ea84e05046f">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_c6a26c7c4e240a0230f19883fa3322ac8a38d6a5.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\f597980eaa5e49d45ac54cf588f2ab8f88fa5b11\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="65d086ee9daaf87b5af62ad24471edafa433354c">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_12c8c42bd2aaff536d966cf467cd903dce0337c9.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\08b2e56d5f24051b139fda359412daf9a1bb0fc8\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="966e5771a5a2ebfb31bf00d7cd6cd2546d245517">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_52cafbe1ba6db9f3ebcdd50a2f04e5555e9c7084.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\8a2d304ea721874148cdf14862776c18e31a45d2\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="8e673cdfadd8f2d98fdb2fda2285c30f6e449782">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_3c9aa5511566639dd6c282472931b00d09132e98.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\15596e4de7e7639cc58f92dc819220bebf93e2bf\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="b82b8e847173c28efffcd291b2a0b1ae9ad17fa4">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_6906a7274f9e8c98b9dbf902ee57d58646cc2230.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\b4718f06568c6daa6c43a9c900abb7ba37ed0092\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="ee394a892dd21c03a528139c1e8d4e0e1264ac84">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_5fe72fbe18fdb761097c67610ccad95e1fac782a.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\d1148e790a9701e12d7d1a81cfbcde5f745b1a67\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="551e78f21acf69ebfb489c0e79647824c838013e">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_aee550a15f56ffdbdbeec3c8c94ffcb9165f9983.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\cd0052070890ef8d74edeccd189962d77f6201be\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="cb454b52545859ed2f24a6c01366805b0fa04b22">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_ffb30d85769b18e656a675e0756763f039e66026.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\a7b9417af6cb0f64dc88f64ac6e2361b7d9b4324\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="2d7fe76982677315c4dc4edfb459c8ca718a9d4c">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_9f8da4ed1ecf6435284ffe30b2113464cc0679c7.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\579c0d08a7f46fd5e930c874702db00c1ded6bb2\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="9cad249cf62751a323d9af568caf12284b7d6062">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_eef40c7be133d377262ecf26bc87ad84aab87909.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\b94503de9e102709a98e751f71d2fc871b4f6c63\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="613298b7aa012f121ce542881c0a599ebd8078f2">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_c355fecb28e1d48c1e940ff92469845d6b54b8b3.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\973c5662e3e3a2eef401fe29c6081a99ab5c8e32\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="fef2b3e4b6b1b0e5fe7b69fa137a5fa55a3182ab">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_a50125e04e02ea72bb82a7ba742ad3a204105a93.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\e5a97adb9f33e944d486aa41b72245ae841a1899\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="3a364cc6b698d1b3b2d284f64618daaa7fe77ddf">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_e3f59b2605445df9c6909a08d397c7aa2dc4039e.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\cea4922403c0ac0da97da948fdabf29623e84bad\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="dfecc4d835cdabcdecf7e95f0d20a3ef1e9d8ef4">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_e75e8647e94f08c3e218f2d5e3b44c51d341bf64.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\2bce4e89d8b3114ef3451b372337efa09be18a6d\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="b36f30ac5ee5d5214f4b1e2ac49f11889d58e71a">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_d4a1ed059ab7b5f554089f1a66389f3da908da72.jar" />
+    </item>
+    <item
+        is-multidex="false"
+        jar="C:\Users\sanch\.android\build-cache\26aed6b33564041b0e02cc60290de0faf7b8dc44\output\jars\classes.jar"
+        jumboMode="false"
+        optimize="true"
+        revision="25.0.2"
+        sha1="c54246475c1bb64ac6857d1320364bfbfeda2c46">
+        <dex dex="C:\Users\sanch\Desktop\GoogleMapsApp\GoogleMapsApp\app\build\intermediates\pre-dexed\debug\classes_eff68fd9e4717469570ec61966c062eb3f0e68ae.jar" />
+    </item>
+
+</items>
