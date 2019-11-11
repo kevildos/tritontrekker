@@ -1,0 +1,15 @@
+<component name="libraryTable">
+  <library name="Gradle: com.android.support:mediarouter-v7:23.0.0@aar">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.android/build-cache/36c4f946f54871f3a27b524f6280a0cd261e6802/output/jars/classes.jar!/" />
+      <root url="file://$USER_HOME$/.android/build-cache/36c4f946f54871f3a27b524f6280a0cd261e6802/output/res" />
+      <root url="jar://$USER_HOME$/.android/build-cache/36c4f946f54871f3a27b524f6280a0cd261e6802/output/jars/libs/internal_impl-23.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$USER_HOME$/AppData/Local/Android/Sdk/extras/android/m2repository/com/android/support/mediarouter-v7/23.0.0/mediarouter-v7-23.0.0-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$USER_HOME$/AppData/Local/Android/Sdk/extras/android/m2repository/com/android/support/mediarouter-v7/23.0.0/mediarouter-v7-23.0.0-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>
