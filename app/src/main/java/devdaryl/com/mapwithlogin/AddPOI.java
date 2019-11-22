@@ -26,10 +26,16 @@ import java.util.Map;
 public class AddPOI extends AppCompatActivity {
 
     FirebaseFirestore mFirestore;
+    double latitude;
+    double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*LatLng position = getIntent().getExtras().getParcelable("Pos");
+        latitude = position.getLatitude();
+        longitude = position.getLongitude();*/
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -121,6 +127,7 @@ public class AddPOI extends AppCompatActivity {
                 double lat = 12.214125;
                 double lng = 15.2152;
                 addLocation(name, description, "floor_description", list, lat, lng, 1);
+                //addLocation(name, description, "floor_description", list, latitude, longitude, 1);
                 finish();
             }
         });
@@ -137,6 +144,7 @@ public class AddPOI extends AppCompatActivity {
         userMap.put("location", location);
         userMap.put("maps_icon", "icon");
         userMap.put("rating", 1);
+
 
         final String name2 = name;
         String id = mFirestore.collection("locations").document().getId();
