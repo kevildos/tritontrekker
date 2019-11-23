@@ -9,19 +9,33 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Spinner;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.type.LatLng;
+
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class AddPOI extends AppCompatActivity {
 
+    FirebaseFirestore mFirestore;
+    double latitude;
+    double longitude;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        /*LatLng position = getIntent().getExtras().getParcelable("Pos");
+        latitude = position.getLatitude();
+        longitude = position.getLongitude();*/
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -32,6 +46,7 @@ public class AddPOI extends AppCompatActivity {
         setSupportActionBar(toolbar);
         toolbar.setElevation(0);
 
+        mFirestore = FirebaseFirestore.getInstance();
         // add back arrow to toolbar
         if (getSupportActionBar() != null){
             getSupportActionBar().setDisplayHomeAsUpEnabled(true);
@@ -44,7 +59,7 @@ public class AddPOI extends AppCompatActivity {
          */
         Spinner spinner = findViewById(R.id.spinner);
 
-        List<String> spinnerDescriptionArray =  new ArrayList<String>();
+        final List<String> spinnerDescriptionArray =  new ArrayList<String>();
         spinnerDescriptionArray.add("Bathroom");
         spinnerDescriptionArray.add("Lecture Hall");
         spinnerDescriptionArray.add("Printer");
@@ -77,9 +92,11 @@ public class AddPOI extends AppCompatActivity {
 
 
         // Button initializations and listeners
-        final EditText nameInput = (EditText) findViewById(R.id.editText);
+        final EditText nameInput = (EditText) findViewById(R.id.name);
         Button addPicture = (Button) findViewById(R.id.button);
         Button confirm = (Button) findViewById(R.id.button2);
+        final EditText keywords = (EditText) findViewById(R.id.keywords);
+        final EditText desc = (EditText)findViewById(R.id.editText2);
 //        Button cancel = (Button) findViewById(R.id.button3);
 
 
@@ -103,10 +120,36 @@ public class AddPOI extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println(nameInput.getText());
+                String name = nameInput.getText().toString();
+                String description = desc.getText().toString();
+                ArrayList<String> list = new ArrayList<String>();
+                list.add(keywords.getText().toString());
+                double lat = 12.214125;
+                double lng = 15.2152;
+                addLocation(name, description, "floor_description", list, lat, lng, 1);
+                //addLocation(name, description, "floor_description", list, latitude, longitude, 1);
                 finish();
             }
         });
 
+    }
+
+    private void addLocation(String name, String description, String floor_description, ArrayList<String> key_words,
+                             double latitude, double longtitude, int maps_icon) {
+        Map<String, Object> userMap = new HashMap<>();
+        userMap.put("name", name);
+        userMap.put("description", description);
+        userMap.put("key_words", key_words);
+        GeoPoint location = new GeoPoint(latitude, longtitude);
+        userMap.put("location", location);
+        userMap.put("maps_icon", "icon");
+        userMap.put("rating", 1);
+
+
+        final String name2 = name;
+        String id = mFirestore.collection("locations").document().getId();
+        mFirestore.collection("locations").document(id).set(userMap);
+        Toast.makeText(AddPOI.this, "Location " + name + " added to firestore", Toast.LENGTH_LONG).show();
     }
 
     // Handles X button click
