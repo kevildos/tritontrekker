@@ -5,7 +5,5 @@
         android:title="Account" />
     <item android:id="@+id/nav_addpoi"
         android:title="Add POI"/>
-    <item android:id="@+id/nav_filterpoi"
-        android:title="Filter POI"/>
 
 </menu>
