@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Button;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -58,9 +59,16 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         startActivity(intent);
     }
 
+    public void openFilterPOIActivity(){
+        //Toast.makeText(this, "Hey", Toast.LENGTH_SHORT);
+        Intent intent = new Intent(this, FilterPOI.class);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
+        Toast.makeText(MapActivity.this, "onNaviagationSelected", Toast.LENGTH_SHORT);
         int id = menuItem.getItemId();
 
 
@@ -74,6 +82,11 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         if(id == R.id.nav_addpoi){
             mDrawerLayout.closeDrawers();
             openAddPOIActivity();
+        }
+
+        if(id == R.id.nav_filterpoi){
+           mDrawerLayout.closeDrawers();
+            openFilterPOIActivity();
         }
 
 

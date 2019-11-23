@@ -44,6 +44,13 @@
             >
 
         </activity>
+        <activity
+            android:name=".FilterPOI"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_filter_poi"
+            android:parentActivityName=".MapActivity"
+            android:theme="@style/FullscreenThemeUpdated"
+            />
     </application>
 
 </manifest>
