@@ -194,6 +194,11 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         startActivity(intent);
     }
 
+    public void openFilterPOIActivity() {
+        Intent intent = new Intent(this, FilterPOI.class);
+        startActivity(intent);
+    }
+
     @Override
     public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
 
@@ -210,6 +215,12 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         if(id == R.id.nav_addpoi){
             mDrawerLayout.closeDrawers();
             openAddPOIActivity();
+        }
+
+        // filterpoi activity handler
+        if(id == R.id.nav_filterpoi){
+            mDrawerLayout.closeDrawers();
+            openFilterPOIActivity();
         }
 
 
@@ -369,7 +380,12 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 if (task.isSuccessful()) {
                     Location currentLocation = (Location) task.getResult();
                     myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                    Toast.makeText(MapActivity.this, "location" + myLocation, Toast.LENGTH_SHORT).show();
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(myLocation)      // Sets the center of the map to Mountain View
+                            .zoom(18)                   // Sets the zoom
+                            .bearing(0)                // Sets the orientation of the camera to east
+                            .build();                   // Creates a CameraPosition from the builder
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
                 }
             }
         });

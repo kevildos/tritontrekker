@@ -5,5 +5,5 @@
 
     <string name="app_name">GoogleMapsGooglePlaces</string>
     <string name="title_activity_add_poi">AddPOI</string>
-
+    <string name="title_activity_filter_poi">FilterPOI</string>
 </resources>

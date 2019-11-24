@@ -13,14 +13,14 @@
         android:backgroundTint="#ffffff"
         android:orientation="vertical">
 
-    <androidx.appcompat.widget.Toolbar
-        android:id="@+id/toolbar2"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="#FFFFFF"
-        android:minHeight="?attr/actionBarSize"
-        android:theme="?attr/actionBarTheme"
-        app:title="Filter" />
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:title="Filter" />
 
 
         <TextView
