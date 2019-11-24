@@ -33,7 +33,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="devdaryl.com.mapwithlogin.MapActivity" />
+        <activity android:name="devdaryl.com.mapwithlogin.MapActivity"
+                  android:launchMode="singleTop"
+            />
 
         <activity
             android:name=".AddPOI"
