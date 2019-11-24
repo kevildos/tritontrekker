@@ -490,4 +490,11 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
             }
         });
     }
+        public void openMenu(View view) {
+
+        //This function needs to open the menu/ drawer
+        DrawerLayout drawer = findViewById(R.id.drawer_layout);
+        drawer.openDrawer(GravityCompat.START);
+    }
+
 }
