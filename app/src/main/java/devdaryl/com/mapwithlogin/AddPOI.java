@@ -33,9 +33,11 @@ public class AddPOI extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        /*LatLng position = getIntent().getExtras().getParcelable("Pos");
-        latitude = position.getLatitude();
-        longitude = position.getLongitude();*/
+        String lat = getIntent().getStringExtra("Latitude");
+        String lon = getIntent().getStringExtra("Longitude");
+
+        latitude = Double.parseDouble(lat);
+        longitude = Double.parseDouble(lon);
 
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -124,8 +126,8 @@ public class AddPOI extends AppCompatActivity {
                 String description = desc.getText().toString();
                 ArrayList<String> list = new ArrayList<String>();
                 list.add(keywords.getText().toString());
-                double lat = 12.214125;
-                double lng = 15.2152;
+                double lat = latitude;
+                double lng = longitude;
                 addLocation(name, description, "floor_description", list, lat, lng, 1);
                 //addLocation(name, description, "floor_description", list, latitude, longitude, 1);
                 finish();

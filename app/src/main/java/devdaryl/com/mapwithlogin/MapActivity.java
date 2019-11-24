@@ -18,12 +18,15 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiActivity;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -69,11 +72,19 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     private LatLng currLocation;
     private Marker mCurrLocationMarker;
 
+    private LatLng myLocation;
+
+    private FusedLocationProviderClient mFusedLocationProviderClient;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkLocationPermission();
+        }
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -165,13 +176,21 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
     public void openAddPOIActivity(){
         Intent intent = new Intent(this, AddPOI.class);
-       /* LatLng toPassIn;
-        if(pinDropped == true)
+        LatLng toPassIn;
+        if(pinDropped == true) {
             toPassIn = pinDroppedLocation;
-        else
-            toPassIn = currLocation;
+        }
+        else {
+            toPassIn = myLocation;
+        }
 
-        intent.putExtra("Pos", toPassIn);*/
+
+        Double lat = toPassIn.latitude;
+        Double lon = toPassIn.longitude;
+
+
+        intent.putExtra("Latitude", lat.toString());
+        intent.putExtra("Longitude", lon.toString());
         startActivity(intent);
     }
 
@@ -214,6 +233,8 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         else {
             mMap.setMyLocationEnabled(true);
         }
+
+        getDeviceLocation();
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
@@ -306,6 +327,54 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         }
     }
 
+    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
+    public boolean checkLocationPermission(){
+        if (ContextCompat.checkSelfPermission(this,
+                Manifest.permission.ACCESS_FINE_LOCATION)
+                != PackageManager.PERMISSION_GRANTED) {
+
+            // Asking user if explanation is needed
+            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)) {
+
+                // Show an explanation to the user *asynchronously* -- don't block
+                // this thread waiting for the user's response! After the user
+                // sees the explanation, try again to request the permission.
+
+                //Prompt the user once explanation has been shown
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+
+
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions(this,
+                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
+                        MY_PERMISSIONS_REQUEST_LOCATION);
+            }
+            return false;
+        } else {
+            return true;
+        }
+    }
+
+    private void getDeviceLocation() {
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        Task location = mFusedLocationProviderClient.getLastLocation();
+        location.addOnCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                if (task.isSuccessful()) {
+                    Location currentLocation = (Location) task.getResult();
+                    myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                    Toast.makeText(MapActivity.this, "location" + myLocation, Toast.LENGTH_SHORT).show();
+                }
+            }
+        });
+
+    }
     //marker click listener for pop up screen
    /* public void onMarkerLongClick
     {
