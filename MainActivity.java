@@ -1,5 +1,4 @@
-package com.example.verifyreportbutton;
-
+package com.example.poipopup;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.Color;
@@ -109,5 +108,54 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    public void onFavoriteToggleClick(View view) {
+
+        ToggleButton favBtn = findViewById(R.id.favoriteButton);
+
+        /*
+        Works in reverse because function called after you click/"check" the button.
+        if button is already "checked" save to favorites
+        otherwise remove it from favorites
+         */
+        if(favBtn.isChecked()) {
+            //Save the POI as a favorite
+
+            Toast.makeText(this, "Saved to Favorites", Toast.LENGTH_SHORT).show();
+        } else {
+
+            //Remove the POI from favorites
+            Toast.makeText(this, "Removed from Favorites", Toast.LENGTH_SHORT).show();
+        }
+
+
+    }
+
+    public void onReportToggleClick(View view) {
+
+        ToggleButton reportBtn = findViewById(R.id.reportButton);
+
+        /*
+        Works in reverse because function called after you click/"check" the button.
+        if button is already "checked" save to favorites
+        otherwise remove it from favorites
+         */
+        if(reportBtn.isChecked()) {
+            //Save the POI as a favorite
+
+            Toast.makeText(this, "Reported bogus POI", Toast.LENGTH_SHORT).show();
+        } else {
+
+            //Remove the POI from favorites
+            Toast.makeText(this, "Removed report", Toast.LENGTH_SHORT).show();
+        }
+
+    }
+
+    public void onDirectionClick(View view) {
+
+        //Get the directions to the poi
+        Toast.makeText(this, "Getting directions to POI", Toast.LENGTH_SHORT).show();
     }
 }
