@@ -20,18 +20,19 @@
 <!--        android:text="Account" />-->
 
 
-<LinearLayout
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
         <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="40dp"
-            android:layout_marginHorizontal="15dp"
-            android:layout_marginTop="15dp"
+            android:layout_height="38dp"
+            android:layout_marginRight="55dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="12dp"
             android:background="#FFFFFF"
-            android:layout_gravity="center_horizontal"
+            android:layout_gravity="left"
             android:orientation="horizontal">
 
             <Button
@@ -52,24 +53,25 @@
                 android:hint="Search Here"
                 android:inputType="textPersonName" />
 
-<!--                search view upgrade for later-->
-<!--            <SearchView-->
-<!--                android:id="@+id/editText4"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="match_parent"-->
+            <!--                search view upgrade for later-->
+            <!--            <SearchView-->
+            <!--                android:id="@+id/editText4"-->
+            <!--                android:layout_width="wrap_content"-->
+            <!--                android:layout_height="match_parent"-->
 
-<!--&lt;!&ndash;                android:autofillHints="true"&ndash;&gt;-->
+            <!--&lt;!&ndash;                android:autofillHints="true"&ndash;&gt;-->
 
-<!--&lt;!&ndash;                android:queryHint="Search Here"&ndash;&gt;-->
-<!--                android:searchHintIcon="#FFFFFF"-->
-<!--                android:searchIcon="#FFFFFF" />-->
+            <!--&lt;!&ndash;                android:queryHint="Search Here"&ndash;&gt;-->
+            <!--                android:searchHintIcon="#FFFFFF"-->
+            <!--                android:searchIcon="#FFFFFF" />-->
 
             <Button
                 android:id="@+id/button4"
                 android:layout_width="wrap_content"
                 android:layout_height="match_parent"
-                android:backgroundTint="#E6006A96"
+                android:background="#E6006A96"
                 android:onClick="onMapSearch"
+                android:textColor="#FFFFFF"
                 android:text="Find" />
         </LinearLayout>
 

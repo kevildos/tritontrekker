@@ -7,6 +7,8 @@ public class POI {
     private String name;
     private String description;
     private String type;
+    private int likes;
+    private int dislikes;
     //private String image;
 
     public POI(double lat, double lon, String nam, String des, String typ) {

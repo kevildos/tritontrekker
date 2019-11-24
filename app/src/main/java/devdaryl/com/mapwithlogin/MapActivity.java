@@ -22,6 +22,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -50,6 +51,7 @@ import com.google.maps.DirectionsApiRequest;
 import com.google.maps.GeoApiContext;
 import com.google.maps.PendingResult;
 import com.google.maps.internal.PolylineEncoding;
+import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.TravelMode;
@@ -90,6 +92,10 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
     private GeoApiContext geoApiContext = null;
 
+    private Polyline polylineG;
+    private DirectionsLeg leg;
+    private List<Polyline> mPolylines = new ArrayList<Polyline>();
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -103,6 +109,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mFirestore = FirebaseFirestore.getInstance();
+        mFirestore.collection("locations");
 
         if (mNavigationView != null) {
             mNavigationView.setNavigationItemSelectedListener(this);
@@ -115,6 +122,81 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         if(geoApiContext == null){
             geoApiContext = new GeoApiContext.Builder().apiKey("AIzaSyBUNsVo7I1Yd4qJjkZNbgeFh-Q8hcGsn2Y").build();
         }
+    }
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+
+        //Initialize Google Play Services
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+            }
+        }
+        else {
+            mMap.setMyLocationEnabled(true);
+        }
+
+        getDeviceLocation();
+
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                pinDropped = false;
+                pinDroppedLocation = null;
+                mMap.clear();
+            }
+        });
+
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng pos) {
+                // clear map
+                mMap.clear();
+
+                // set marker options:
+                // is draggable, can change title and snippet (text under title)
+                MarkerOptions options = new MarkerOptions().position(pos).title("Name").snippet("Type");
+
+                // add marker to map
+                mMap.addMarker(options);
+                pinDropped = true;
+                pinDroppedLocation = pos;
+
+                // zoom in camera on marker
+                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 14f));
+            }
+        });
+
+        mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener()
+        {
+            @Override
+            public void onPolylineClick(Polyline polyline)
+            {
+                for(Polyline polyline1: mPolylines){
+
+                    if(polyline1.getId().equals(polyline.getId())){
+                        polyline1.setColor(
+                                ContextCompat.getColor(getApplicationContext(), R.color.color_blue));
+                        polyline1.setZIndex(1);
+                        Marker marker = mMap.addMarker(new MarkerOptions()
+                                .position(myLocation)
+                                .title("Estimated Time: " + leg.duration));
+                        marker.showInfoWindow();
+                    }
+                    else{
+                        polyline1.setColor(
+                                ContextCompat.getColor(getApplicationContext(), R.color.color_grey));
+                        polyline1.setZIndex(0);
+                    }
+                }
+            }
+        });
     }
 
     // Usage: pulls a list of the document id's under that key_word
@@ -242,55 +324,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         return true;
     }
 
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
 
-        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
-
-        //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                mMap.setMyLocationEnabled(true);
-            }
-        }
-        else {
-            mMap.setMyLocationEnabled(true);
-        }
-
-        getDeviceLocation();
-
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                pinDropped = false;
-                pinDroppedLocation = null;
-                mMap.clear();
-            }
-        });
-
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng pos) {
-                // clear map
-                mMap.clear();
-
-                // set marker options:
-                // is draggable, can change title and snippet (text under title)
-                MarkerOptions options = new MarkerOptions().position(pos).title("Name").snippet("Type");
-
-                // add marker to map
-                mMap.addMarker(options);
-                pinDropped = true;
-                pinDroppedLocation = pos;
-
-                // zoom in camera on marker
-                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 14f));
-            }
-        });
-    }
 
     @Override
     public void onLocationChanged(Location location) {
@@ -353,38 +387,6 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         }
     }
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public boolean checkLocationPermission(){
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
-
-            // Asking user if explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-                //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-            }
-            return false;
-        } else {
-            return true;
-        }
-    }
-
     private void getDeviceLocation() {
 
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
@@ -442,6 +444,14 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
             public void run() {
                 Log.d(TAG, "run: result routes: " + result.routes.length);
 
+                if(mPolylines.size() > 0) {
+                    for (Polyline polyline : mPolylines) {
+                        polyline.remove();
+                    }
+                    mPolylines.clear();
+                    mPolylines = new ArrayList<>();
+                }
+
                 for(DirectionsRoute route: result.routes){
                     Log.d(TAG, "run: leg: " + route.legs[0].toString());
                     List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
@@ -455,8 +465,22 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                         ));
                     }
 
-                    Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
-                    polyline.setClickable(true);
+                    polylineG = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                    polylineG.setColor(ContextCompat.getColor(getApplicationContext(), R.color.color_grey));
+                    polylineG.setClickable(true);
+                    polylineG.setWidth(15f);
+                    mPolylines.add(polylineG);
+
+                    mPolylines.get(0).setColor
+                            (ContextCompat.getColor(getApplicationContext(), R.color.color_blue));
+                    mPolylines.get(0).setZIndex(1);
+
+                    leg = route.legs[0];
+
+                    Marker marker = mMap.addMarker(new MarkerOptions()
+                            .position(myLocation)
+                            .title("Estimated Time: " + leg.duration));
+                    marker.showInfoWindow();
                 }
             }
         });
@@ -490,11 +514,11 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
             }
         });
     }
-        public void openMenu(View view) {
+
+    public void openMenu(View view) {
 
         //This function needs to open the menu/ drawer
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.openDrawer(GravityCompat.START);
     }
-
 }
