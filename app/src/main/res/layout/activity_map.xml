@@ -39,7 +39,7 @@
                 android:layout_width="35dp"
                 android:layout_height="match_parent"
                 android:layout_marginHorizontal="10dp"
-                android:background="@drawable/ic_menu_white"
+                android:background="@drawable/ic_menu_hamburger"
                 android:onClick="openMenu" />
 
 
