@@ -1,5 +1,7 @@
 package devdaryl.com.mapwithlogin;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -8,6 +10,7 @@ import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -163,6 +166,20 @@ public class AddPOI extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        System.out.println("ACTIVITY RESULT");
+        super.onActivityResult(requestCode,resultCode,data);
+        if (requestCode == 1 && resultCode == RESULT_OK) {
+            ImageView imageView = (ImageView)findViewById(R.id.imageView1);
+            System.out.println("PHOTO TAKEN");
+            Bitmap photo = (Bitmap) data.getExtras().get("data");
+            imageView.setImageBitmap(photo);
+        }
+        else {
+            System.out.println("PHOTO NOT TAKEN");
+        }
     }
 
 

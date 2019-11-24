@@ -2,10 +2,17 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/nav_account"
-        android:title="Account" />
+        android:title="Account"
+        android:icon="@drawable/ic_person_black_24dp"/>
     <item android:id="@+id/nav_addpoi"
-        android:title="Add POI"/>
+        android:title="Add POI"
+        android:icon="@drawable/ic_add_location_black_24dp"/>
     <item android:id="@+id/nav_filterpoi"
-        android:title="Filter POI"/>
+        android:title="Filter POI"
+        android:icon="@drawable/ic_filter_list_black_24dp"/>
+    <item android:id="@+id/nav_directions"
+        android:title="Directions"
+        android:icon="@drawable/ic_directions_black_24dp"
+        />
 
 </menu>

@@ -9,6 +9,8 @@ import android.location.Location;
 import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Looper;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -35,6 +37,8 @@ import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
+import com.google.android.gms.maps.model.Polyline;
+import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
@@ -42,8 +46,16 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.maps.DirectionsApiRequest;
+import com.google.maps.GeoApiContext;
+import com.google.maps.PendingResult;
+import com.google.maps.internal.PolylineEncoding;
+import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.TravelMode;
 
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -76,15 +88,17 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
+    private GeoApiContext geoApiContext = null;
+
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
-        }
+        // if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+         //   checkLocationPermission();
+        //}
 
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -98,13 +112,9 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync((OnMapReadyCallback) this);
 
-//        accountButton = (Button) findViewById(R.id.nav_account);
-//        accountButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                openLoginActivity();
-//            }
-//        });
+        if(geoApiContext == null){
+            geoApiContext = new GeoApiContext.Builder().apiKey("AIzaSyBUNsVo7I1Yd4qJjkZNbgeFh-Q8hcGsn2Y").build();
+        }
     }
 
     // Usage: pulls a list of the document id's under that key_word
@@ -221,6 +231,11 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         if(id == R.id.nav_filterpoi){
             mDrawerLayout.closeDrawers();
             openFilterPOIActivity();
+        }
+
+        if(id == R.id.nav_directions){
+            mDrawerLayout.closeDrawers();
+            calculateDirections(pinDroppedLocation);
         }
 
 
@@ -391,10 +406,88 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         });
 
     }
-    //marker click listener for pop up screen
-   /* public void onMarkerLongClick
-    {
-        Intent intent = new Intent(this, PoiPopUp.class);
 
-    }*/
+    private void filterList() {
+
+        //sample creating
+        POI first = new POI(32.8812, -117.2375, "geisel", "place to live life", "building");
+        POI second = new POI(32.8818, -117.2375, "close first", "life", "building");
+        POI third = new POI(32.8899, -117.2440, "north east", "place ", "building");
+        POI fourth = new POI(32.8800, -117.2350, "south west", "idk", "building");
+        List<POI> returnList = new ArrayList<>();
+        returnList.add(first);
+        returnList.add(second);
+        returnList.add(third);
+        returnList.add(fourth);
+        putMarkerOnMap(returnList);
+    }
+
+    private void putMarkerOnMap(List<POI> poiList) {
+
+        for(POI cur : poiList) {
+            double lat = cur.getLatitude();
+            double lon = cur.getLongitude();
+            LatLng location = new LatLng(lat, lon);
+            mMap.addMarker(new MarkerOptions()
+                .position(location)
+                    .title(cur.getName())
+                    .snippet(cur.getDescription())
+            );
+        }
+    }
+
+    private void addPolyLinesToMap(final DirectionsResult result){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "run: result routes: " + result.routes.length);
+
+                for(DirectionsRoute route: result.routes){
+                    Log.d(TAG, "run: leg: " + route.legs[0].toString());
+                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+
+                    List<LatLng> newDecodedPath = new ArrayList<>();
+
+                    for(com.google.maps.model.LatLng latLng: decodedPath){
+
+                        newDecodedPath.add(new LatLng(
+                                latLng.lat, latLng.lng
+                        ));
+                    }
+
+                    Polyline polyline = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                    polyline.setClickable(true);
+                }
+            }
+        });
+    }
+
+    private void calculateDirections(LatLng latlongDest){
+        Log.d(TAG, "calculateDirections: calculating directions.");
+
+        com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
+                latlongDest.latitude,latlongDest.longitude);
+        DirectionsApiRequest directions = new DirectionsApiRequest(geoApiContext);
+        directions.mode(TravelMode.WALKING);
+
+        directions.alternatives(true);
+        directions.origin(
+                new com.google.maps.model.LatLng(myLocation.latitude,myLocation.longitude)
+        );
+        Log.d(TAG, "calculateDirections: destination: " + destination.toString());
+        directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
+            @Override
+            public void onResult(DirectionsResult result) {
+                Log.d(TAG, "onResult: routes: " + result.routes[0].toString());
+                Log.d(TAG, "onResult: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
+                addPolyLinesToMap(result);
+            }
+
+            @Override
+            public void onFailure(Throwable e) {
+                Log.e(TAG, "onFailure: " + e.getMessage() );
+
+            }
+        });
+    }
 }
