@@ -45,6 +45,7 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.maps.DirectionsApiRequest;
@@ -54,6 +55,7 @@ import com.google.maps.internal.PolylineEncoding;
 import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
+import com.google.maps.model.Duration;
 import com.google.maps.model.TravelMode;
 
 import java.io.IOException;
@@ -96,6 +98,10 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     private DirectionsLeg leg;
     private List<Polyline> mPolylines = new ArrayList<Polyline>();
 
+    private List< Map<String, Object> > locationList;
+
+    private List<Pair> durations = new ArrayList<Pair>();
+    private Duration currDuration;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -184,9 +190,17 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                         polyline1.setColor(
                                 ContextCompat.getColor(getApplicationContext(), R.color.color_blue));
                         polyline1.setZIndex(1);
+
+                        for(Pair pair: durations){
+                            if (pair.getPolyID().equals(polyline1.getId())){
+                                currDuration = pair.getDuration();
+                                break;
+                            }
+                        }
                         Marker marker = mMap.addMarker(new MarkerOptions()
                                 .position(myLocation)
-                                .title("Estimated Time: " + leg.duration));
+                                .title("Estimated Time: " + currDuration));
+                        System.out.println("CURRDURATION: " + currDuration);
                         marker.showInfoWindow();
                     }
                     else{
@@ -197,6 +211,8 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 }
             }
         });
+
+        filterList();
     }
 
     // Usage: pulls a list of the document id's under that key_word
@@ -361,6 +377,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
     }
 
+    /*
     public void onMapSearch(View view) {
         mMap.clear();
         EditText locationSearch = (EditText) findViewById(R.id.editText4);
@@ -385,6 +402,104 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                     .build();                   // Creates a CameraPosition from the builder
             mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
         }
+    }
+    */
+
+    //database search
+    public void onMapSearch(View view) {
+
+        mMap.clear();
+        EditText locationSearch = (EditText) findViewById(R.id.editText4);
+        String location = locationSearch.getText().toString();
+
+        System.out.println("Got to 1 ");
+        readData(new FirestoreCallback() {
+            @Override
+            public void onCallback(List<Map<String, Object>> list) {
+                System.out.println("Got to 2 ");
+                locationList = list;
+
+                if(!(list == null || list.isEmpty())) {
+                    Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
+                            " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
+                    putMarkerOnMap(list);
+                }}
+        }, location);
+
+//        for(Map<String, Object> i: locationList){
+ //           System.out.println(i.toString());
+  //      }
+        //documentList = new ArrayList<>();
+        locationList = new ArrayList<>();
+
+        /*List<Address>addressList = null;
+
+        if (location != null || !location.equals("")) {
+            Geocoder geocoder = new Geocoder(this);
+            try {
+                // while(addressList.size() == 0) {
+                addressList = geocoder.getFromLocationName(location, 1);
+                // }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(addressList.size() == 0){
+                Toast.makeText(MapActivity.this, "Address + " + location + " not found!", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Address address = addressList.get(0);
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(latLng)      // Sets the center of the map to Mountain View
+                    .zoom(18)                   // Sets the zoom
+                    .bearing(0)                // Sets the orientation of the camera to east
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }*/
+    }
+
+    public void readData(final FirestoreCallback firestoreCallback, final String location) {
+        System.out.println("Got to 3 ");
+
+        mFirestore.collection("locations")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        System.out.println("Got to 4 ");
+
+                        if (task.isSuccessful()) {
+                            System.out.println("Got to 5 ");
+
+                            List<Map<String, Object>> eventList = new ArrayList<>();
+                            //List<DocumentSnapshot> list = task.getResult().getDocuments();
+
+                            for(DocumentSnapshot doc : task.getResult()) {
+                                System.out.println("Got to 5.25 ");
+
+                                Map<String, Object> e = doc.getData();
+                                System.out.println("Got to 5.5 ");
+
+                                if(e.get("name").equals(location)) {
+                                    System.out.println("Got to 6 ");
+
+                                    eventList.add(e);
+                                }
+                            }
+                            System.out.println("Got to 7 ");
+
+                            firestoreCallback.onCallback(eventList);
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+
+                });
+    }
+    public interface FirestoreCallback {
+        void onCallback(List<Map<String, Object>> list);
     }
 
     private void getDeviceLocation() {
@@ -421,9 +536,9 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         returnList.add(second);
         returnList.add(third);
         returnList.add(fourth);
-        putMarkerOnMap(returnList);
+        //putMarkerOnMap(returnList);
     }
-
+/*
     private void putMarkerOnMap(List<POI> poiList) {
 
         for(POI cur : poiList) {
@@ -434,6 +549,25 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 .position(location)
                     .title(cur.getName())
                     .snippet(cur.getDescription())
+            );
+        }
+    }*/
+
+    //database markers
+    private void putMarkerOnMap(List<Map<String,Object>> poiList) {
+
+        for(Map<String, Object> cur: poiList) {
+            GeoPoint geo = (GeoPoint) cur.get("location");
+
+            double lat = geo.getLatitude();
+            double lon = geo.getLongitude();
+            LatLng location = new LatLng(lat, lon);
+            Toast.makeText(MapActivity.this,
+                    (String)cur.get("name") + (String)cur.get("description"), Toast.LENGTH_LONG).show();
+            mMap.addMarker(new MarkerOptions()
+                    .position(location)
+                    .title("bathroom")
+                    .snippet("place to have fun")
             );
         }
     }
@@ -450,6 +584,8 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                     }
                     mPolylines.clear();
                     mPolylines = new ArrayList<>();
+                    durations.clear();
+                    durations = new ArrayList<>();
                 }
 
                 for(DirectionsRoute route: result.routes){
@@ -470,17 +606,36 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                     polylineG.setClickable(true);
                     polylineG.setWidth(15f);
                     mPolylines.add(polylineG);
+                    System.out.println("POLYLINES ARRAY LENGTH: " + mPolylines.size());
 
                     mPolylines.get(0).setColor
                             (ContextCompat.getColor(getApplicationContext(), R.color.color_blue));
                     mPolylines.get(0).setZIndex(1);
 
-                    leg = route.legs[0];
+                    Pair pair = new Pair(polylineG.getId(), route.legs[0].duration);
+                    durations.add(pair);
+                    System.out.println("ROUTE LEGS LENGTH: " + route.legs.length);
 
-                    Marker marker = mMap.addMarker(new MarkerOptions()
-                            .position(myLocation)
-                            .title("Estimated Time: " + leg.duration));
-                    marker.showInfoWindow();
+                }
+
+                for(Polyline polyline: mPolylines){
+                    System.err.println("POLYLINE ARRAY POLYLINEID: " + polyline.getId());
+                }
+
+                for(Pair pair: durations){
+                    System.err.println("DURATIONS PAIR ARRAY: " + pair.getDuration() + " " + pair.polyID);
+                }
+
+
+                Marker marker = mMap.addMarker(new MarkerOptions()
+                        .position(myLocation)
+                        .title("Estimated Time: " + durations.get(0).duration));
+                marker.showInfoWindow();
+
+                int i = 1;
+                for (Pair pair: durations) {
+                    System.out.println
+                            ("Duration " + i + ": " + pair.polyID + " " + pair.duration);
                 }
             }
         });
@@ -520,5 +675,25 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         //This function needs to open the menu/ drawer
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.openDrawer(GravityCompat.START);
+    }
+}
+
+class Pair
+{
+    String polyID;
+    Duration duration;
+
+    public Pair(String id, Duration dur)
+    {
+        this.polyID = id;
+        this.duration = dur;
+    }
+
+    public String getPolyID(){
+        return polyID;
+    }
+
+    public Duration getDuration(){
+        return duration;
     }
 }
