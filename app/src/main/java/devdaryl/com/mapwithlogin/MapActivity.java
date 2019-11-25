@@ -1,6 +1,7 @@
 package devdaryl.com.mapwithlogin;
 
 import android.Manifest;
+import android.content.ClipData;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Address;
@@ -10,6 +11,7 @@ import android.location.LocationListener;
 import android.os.Build;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -22,6 +24,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.common.api.GoogleApi;
 import com.google.android.gms.common.api.GoogleApiActivity;
@@ -37,7 +40,9 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.internal.NavigationMenu;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -58,6 +63,10 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         LocationListener
 {
 
+    private static final String FIREBASE_USER = "account";
+    private static final int LOGIN_STATE_CODE = 10;
+    private static final String ACCOUNT_ID = "account";
+    private GoogleSignInAccount account;
     private static final String TAG = "MapActivity";
     private GoogleMap mMap;
     private Button accountButton;
@@ -82,6 +91,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -97,14 +107,6 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync((OnMapReadyCallback) this);
-
-//        accountButton = (Button) findViewById(R.id.nav_account);
-//        accountButton.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                openLoginActivity();
-//            }
-//        });
     }
 
     // Usage: pulls a list of the document id's under that key_word
@@ -171,7 +173,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
     public void openLoginActivity() {
         Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+        startActivityForResult(intent, LOGIN_STATE_CODE);
     }
 
     public void openAddPOIActivity(){
@@ -391,10 +393,23 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         });
 
     }
-    //marker click listener for pop up screen
-   /* public void onMarkerLongClick
-    {
-        Intent intent = new Intent(this, PoiPopUp.class);
 
-    }*/
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        // get account object from login activity
+        if(requestCode == LOGIN_STATE_CODE){
+            if(resultCode == RESULT_OK && data.getStringExtra(ACCOUNT_ID).equals("success")){
+
+                NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+                if (navigationView != null) {
+                    Menu menu = navigationView.getMenu();
+                    menu.findItem(R.id.nav_account).setTitle("Log out");
+                    //menu.findItem(R.id.nav_pkg_manage).setVisible(false);//In case you want to remove menu item
+                    navigationView.setNavigationItemSelectedListener(this);
+                }
+            }
+        }
+    }
 }

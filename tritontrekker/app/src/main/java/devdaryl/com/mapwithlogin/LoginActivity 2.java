@@ -27,7 +27,6 @@ import com.google.firebase.auth.GoogleAuthProvider;
 public class LoginActivity extends AppCompatActivity {
 
     private static final String TAG = "LoginActivity";
-    private static final String FIREBASE_USER = "account";
     private static final int RC_SIGN_IN = 9001;
     private TextView statusTextView;
     GoogleSignInClient mGoogleSignInClient;
@@ -35,7 +34,6 @@ public class LoginActivity extends AppCompatActivity {
     private static GoogleSignInOptions gso = null;
     private SignInButton signInButton;
     private Button signOutButton;
-    private Intent mapIntent;
 
     private GoogleSignInAccount account;
 
@@ -43,10 +41,6 @@ public class LoginActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        // get intent from MapActivity
-        mapIntent = getIntent();
-
 
         if(gso == null) {
             gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -126,13 +120,9 @@ public class LoginActivity extends AppCompatActivity {
 
         if(user != null) {
             statusTextView.setText("Hello, " + user.getDisplayName());
-            mapIntent.putExtra(FIREBASE_USER, "success");
-            setResult(RESULT_OK, mapIntent);
         }
         else{
             statusTextView.setText("There was a problem! Trying again.");
-            mapIntent.putExtra(FIREBASE_USER, "fail");
-            setResult(RESULT_CANCELED, mapIntent);
         }
     }
 
