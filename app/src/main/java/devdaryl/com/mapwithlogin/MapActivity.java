@@ -422,7 +422,11 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 if(!(list == null || list.isEmpty())) {
                     Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
                             " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
-                    putMarkerOnMap(list);
+                    GeoPoint geoPoint = (GeoPoint)list.get(0).get("location");
+                    double latitude = geoPoint.getLatitude();
+                    double longtitude = geoPoint.getLongitude();
+                    Toast.makeText(MapActivity.this, "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+                    moveCamera(new LatLng(latitude, longtitude), 20);
                 }}
         }, location);
 
@@ -555,20 +559,12 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
     //database markers
     private void putMarkerOnMap(List<Map<String,Object>> poiList) {
-
         for(Map<String, Object> cur: poiList) {
-            GeoPoint geo = (GeoPoint) cur.get("location");
-
-            double lat = geo.getLatitude();
-            double lon = geo.getLongitude();
-            LatLng location = new LatLng(lat, lon);
-            Toast.makeText(MapActivity.this,
-                    (String)cur.get("name") + (String)cur.get("description"), Toast.LENGTH_LONG).show();
-            mMap.addMarker(new MarkerOptions()
-                    .position(location)
-                    .title("bathroom")
-                    .snippet("place to have fun")
-            );
+            GeoPoint geoPoint = (GeoPoint)poiList.get(0).get("location");
+            double latitude = geoPoint.getLatitude();
+            double longtitude = geoPoint.getLongitude();
+            Toast.makeText(MapActivity.this, "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+            moveCamera(new LatLng(latitude, longtitude), 15);
         }
     }
 
@@ -676,6 +672,16 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.openDrawer(GravityCompat.START);
     }
+
+    private void moveCamera(LatLng latLng, float zoom){
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
+
+        MarkerOptions options = new MarkerOptions().
+                position(latLng)
+                .title("u a fag");
+        mMap.addMarker(options);
+    }
+
 }
 
 class Pair
