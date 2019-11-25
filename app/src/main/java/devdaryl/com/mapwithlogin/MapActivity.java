@@ -11,6 +11,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
@@ -150,6 +151,12 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
         getDeviceLocation();
 
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+        mMap.setPadding(0, height - 250, 0, 0);
+
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override
             public void onMapClick(LatLng latLng) {
@@ -212,7 +219,14 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
             }
         });
 
-        filterList();
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                Intent intent = new Intent(MapActivity.this, PoiPopUp.class);
+                startActivity(intent);
+                return true;
+            }
+        });
     }
 
     // Usage: pulls a list of the document id's under that key_word
@@ -557,17 +571,6 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         }
     }*/
 
-    //database markers
-    private void putMarkerOnMap(List<Map<String,Object>> poiList) {
-        for(Map<String, Object> cur: poiList) {
-            GeoPoint geoPoint = (GeoPoint)poiList.get(0).get("location");
-            double latitude = geoPoint.getLatitude();
-            double longtitude = geoPoint.getLongitude();
-            Toast.makeText(MapActivity.this, "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
-            moveCamera(new LatLng(latitude, longtitude), 15);
-        }
-    }
-
     private void addPolyLinesToMap(final DirectionsResult result){
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
@@ -681,7 +684,6 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
                 .title("u a fag");
         mMap.addMarker(options);
     }
-
 }
 
 class Pair
