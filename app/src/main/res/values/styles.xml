@@ -34,6 +34,7 @@
         <item name="android:textStyle">bold</item>
     </style>
 
+    <!-- PoiPopUp Styles -->
     <style name = "AppTheme.PopUp">
         <item name = "android:windowIsTranslucent">true</item>
         <item name = "android:windowCloseOnTouchOutside">true</item>
