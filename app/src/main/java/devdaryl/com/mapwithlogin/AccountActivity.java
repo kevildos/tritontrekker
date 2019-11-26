@@ -6,6 +6,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
+import com.google.android.gms.auth.api.signin.GoogleSignInStatusCodes;
 import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,29 +26,23 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.GoogleAuthProvider;
 
-public class LoginActivity extends AppCompatActivity {
+public class AccountActivity extends AppCompatActivity {
 
-    private static final String TAG = "LoginActivity";
-    private static final String FIREBASE_USER = "account";
+    private static final String TAG = "AccountActivity";
+    private static final String ACCOUNT_STATE = "account_state";
     private static final int RC_SIGN_IN = 9001;
     private TextView statusTextView;
-    GoogleSignInClient mGoogleSignInClient;
-    private FirebaseAuth mAuth;
+    private GoogleSignInClient mGoogleSignInClient;
+    private static FirebaseAuth mAuth;
     private static GoogleSignInOptions gso = null;
     private SignInButton signInButton;
     private Button signOutButton;
-    private Intent mapIntent;
-
     private GoogleSignInAccount account;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
-
-        // get intent from MapActivity
-        mapIntent = getIntent();
-
 
         if(gso == null) {
             gso = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
@@ -58,28 +54,18 @@ public class LoginActivity extends AppCompatActivity {
         // get sign in and sign out text display
         statusTextView = (TextView) findViewById(R.id.statusTextView);
 
+
         mGoogleSignInClient = GoogleSignIn.getClient(this, gso);
-
-        // sign in button
-        signInButton = (SignInButton) findViewById(R.id.signInButton);
-        signInButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signIn();
-            }
-        });
-
-        // sign out button
-        signOutButton = (Button) findViewById(R.id.signOutButton);
-        signOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                signOut();
-            }
-        });
 
         // Initialize Firebase Auth
         mAuth = FirebaseAuth.getInstance();
+
+        if(getIntent().getBooleanExtra(ACCOUNT_STATE, false)){
+            signOut();
+        }
+        else{
+            signIn();
+        }
     }
 
     private void signIn() {
@@ -89,11 +75,14 @@ public class LoginActivity extends AppCompatActivity {
 
     // sign out of Google and Firebase
     private void signOut(){
+
         mGoogleSignInClient.signOut().addOnCompleteListener(this, new OnCompleteListener<Void>() {
             @Override
             public void onComplete(@NonNull Task<Void> task) {
-                FirebaseAuth.getInstance().signOut();
-                statusTextView.setText("Signed Out");
+                mAuth.signOut();
+                Toast.makeText(AccountActivity.this, "You have been logged out.", Toast.LENGTH_LONG).show();
+                setResult(1);
+                finish();
             }
         });
     }
@@ -111,8 +100,16 @@ public class LoginActivity extends AppCompatActivity {
                             // Sign in success, update UI with the signed-in user's information
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
-                            updateUI(user);
-                        } else {
+
+                            if(user.getEmail().contains("@ucsd.edu")){
+                                updateUI(user);
+                            }
+                            else {
+                                revokeAccess(user);
+                            }
+
+                        }
+                        else {
                             // If sign in fails, display a message to the user.
                             Log.w(TAG, "signInWithCredential:failure", task.getException());
                             updateUI(null);
@@ -123,16 +120,15 @@ public class LoginActivity extends AppCompatActivity {
 
     // TODO update UI when a user is signed in
     private void updateUI(FirebaseUser user) {
-
         if(user != null) {
-            statusTextView.setText("Hello, " + user.getDisplayName());
-            mapIntent.putExtra(FIREBASE_USER, "success");
-            setResult(RESULT_OK, mapIntent);
+            Toast.makeText(AccountActivity.this, "You have logged in!", Toast.LENGTH_LONG).show();
+            setResult(1);
+            finish();
         }
         else{
-            statusTextView.setText("There was a problem! Trying again.");
-            mapIntent.putExtra(FIREBASE_USER, "fail");
-            setResult(RESULT_CANCELED, mapIntent);
+            statusTextView.setText("Login cancelled");
+            setResult(0);
+            finish();
         }
     }
 
@@ -150,6 +146,7 @@ public class LoginActivity extends AppCompatActivity {
                 firebaseAuthWithGoogle(account);
             }
             catch (ApiException e){
+                // error
                 // Google Sign In failed, update UI appropriately
                 Log.w(TAG, "Google sign in failed", e);
                 // [START_EXCLUDE]
@@ -167,7 +164,24 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     // TODO allow users to remove their account from application
-    private void revokeAccess() {
-
+    private void revokeAccess(FirebaseUser user) {
+        mGoogleSignInClient.revokeAccess()
+                .addOnCompleteListener(this, new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        user.delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        if (task.isSuccessful()) {
+                                            Toast.makeText(AccountActivity.this, "You must log in with an active UCSD account.", Toast.LENGTH_LONG).show();
+                                            Log.d(TAG, "User account deleted.");
+                                            setResult(-1);
+                                            finish();
+                                        }
+                                    }
+                                });
+                    }
+                });
     }
 }
