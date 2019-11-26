@@ -27,8 +27,10 @@
         android:debuggable="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/networ_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
+        android:testOnly="true"
         android:theme="@style/AppTheme" >
         <activity android:name="devdaryl.com.mapwithlogin.LoginActivity" />
 
@@ -49,7 +51,9 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="devdaryl.com.mapwithlogin.MapActivity" />
+        <activity
+            android:name="devdaryl.com.mapwithlogin.MapActivity"
+            android:launchMode="singleTop" />
         <activity
             android:name="devdaryl.com.mapwithlogin.AddPOI"
             android:configChanges="orientation|keyboardHidden|screenSize"
@@ -57,6 +61,20 @@
             android:parentActivityName="devdaryl.com.mapwithlogin.MapActivity"
             android:theme="@style/FullscreenThemeUpdated" >
         </activity>
+        <activity
+            android:name="devdaryl.com.mapwithlogin.FilterPOI"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="@string/title_activity_filter_poi"
+            android:parentActivityName="devdaryl.com.mapwithlogin.MapActivity"
+            android:theme="@style/FullscreenThemeUpdated" >
+        </activity>
+        <activity
+            android:name="devdaryl.com.mapwithlogin.PoiPopUp"
+            android:configChanges="orientation|keyboardHidden|screenSize"
+            android:label="title_activity_poi_pop_up"
+            android:parentActivityName="devdaryl.com.mapwithlogin.MapActivity"
+            android:theme="@style/AppTheme.PopUp" />
+
         <!-- Needs to be explicitly declared on P+ -->
         <uses-library
             android:name="org.apache.http.legacy"
