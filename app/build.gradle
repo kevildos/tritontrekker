@@ -60,6 +60,8 @@ dependencies {
     implementation 'com.google.maps:google-maps-services:0.10.1'
     implementation 'org.slf4j:slf4j-simple:1.7.25'
 
+    implementation 'pl.droidsonroids.gif:android-gif-drawable:1.2.19'
+
     //implementation'com.google.android.gms:play-services:12.0.1'
 }
 

@@ -3,9 +3,8 @@ package devdaryl.com.mapwithlogin;
 import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
-import android.location.Address;
-import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Build;
@@ -14,6 +13,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
@@ -22,15 +22,11 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
-import com.google.android.gms.common.api.GoogleApi;
-import com.google.android.gms.common.api.GoogleApiActivity;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -45,6 +41,8 @@ import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -60,7 +58,6 @@ import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.Duration;
 import com.google.maps.model.TravelMode;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -75,11 +72,18 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         OnMapReadyCallback,
         LocationListener {
 
+    private static final int ACC_REQ_CODE = 100;
+    private static final String ACCOUNT_STATE = "account_state";
     private static final String TAG = "MapActivity";
     private GoogleMap mMap;
     private DrawerLayout mDrawerLayout;
     private NavigationView mNavigationView;
     FirebaseFirestore mFirestore;
+    private SharedPreferences sp;
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private Boolean isLoggedIn;
+    private Menu menu;
 
     // Location vars
     private boolean pinDropped = false;
@@ -87,6 +91,9 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     private LatLng pinDroppedLocation;
     private Marker mCurrLocationMarker;
     private Marker mClickedMarker;
+    private String[] greetings;
+    private int numGreetings;
+
     private LatLng myLocation;
     private FusedLocationProviderClient mFusedLocationProviderClient;
 
@@ -111,14 +118,11 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        // if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-        //   checkLocationPermission();
-        //}
-
         mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mFirestore = FirebaseFirestore.getInstance();
         mFirestore.collection("locations");
+
 
         if (mNavigationView != null) {
             mNavigationView.setNavigationItemSelectedListener(this);
@@ -130,6 +134,44 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
         if (geoApiContext == null) {
             geoApiContext = new GeoApiContext.Builder().apiKey("AIzaSyBUNsVo7I1Yd4qJjkZNbgeFh-Q8hcGsn2Y").build();
+        }
+
+        menu = mNavigationView.getMenu();
+        mAuth = FirebaseAuth.getInstance();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+
+                // check if user is logged in
+                if(mAuth.getCurrentUser() != null){
+                    isLoggedIn = true;
+                }
+                else{
+                    isLoggedIn = false;
+                }
+
+                updateLoginButton(isLoggedIn);
+            }
+        };
+        mAuth.addAuthStateListener(mAuthListener);
+
+        updateNavMenu();
+    }
+
+    // update the menu items according to the logged in state of the user
+    private void updateNavMenu(){
+
+    }
+
+    private void updateLoginButton(Boolean isLoggedIn){
+        if(isLoggedIn){
+            menu.findItem(R.id.nav_account).setTitle("Log out");
+            menu.findItem(R.id.nav_addpoi).setVisible(true);
+        }
+        else{
+            menu.findItem(R.id.nav_account).setTitle("Log in");
+            menu.findItem(R.id.nav_addpoi).setVisible(false);
         }
     }
 
@@ -290,9 +332,11 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         }
     }
 
-    public void openLoginActivity() {
-        Intent intent = new Intent(this, LoginActivity.class);
-        startActivity(intent);
+    public void openAccountActivity() {
+        Intent intent = new Intent(this, AccountActivity.class);
+
+        intent.putExtra(ACCOUNT_STATE, isLoggedIn);
+        startActivityForResult(intent, ACC_REQ_CODE);
     }
 
     public void openAddPOIActivity() {
@@ -325,10 +369,10 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         int id = menuItem.getItemId();
 
 
-        // login activity handler
-        if (id == R.id.nav_account) {
+        // account activity handler
+        if(id == R.id.nav_account){
             mDrawerLayout.closeDrawers();
-            openLoginActivity();
+            openAccountActivity();
         }
 
         // addpoi activity handler
@@ -351,7 +395,6 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
         return true;
     }
-
 
     @Override
     public void onLocationChanged(Location location) {
@@ -388,34 +431,6 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
     }
 
-    /*
-    public void onMapSearch(View view) {
-        mMap.clear();
-        EditText locationSearch = (EditText) findViewById(R.id.editText4);
-        String location = locationSearch.getText().toString();
-        List<Address>addressList = null;
-
-        if (location != null || !location.equals("")) {
-            Geocoder geocoder = new Geocoder(this);
-            try {
-                addressList = geocoder.getFromLocationName(location, 1);
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(latLng)      // Sets the center of the map to Mountain View
-                    .zoom(18)                   // Sets the zoom
-                    .bearing(0)                // Sets the orientation of the camera to east
-                    .build();                   // Creates a CameraPosition from the builder
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }
-    }
-    */
-
     //database search
     public void onMapSearch(View view) {
 
@@ -442,38 +457,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
             }
         }, location);
 
-//        for(Map<String, Object> i: locationList){
-        //           System.out.println(i.toString());
-        //      }
-        //documentList = new ArrayList<>();
         locationList = new ArrayList<>();
-
-        /*List<Address>addressList = null;
-
-        if (location != null || !location.equals("")) {
-            Geocoder geocoder = new Geocoder(this);
-            try {
-                // while(addressList.size() == 0) {
-                addressList = geocoder.getFromLocationName(location, 1);
-                // }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if(addressList.size() == 0){
-                Toast.makeText(MapActivity.this, "Address + " + location + " not found!", Toast.LENGTH_LONG).show();
-                return;
-            }
-            Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(latLng)      // Sets the center of the map to Mountain View
-                    .zoom(18)                   // Sets the zoom
-                    .bearing(0)                // Sets the orientation of the camera to east
-                    .build();                   // Creates a CameraPosition from the builder
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }*/
     }
 
     public void readData(final FirestoreCallback firestoreCallback, final String location) {
@@ -569,8 +553,7 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
             );
         }
     }*/
-
-    private void addPolyLinesToMap(final DirectionsResult result) {
+    private void addPolyLinesToMap(final DirectionsResult result){
         new Handler(Looper.getMainLooper()).post(new Runnable() {
             @Override
             public void run() {

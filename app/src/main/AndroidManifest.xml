@@ -17,7 +17,7 @@
         android:networkSecurityConfig="@xml/networ_security_config"
         >
 
-        <activity android:name="devdaryl.com.mapwithlogin.LoginActivity"></activity>
+        <activity android:name="devdaryl.com.mapwithlogin.AccountActivity"></activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"

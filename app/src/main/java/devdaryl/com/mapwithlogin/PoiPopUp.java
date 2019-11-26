@@ -165,16 +165,4 @@ public class PoiPopUp extends AppCompatActivity {
         Toast.makeText(this, "Getting directions to POI", Toast.LENGTH_SHORT).show();
     }
 
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        Toast.makeText(PoiPopUp.this, "Destroyed", Toast.LENGTH_SHORT);
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Toast.makeText(PoiPopUp.this, "Stopped", Toast.LENGTH_SHORT);
-    }
 }

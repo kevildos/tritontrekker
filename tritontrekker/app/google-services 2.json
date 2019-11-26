@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "259355436321",
+    "firebase_url": "https://tritontrekker.firebaseio.com",
+    "project_id": "tritontrekker",
+    "storage_bucket": "tritontrekker.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:259355436321:android:e668ddc9790f1232c30a60",
+        "android_client_info": {
+          "package_name": "devdaryl.com.mapwithlogin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "259355436321-doop4p8ogl83s09ih28be309b2voim30.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCAGHnOsC6KDzsM_LXu5RJuL30RHQNs-cU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "259355436321-doop4p8ogl83s09ih28be309b2voim30.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
