@@ -13,11 +13,9 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -57,6 +55,15 @@ import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.Duration;
 import com.google.maps.model.TravelMode;
+import com.mikepenz.materialdrawer.AccountHeader;
+import com.mikepenz.materialdrawer.AccountHeaderBuilder;
+import com.mikepenz.materialdrawer.Drawer;
+import com.mikepenz.materialdrawer.DrawerBuilder;
+import com.mikepenz.materialdrawer.MiniDrawer;
+import com.mikepenz.materialdrawer.model.MiniDrawerItem;
+import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
+import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
+import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -64,14 +71,30 @@ import java.util.Map;
 
 import javax.annotation.Nullable;
 
+import okhttp3.internal.http2.Header;
+
 /**
  * Created by User on 10/2/2017.
  */
 
-public class MapActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener,
+public class MapActivity extends AppCompatActivity implements
         OnMapReadyCallback,
         LocationListener {
 
+    // nav menu vars
+    private Drawer menu;
+    private PrimaryDrawerItem accountItem;
+    private PrimaryDrawerItem addPoiItem;
+    private PrimaryDrawerItem filterItem;
+    private PrimaryDrawerItem directionsItem;
+    private AccountHeader header;
+    private static final int accountItemID = 1;
+    private static final int addPoitItemID = 2;
+    private static final int filterItemID = 3;
+    private static final int directionsItemID = 4;
+
+
+    // Firebase vars
     private static final int ACC_REQ_CODE = 100;
     private static final String ACCOUNT_STATE = "account_state";
     private static final String TAG = "MapActivity";
@@ -83,7 +106,6 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private Boolean isLoggedIn;
-    private Menu menu;
 
     // Location vars
     private boolean pinDropped = false;
@@ -93,19 +115,15 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     private Marker mClickedMarker;
     private String[] greetings;
     private int numGreetings;
-
     private LatLng myLocation;
     private FusedLocationProviderClient mFusedLocationProviderClient;
-
     private GeoApiContext geoApiContext = null;
 
     // Direction Vars
     private Polyline polylineG;
     private DirectionsLeg leg;
     private List<Polyline> mPolylines = new ArrayList<Polyline>();
-
     private List<Map<String, Object>> locationList;
-
     private List<Pair> durations = new ArrayList<Pair>();
     private Duration currDuration;
 
@@ -118,15 +136,10 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        mNavigationView = (NavigationView) findViewById(R.id.nav_view);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mFirestore = FirebaseFirestore.getInstance();
         mFirestore.collection("locations");
-
-
-        if (mNavigationView != null) {
-            mNavigationView.setNavigationItemSelectedListener(this);
-        }
+        mAuth = FirebaseAuth.getInstance();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -136,8 +149,9 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
             geoApiContext = new GeoApiContext.Builder().apiKey("AIzaSyBUNsVo7I1Yd4qJjkZNbgeFh-Q8hcGsn2Y").build();
         }
 
-        menu = mNavigationView.getMenu();
-        mAuth = FirebaseAuth.getInstance();
+        buildMenuItems();
+        buildMenuHeader();
+        buildMenu();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -159,6 +173,97 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         updateNavMenu();
     }
 
+    private void buildMenuItems(){
+        accountItem = new PrimaryDrawerItem()
+                .withIdentifier(accountItemID)
+                .withName("Log in")
+                .withIcon(R.drawable.ic_person_black_24dp);
+        addPoiItem = new PrimaryDrawerItem().withIdentifier(addPoitItemID)
+                .withName("Add POI")
+                .withIdentifier(addPoitItemID)
+                .withIcon(R.drawable.ic_add_location_black_24dp);
+        filterItem = new PrimaryDrawerItem().withIdentifier(accountItemID)
+                .withIdentifier(filterItemID)
+                .withName("Filter")
+                .withIcon(R.drawable.ic_filter_list_black_24dp);
+        directionsItem = new PrimaryDrawerItem().withIdentifier(accountItemID)
+                .withIdentifier(directionsItemID)
+                .withName("Directions")
+                .withIcon(R.drawable.ic_directions_black_24dp);
+    }
+
+    private void buildMenuHeader(){
+        header = new AccountHeaderBuilder()
+                .withActivity(MapActivity.this)
+                .withAccountHeader(R.layout.material_drawer_layout)
+                .withHeaderBackground(R.drawable.logo)
+                .withHeaderBackgroundScaleType(ImageView.ScaleType.FIT_CENTER)
+                .withSelectionListEnabledForSingleProfile(false)
+                .withProfileImagesVisible(false)
+                .build();
+    }
+
+    private void updateMenuHeader(Boolean isLoggedIn){
+        if(isLoggedIn){
+            FirebaseUser user = mAuth.getCurrentUser();
+
+            header.removeProfile(0);
+            header.addProfiles(
+                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail())
+                    );
+
+        }
+        else{
+            header.removeProfile(0);
+            header.addProfiles(
+                    new ProfileDrawerItem().withName("Guest").withEmail("Log in to gain full access")
+            );
+        }
+    }
+
+    private void buildMenu(){
+        menu = new DrawerBuilder()
+                .withActivity(MapActivity.this)
+                .addDrawerItems(
+                        accountItem,
+                        filterItem,
+                        directionsItem
+                )
+                .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
+                    @Override
+                    public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
+                        long id = drawerItem.getIdentifier();
+
+                        // account activity handler
+                        if(id == accountItemID){
+                            mDrawerLayout.closeDrawers();
+                            openAccountActivity();
+                        }
+
+                        // addpoi activity handler
+                        else if (id == addPoitItemID) {
+                            mDrawerLayout.closeDrawers();
+                            openAddPOIActivity();
+                        }
+
+                        // filterpoi activity handler
+                        else if (id == filterItemID) {
+                            mDrawerLayout.closeDrawers();
+                            openFilterPOIActivity();
+                        }
+
+                        else if (id == directionsItemID) {
+                            mDrawerLayout.closeDrawers();
+                            calculateDirections(pinDroppedLocation);
+                        }
+
+                        return true;
+                    }
+                })
+                .withAccountHeader(header)
+                .build();
+    }
+
     // update the menu items according to the logged in state of the user
     private void updateNavMenu(){
 
@@ -166,13 +271,17 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
 
     private void updateLoginButton(Boolean isLoggedIn){
         if(isLoggedIn){
-            menu.findItem(R.id.nav_account).setTitle("Log out");
-            menu.findItem(R.id.nav_addpoi).setVisible(true);
+            accountItem.withName("Log out");
+            menu.updateItem(accountItem);
+            menu.addItemAtPosition(addPoiItem, 2);
         }
-        else{
-            menu.findItem(R.id.nav_account).setTitle("Log in");
-            menu.findItem(R.id.nav_addpoi).setVisible(false);
+        else {
+            accountItem.withName("Log in");
+            menu.updateItem(accountItem);
+            menu.removeItem(addPoitItemID);
         }
+
+        updateMenuHeader(isLoggedIn);
     }
 
     @Override
@@ -361,39 +470,6 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     public void openFilterPOIActivity() {
         Intent intent = new Intent(this, FilterPOI.class);
         startActivity(intent);
-    }
-
-    @Override
-    public boolean onNavigationItemSelected(@NonNull MenuItem menuItem) {
-
-        int id = menuItem.getItemId();
-
-
-        // account activity handler
-        if(id == R.id.nav_account){
-            mDrawerLayout.closeDrawers();
-            openAccountActivity();
-        }
-
-        // addpoi activity handler
-        if (id == R.id.nav_addpoi) {
-            mDrawerLayout.closeDrawers();
-            openAddPOIActivity();
-        }
-
-        // filterpoi activity handler
-        if (id == R.id.nav_filterpoi) {
-            mDrawerLayout.closeDrawers();
-            openFilterPOIActivity();
-        }
-
-        if (id == R.id.nav_directions) {
-            mDrawerLayout.closeDrawers();
-            calculateDirections(pinDroppedLocation);
-        }
-
-
-        return true;
     }
 
     @Override
@@ -652,10 +728,8 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     }
 
     public void openMenu(View view) {
-
         //This function needs to open the menu/ drawer
-        DrawerLayout drawer = findViewById(R.id.drawer_layout);
-        drawer.openDrawer(GravityCompat.START);
+        menu.openDrawer();
     }
 
     private void moveCamera(LatLng latLng, float zoom) {
