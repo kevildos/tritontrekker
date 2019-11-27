@@ -12,8 +12,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true">
 
-        <TableRow
-            android:paddingHorizontal="15dp">
+        <TableRow android:paddingHorizontal="15dp">
 
             <TextView
                 android:id="@+id/poiTitle"
@@ -23,8 +22,7 @@
                 android:textSize="30sp" />
         </TableRow>
 
-        <TableRow
-            android:paddingHorizontal="15dp">
+        <TableRow android:paddingHorizontal="15dp">
 
             <TextView
                 android:id="@+id/poiLocation"
@@ -34,8 +32,7 @@
                 android:textSize="20sp" />
         </TableRow>
 
-        <TableRow
-            android:paddingHorizontal="15dp">
+        <TableRow android:paddingHorizontal="15dp">
 
             <LinearLayout
                 android:layout_width="wrap_content"
@@ -58,17 +55,14 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
                         android:orientation="horizontal">
 
                         <ToggleButton
                             android:id="@+id/favoriteButton"
                             android:layout_width="50dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:layout_marginBottom="10dp"
+                            android:layout_marginRight="10dp"
                             android:background="@drawable/toggle_favorite"
                             android:onClick="onFavoriteToggleClick"
                             android:textOff=""
@@ -78,10 +72,7 @@
                             android:id="@+id/directionsButton"
                             android:layout_width="50dp"
                             android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
                             android:layout_marginTop="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:layout_marginBottom="10dp"
                             android:background="@drawable/ic_directions"
                             android:onClick="onDirectionClick"
                             android:textOff=""
@@ -93,63 +84,63 @@
                     <LinearLayout
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
                         android:orientation="horizontal">
 
-                        <ToggleButton
-                            android:id="@+id/likeButton"
-                            android:layout_width="50dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:background="@drawable/toggle_like"
-                            android:onClick="onLikeToggleClick"
-                            android:textOff=""
-                            android:textOn="" />
-
-                        <ToggleButton
-                            android:id="@+id/dislikeButton"
-                            android:layout_width="50dp"
-                            android:layout_height="wrap_content"
-                            android:layout_marginStart="10dp"
-                            android:layout_marginTop="10dp"
-                            android:layout_marginEnd="10dp"
-                            android:layout_marginBottom="10dp"
-                            android:background="@drawable/toggle_dislike"
-                            android:onClick="onDislikeToggleClick"
-                            android:textOff=""
-                            android:textOn="" />
-
-                    </LinearLayout>
-
-                    <LinearLayout
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dp"
-                        android:orientation="horizontal">
-
-                        <TextView
-                            android:id="@+id/likeCounter"
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingHorizontal="30dp"
-                            android:text="0"
-                            android:textColor="@android:color/background_light"
-                            android:textSize="25sp" />
+                            android:layout_marginRight="10dp"
+                            android:orientation="vertical">
 
-                        <TextView
-                            android:id="@+id/dislikeCounter"
+                            <ToggleButton
+                                android:id="@+id/likeButton"
+                                android:layout_width="50dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/toggle_like"
+                                android:onClick="onLikeToggleClick"
+                                android:textOff=""
+                                android:textOn="" />
+
+                            <TextView
+                                android:id="@+id/likeCounter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:text="0"
+                                android:textColor="@android:color/background_light"
+                                android:textSize="25sp" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:paddingHorizontal="30dp"
-                            android:text="0"
-                            android:textColor="@android:color/background_light"
-                            android:textSize="25sp" />
+                            android:orientation="vertical">
 
+                            <ToggleButton
+                                android:id="@+id/dislikeButton"
+                                android:layout_width="50dp"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:layout_marginTop="10dp"
+                                android:background="@drawable/toggle_dislike"
+                                android:onClick="onDislikeToggleClick"
+                                android:textOff=""
+                                android:textOn="" />
+
+                            <TextView
+                                android:id="@+id/dislikeCounter"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_gravity="center_horizontal"
+                                android:text="0"
+                                android:textColor="@android:color/background_light"
+                                android:textSize="25sp" />
+
+                        </LinearLayout>
                     </LinearLayout>
-
                 </LinearLayout>
 
             </LinearLayout>
@@ -162,10 +153,10 @@
                 android:id="@+id/poiDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="15dp"
                 android:maxLines="4"
+                android:padding="15dp"
                 android:text="Lorem ipsum dolor sit amet, consec tetur adipis icing elit."
-                android:textSize="20sp"/>
+                android:textSize="20sp" />
         </TableRow>
 
         <TableRow>
@@ -173,14 +164,14 @@
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginRight="10dp"
                 android:layout_gravity="right"
+                android:layout_marginRight="10dp"
                 android:orientation="horizontal">
 
                 <ToggleButton
                     android:id="@+id/reportButton"
-                    android:layout_height="wrap_content"
                     android:layout_width="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginStart="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginEnd="10dp"
