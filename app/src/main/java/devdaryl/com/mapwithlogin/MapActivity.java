@@ -182,19 +182,23 @@ public class MapActivity extends AppCompatActivity implements
         accountItem = new PrimaryDrawerItem()
                 .withIdentifier(accountItemID)
                 .withName("Log in")
-                .withIcon(R.drawable.ic_person_black_24dp);
+                .withIcon(R.drawable.ic_person_black_24dp)
+                .withSelectable(false);
         addPoiItem = new PrimaryDrawerItem().withIdentifier(addPoitItemID)
                 .withName("Add POI")
                 .withIdentifier(addPoitItemID)
-                .withIcon(R.drawable.ic_add_location_black_24dp);
+                .withIcon(R.drawable.ic_add_location_black_24dp)
+                .withSelectable(false);
         filterItem = new PrimaryDrawerItem().withIdentifier(accountItemID)
                 .withIdentifier(filterItemID)
                 .withName("Filter")
-                .withIcon(R.drawable.ic_filter_list_black_24dp);
+                .withIcon(R.drawable.ic_filter_list_black_24dp)
+                .withSelectable(false);
         directionsItem = new PrimaryDrawerItem().withIdentifier(accountItemID)
                 .withIdentifier(directionsItemID)
                 .withName("Directions")
-                .withIcon(R.drawable.ic_directions_black_24dp);
+                .withIcon(R.drawable.ic_directions_black_24dp)
+                .withSelectable(false);
     }
 
     private void buildMenuHeader(){
@@ -202,7 +206,7 @@ public class MapActivity extends AppCompatActivity implements
                 .withActivity(MapActivity.this)
                 .withAccountHeader(R.layout.material_drawer_layout)
                 .withHeaderBackground(R.drawable.logo)
-                .withHeaderBackgroundScaleType(ImageView.ScaleType.FIT_CENTER)
+                .withHeaderBackgroundScaleType(ImageView.ScaleType.CENTER_INSIDE)
                 .withSelectionListEnabledForSingleProfile(false)
                 .withProfileImagesVisible(false)
                 .build();
