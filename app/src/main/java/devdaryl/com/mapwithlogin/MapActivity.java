@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.location.Address;
+import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
 import android.os.Build;
@@ -65,6 +67,7 @@ import com.mikepenz.materialdrawer.model.PrimaryDrawerItem;
 import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -152,6 +155,8 @@ public class MapActivity extends AppCompatActivity implements
         buildMenuItems();
         buildMenuHeader();
         buildMenu();
+
+
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -521,7 +526,13 @@ public class MapActivity extends AppCompatActivity implements
                 System.out.println("Got to 2 ");
                 locationList = list;
 
-                if (!(list == null || list.isEmpty())) {
+                if(list != null) {
+                    System.out.println("List not null " + list.toString());
+                }
+                if(list == null) {
+                    System.out.println("List is null ");
+                }
+                else if (!list.isEmpty()) {
                     Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
                             " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
                     GeoPoint geoPoint = (GeoPoint) list.get(0).get("location");
@@ -530,12 +541,43 @@ public class MapActivity extends AppCompatActivity implements
                     Toast.makeText(MapActivity.this, "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
                     moveCamera(new LatLng(latitude, longtitude), 20);
                 }
+                else
+                    googleDatabase(location);
+
             }
         }, location);
 
         locationList = new ArrayList<>();
     }
+    public void googleDatabase(String location){
+        List<Address>addressList = null;
 
+        if (location != null || !location.equals("")) {
+            Geocoder geocoder = new Geocoder(this);
+            try {
+                // while(addressList.size() == 0) {
+                addressList = geocoder.getFromLocationName(location, 1);
+                // }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(addressList.size() == 0){
+                Toast.makeText(MapActivity.this, "Address + " + location + " not found!", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Address address = addressList.get(0);
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(latLng)      // Sets the center of the map to Mountain View
+                    .zoom(18)                   // Sets the zoom
+                    .bearing(0)                // Sets the orientation of the camera to east
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+
+    }
     public void readData(final FirestoreCallback firestoreCallback, final String location) {
         System.out.println("Got to 3 ");
 
