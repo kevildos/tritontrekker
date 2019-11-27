@@ -17,6 +17,8 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
+import android.app.SearchManager;
+import android.widget.SearchView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
@@ -76,6 +78,8 @@ import javax.annotation.Nullable;
 
 import okhttp3.internal.http2.Header;
 
+import static android.widget.SearchView.*;
+
 /**
  * Created by User on 10/2/2017.
  */
@@ -95,6 +99,9 @@ public class MapActivity extends AppCompatActivity implements
     private static final int addPoitItemID = 2;
     private static final int filterItemID = 3;
     private static final int directionsItemID = 4;
+
+
+    //Search vars and listeners
 
 
     // Firebase vars
@@ -176,6 +183,63 @@ public class MapActivity extends AppCompatActivity implements
         mAuth.addAuthStateListener(mAuthListener);
 
         updateNavMenu();
+
+        //Listeners
+        SearchView searchL = findViewById(R.id.searchText);
+        searchL.setOnQueryTextListener(new OnQueryTextListener(){
+            @Override
+            //Save string of search when GO
+            public boolean onQueryTextSubmit(String s){
+                onMapSearch(s);
+                return true;
+            }
+            @Override
+            public boolean onQueryTextChange(String s) {
+                return false;
+            }
+
+        });
+
+    }
+
+    public void onMapSearch(String s) {
+
+        mMap.clear();
+
+        //Using SearchView widget
+        String location = s;
+//        EditText locationSearch = (EditText) findViewById(R.id.editText4);
+//        String location = locationSearch.getText().toString();
+
+        System.out.println("Got to 1 ");
+        readData(new FirestoreCallback() {
+            @Override
+            public void onCallback(List<Map<String, Object>> list) {
+                System.out.println("Got to 2 ");
+                locationList = list;
+
+                if(list != null) {
+                    System.out.println("List not null " + list.toString());
+                }
+                if(list == null) {
+                    System.out.println("List is null ");
+                }
+                else if (!list.isEmpty()) {
+                    Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
+                            " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
+                    GeoPoint geoPoint = (GeoPoint) list.get(0).get("location");
+                    double latitude = geoPoint.getLatitude();
+                    double longtitude = geoPoint.getLongitude();
+                    Toast.makeText(MapActivity.this, "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+                    moveCamera(new LatLng(latitude, longtitude), 20);
+                }
+                else
+                    googleDatabase(location);
+
+            }
+        }, location);
+
+        locationList = new ArrayList<>();
     }
 
     private void buildMenuItems(){
@@ -516,42 +580,7 @@ public class MapActivity extends AppCompatActivity implements
     }
 
     //database search
-    public void onMapSearch(View view) {
 
-        mMap.clear();
-        EditText locationSearch = (EditText) findViewById(R.id.editText4);
-        String location = locationSearch.getText().toString();
-
-        System.out.println("Got to 1 ");
-        readData(new FirestoreCallback() {
-            @Override
-            public void onCallback(List<Map<String, Object>> list) {
-                System.out.println("Got to 2 ");
-                locationList = list;
-
-                if(list != null) {
-                    System.out.println("List not null " + list.toString());
-                }
-                if(list == null) {
-                    System.out.println("List is null ");
-                }
-                else if (!list.isEmpty()) {
-                    Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
-                            " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
-                    GeoPoint geoPoint = (GeoPoint) list.get(0).get("location");
-                    double latitude = geoPoint.getLatitude();
-                    double longtitude = geoPoint.getLongitude();
-                    Toast.makeText(MapActivity.this, "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
-                    moveCamera(new LatLng(latitude, longtitude), 20);
-                }
-                else
-                    googleDatabase(location);
-
-            }
-        }, location);
-
-        locationList = new ArrayList<>();
-    }
     public void googleDatabase(String location){
         List<Address>addressList = null;
 

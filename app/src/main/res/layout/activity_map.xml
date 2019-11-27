@@ -28,9 +28,9 @@
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="37dp"
+            android:layout_gravity="center_horizontal"
             android:layout_marginTop="12dp"
             android:background="#FFFFFF"
-            android:layout_gravity="center_horizontal"
             android:orientation="horizontal">
 
             <Button
@@ -42,35 +42,17 @@
                 android:onClick="openMenu" />
 
 
-            <EditText
-                android:id="@+id/editText4"
-                android:layout_width="wrap_content"
+            <SearchView
+                android:id="@+id/searchText"
+                android:layout_width="200dp"
                 android:layout_height="match_parent"
-                android:background="#FFFFFF"
-                android:ems="10"
-                android:hint="Search Here"
-                android:inputType="textPersonName" />
+                android:contextClickable="true"
+                android:inputType="textPersonName"
+                android:longClickable="true"
+                android:maxWidth="300dp"
+                android:queryHint="Search Here"
+                android:searchIcon="@color/colorWhite" />
 
-            <!--                search view upgrade for later-->
-            <!--            <SearchView-->
-            <!--                android:id="@+id/editText4"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="match_parent"-->
-
-            <!--&lt;!&ndash;                android:autofillHints="true"&ndash;&gt;-->
-
-            <!--&lt;!&ndash;                android:queryHint="Search Here"&ndash;&gt;-->
-            <!--                android:searchHintIcon="#FFFFFF"-->
-            <!--                android:searchIcon="#FFFFFF" />-->
-
-            <Button
-                android:id="@+id/button4"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="#E6006A96"
-                android:onClick="onMapSearch"
-                android:textColor="#FFFFFF"
-                android:text="Find" />
         </LinearLayout>
 
         <LinearLayout
