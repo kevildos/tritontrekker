@@ -1,9 +1,8 @@
 <resources>
 
-    <string name="google_maps_API_key">AIzaSyBuljOjByqE0GRMh19DT2vffTYhKU0wEuo</string>
-
-
+    <string name="google_maps_API_key">AIzaSyBUNsVo7I1Yd4qJjkZNbgeFh-Q8hcGsn2Y</string>
     <string name="app_name">GoogleMapsGooglePlaces</string>
     <string name="title_activity_add_poi">AddPOI</string>
-
+    <string name="title_activity_filter_poi">FilterPOI</string>
+    <string name="title_directions">Directions</string>
 </resources>
