@@ -4,23 +4,34 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorWhite"
-    tools:context=".AccountActivity">
+    tools:context=".LoginActivity">
 
-    <pl.droidsonroids.gif.GifImageView
-        android:id="@+id/loading"
-        android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:layout_centerVertical="true"
-        android:background="@drawable/loading" />
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/signInButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Login" />
+
+    <Button
+        android:id="@+id/signOutButton"
+        android:layout_width="128dp"
+        android:layout_height="wrap_content"
+        android:layout_alignEnd="@+id/signInButton"
+        android:layout_alignBottom="@+id/signInButton"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="0dp"
+        android:layout_marginEnd="-2dp"
+        android:layout_marginBottom="-46dp"
+        android:cursorVisible="false"
+        android:text="Sign Out" />
 
     <TextView
         android:id="@+id/statusTextView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_above="@id/loading"
         android:layout_centerInParent="true"
-        android:fontFamily="@font/comfortaa"
-        android:text="Trying to access your account" />
+        android:layout_centerVertical="true"
+        android:text="" />
+
 
 </RelativeLayout>

@@ -10,27 +10,29 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="92d65441-cc6e-48cf-8b54-4ad0d952d235" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/.idea/gradle.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__pl_droidsonroids_gif_android_gif_drawable_1_2_19_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/libraries/Gradle__pl_droidsonroids_relinker_1_3_1_aar.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/modules.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/runConfigurations.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/tritontrekker.iml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/app/app.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/taskHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/taskHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/outputFiles.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/LoginActivity.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/build.gradle" beforeDir="false" afterPath="$PROJECT_DIR$/app/build.gradle" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/AndroidManifest.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/FilterPOI.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/FilterPOI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/POI.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/POI.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/PoiPopUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/PoiPopUp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_delete_black_24dp.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_delete_black_24dp.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_favorite_black_24dp.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_favorite_black_24dp.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_local_drink_black_24dp.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_local_drink_black_24dp.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_print_black_24dp.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_print_black_24dp.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable/ic_wc_black_24dp.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable/ic_wc_black_24dp.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_filter_poi.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_filter_poi.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/activity_login.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/activity_login.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/custom_info_window.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/custom_info_window.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tritontrekker.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tritontrekker.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/layout/nav_header_main.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/layout/nav_header_main.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/menu/nav_menu.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/menu/nav_menu.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/preloaded_fonts.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/preloaded_fonts.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/values/styles.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/local.properties" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tritontrekker-dev_master.iml" beforeDir="false" afterPath="$PROJECT_DIR$/tritontrekker-dev_master.iml" afterDir="false" />
     </list>
     <ignored path="$PROJECT_DIR$/build/classes/" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -55,8 +57,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/PoiPopUp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2">
-              <caret line="110" column="64" selection-start-line="110" selection-start-column="64" selection-end-line="110" selection-end-column="64" />
+            <state relative-caret-position="403">
+              <caret line="137" column="64" selection-start-line="137" selection-start-column="64" selection-end-line="137" selection-end-column="64" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -67,18 +69,32 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/res/values/styles.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="540">
+            <state>
               <caret line="36" column="23" selection-start-line="36" selection-start-column="23" selection-end-line="36" selection-end-column="23" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="8887">
-              <caret line="672" selection-start-line="672" selection-end-line="672" />
+            <state relative-caret-position="9532">
+              <caret line="656" selection-start-line="656" selection-end-line="656" />
             </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tritontrekker/app/src/main/java/devdaryl/com/mapwithlogin/LoginActivity 2.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1664" />
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tritontrekker/app/src/main/java/devdaryl/com/mapwithlogin/LoginActivity.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-1664" />
           </provider>
         </entry>
       </file>
@@ -90,20 +106,16 @@
               <folding>
                 <element signature="e#1187#1188#0" expanded="true" />
                 <element signature="e#1219#1220#0" expanded="true" />
-                <element signature="e#1258#1259#0" expanded="true" />
-                <element signature="e#1292#1293#0" expanded="true" />
-                <element signature="e#1337#1338#0" expanded="true" />
-                <element signature="e#1377#1378#0" expanded="true" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/custom_info_window.xml">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="150">
-              <caret line="60" column="60" lean-forward="true" selection-start-line="60" selection-start-column="60" selection-end-line="60" selection-end-column="60" />
+            <state relative-caret-position="531">
+              <caret line="60" column="60" selection-start-line="60" selection-start-column="60" selection-end-line="60" selection-end-column="60" />
             </state>
           </provider>
           <provider editor-type-id="android-designer2" />
@@ -154,32 +166,6 @@
             <path>
               <item name="tritontrekker" type="b2602c69:ProjectViewProjectNode" />
               <item name="tritontrekker" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-            </path>
-            <path>
-              <item name="tritontrekker" type="b2602c69:ProjectViewProjectNode" />
-              <item name="tritontrekker" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-            </path>
-            <path>
-              <item name="tritontrekker" type="b2602c69:ProjectViewProjectNode" />
-              <item name="tritontrekker" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="tritontrekker" type="b2602c69:ProjectViewProjectNode" />
-              <item name="tritontrekker" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="tritontrekker" type="b2602c69:ProjectViewProjectNode" />
-              <item name="tritontrekker" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="app" type="8a07ba80:GradleTreeStructureProvider$GradleModuleDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="tritontrekker" type="b2602c69:ProjectViewProjectNode" />
@@ -398,7 +384,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/values/styles.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="540">
+        <state>
           <caret line="36" column="23" selection-start-line="36" selection-start-column="23" selection-end-line="36" selection-end-column="23" />
         </state>
       </provider>
@@ -410,38 +396,44 @@
           <folding>
             <element signature="e#1187#1188#0" expanded="true" />
             <element signature="e#1219#1220#0" expanded="true" />
-            <element signature="e#1258#1259#0" expanded="true" />
-            <element signature="e#1292#1293#0" expanded="true" />
-            <element signature="e#1337#1338#0" expanded="true" />
-            <element signature="e#1377#1378#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/PoiPopUp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2">
-          <caret line="110" column="64" selection-start-line="110" selection-start-column="64" selection-end-line="110" selection-end-column="64" />
+        <state relative-caret-position="403">
+          <caret line="137" column="64" selection-start-line="137" selection-start-column="64" selection-end-line="137" selection-end-column="64" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="9532">
+          <caret line="656" selection-start-line="656" selection-end-line="656" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tritontrekker/app/src/main/java/devdaryl/com/mapwithlogin/LoginActivity 2.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1664" />
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tritontrekker/app/src/main/java/devdaryl/com/mapwithlogin/LoginActivity.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1664" />
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/res/layout/custom_info_window.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="150">
-          <caret line="60" column="60" lean-forward="true" selection-start-line="60" selection-start-column="60" selection-end-line="60" selection-end-column="60" />
+        <state relative-caret-position="531">
+          <caret line="60" column="60" selection-start-line="60" selection-start-column="60" selection-end-line="60" selection-end-column="60" />
         </state>
       </provider>
       <provider editor-type-id="android-designer2" />
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="8887">
-          <caret line="672" selection-start-line="672" selection-end-line="672" />
-        </state>
-      </provider>
     </entry>
   </component>
 </project>
