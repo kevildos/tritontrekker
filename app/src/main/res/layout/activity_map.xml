@@ -13,73 +13,14 @@
               tools:context=".MapsActivity"
               android:name="com.google.android.gms.maps.SupportMapFragment" />
 
-<!--    <Button-->
-<!--        android:id="@+id/accountButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Account" />-->
-
-
-    <LinearLayout
+    <com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/floating_search_view"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:orientation="vertical">
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="37dp"
-            android:layout_marginTop="12dp"
-            android:background="#FFFFFF"
-            android:layout_gravity="center_horizontal"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/menu_button"
-                android:layout_width="35dp"
-                android:layout_height="match_parent"
-                android:layout_marginHorizontal="10dp"
-                android:background="@drawable/ic_menu_hamburger"
-                android:onClick="openMenu" />
-
-
-            <EditText
-                android:id="@+id/editText4"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="#FFFFFF"
-                android:ems="10"
-                android:hint="Search Here"
-                android:inputType="textPersonName" />
-
-            <!--                search view upgrade for later-->
-            <!--            <SearchView-->
-            <!--                android:id="@+id/editText4"-->
-            <!--                android:layout_width="wrap_content"-->
-            <!--                android:layout_height="match_parent"-->
-
-            <!--&lt;!&ndash;                android:autofillHints="true"&ndash;&gt;-->
-
-            <!--&lt;!&ndash;                android:queryHint="Search Here"&ndash;&gt;-->
-            <!--                android:searchHintIcon="#FFFFFF"-->
-            <!--                android:searchIcon="#FFFFFF" />-->
-
-            <Button
-                android:id="@+id/button4"
-                android:layout_width="wrap_content"
-                android:layout_height="match_parent"
-                android:background="#E6006A96"
-                android:onClick="onMapSearch"
-                android:textColor="#FFFFFF"
-                android:text="Find" />
-        </LinearLayout>
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal"
-            android:layout_gravity="right">
-
-        </LinearLayout>
-    </LinearLayout>
+        app:floatingSearch_showSearchKey="true"
+        app:floatingSearch_searchHint="Search..."
+        app:floatingSearch_suggestionsListAnimDuration="250"
+        app:floatingSearch_leftActionMode="showHamburger"
+        app:floatingSearch_close_search_on_keyboard_dismiss="true"/>
 
 </androidx.drawerlayout.widget.DrawerLayout>

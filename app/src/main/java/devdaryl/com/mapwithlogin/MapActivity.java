@@ -15,9 +15,12 @@ import android.os.Handler;
 import android.os.Looper;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.SearchView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -26,6 +29,9 @@ import androidx.core.content.ContextCompat;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 
+import com.arlib.floatingsearchview.FloatingSearchView;
+import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
+import com.arlib.floatingsearchview.util.view.SearchInputView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -39,6 +45,8 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
@@ -133,6 +141,8 @@ public class MapActivity extends AppCompatActivity implements
     // onActivityResult request codes
     private int POI_POP_UP = 1;
 
+    //search
+    FloatingSearchView searchBar;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -152,11 +162,16 @@ public class MapActivity extends AppCompatActivity implements
             geoApiContext = new GeoApiContext.Builder().apiKey("AIzaSyBUNsVo7I1Yd4qJjkZNbgeFh-Q8hcGsn2Y").build();
         }
 
+        // setup for menu
         buildMenuItems();
         buildMenuHeader();
+        // setup for menu done
+
+        // build menu now
         buildMenu();
 
-
+        //build search bar
+        buildSearchBar();
 
         mAuthListener = new FirebaseAuth.AuthStateListener() {
             @Override
@@ -182,23 +197,19 @@ public class MapActivity extends AppCompatActivity implements
         accountItem = new PrimaryDrawerItem()
                 .withIdentifier(accountItemID)
                 .withName("Log in")
-                .withIcon(R.drawable.ic_person_black_24dp)
-                .withSelectable(false);
+                .withIcon(R.drawable.ic_person_black_24dp);
         addPoiItem = new PrimaryDrawerItem().withIdentifier(addPoitItemID)
                 .withName("Add POI")
                 .withIdentifier(addPoitItemID)
-                .withIcon(R.drawable.ic_add_location_black_24dp)
-                .withSelectable(false);
+                .withIcon(R.drawable.ic_add_location_black_24dp);
         filterItem = new PrimaryDrawerItem().withIdentifier(accountItemID)
                 .withIdentifier(filterItemID)
                 .withName("Filter")
-                .withIcon(R.drawable.ic_filter_list_black_24dp)
-                .withSelectable(false);
+                .withIcon(R.drawable.ic_filter_list_black_24dp);
         directionsItem = new PrimaryDrawerItem().withIdentifier(accountItemID)
                 .withIdentifier(directionsItemID)
                 .withName("Directions")
-                .withIcon(R.drawable.ic_directions_black_24dp)
-                .withSelectable(false);
+                .withIcon(R.drawable.ic_directions_black_24dp);
     }
 
     private void buildMenuHeader(){
@@ -206,7 +217,7 @@ public class MapActivity extends AppCompatActivity implements
                 .withActivity(MapActivity.this)
                 .withAccountHeader(R.layout.material_drawer_layout)
                 .withHeaderBackground(R.drawable.logo)
-                .withHeaderBackgroundScaleType(ImageView.ScaleType.CENTER_INSIDE)
+                .withHeaderBackgroundScaleType(ImageView.ScaleType.FIT_CENTER)
                 .withSelectionListEnabledForSingleProfile(false)
                 .withProfileImagesVisible(false)
                 .build();
@@ -271,6 +282,35 @@ public class MapActivity extends AppCompatActivity implements
                 })
                 .withAccountHeader(header)
                 .build();
+    }
+
+    private void buildSearchBar(){
+        searchBar = findViewById(R.id.floating_search_view);
+
+        searchBar.setOnSearchListener(new FloatingSearchView.OnSearchListener() {
+            @Override
+            public void onSuggestionClicked(SearchSuggestion searchSuggestion) {
+
+            }
+            @Override
+            public void onSearchAction(String currentQuery) {
+                onMapSearch(currentQuery);
+            }
+        });
+
+        searchBar.setOnLeftMenuClickListener(new FloatingSearchView.OnLeftMenuClickListener() {
+            @Override
+            public void onMenuOpened() {
+                menu.openDrawer();
+                searchBar.closeMenu(true);
+            }
+
+            @Override
+            public void onMenuClosed() {
+                // intentionally left blank
+                // not needed
+            }
+        });
     }
 
     // update the menu items according to the logged in state of the user
@@ -460,19 +500,22 @@ public class MapActivity extends AppCompatActivity implements
     public void openAddPOIActivity() {
         Intent intent = new Intent(this, AddPOI.class);
         LatLng toPassIn;
-        if (pinDropped == true) {
-            toPassIn = pinDroppedLocation;
-        } else {
-            toPassIn = myLocation;
+        Double mylat = myLocation.latitude;
+        Double mylon = myLocation.longitude;
+
+        if(pinDroppedLocation != null) {
+            Double markerlat = pinDroppedLocation.latitude;
+            Double markerlon = pinDroppedLocation.longitude;
+            intent.putExtra("MarkerLatitude", markerlat);
+            intent.putExtra("MakerLongitude", markerlon);
+            intent.putExtra("pindropped", true);
+        }
+        else{
+            intent.putExtra("pindropped", false);
         }
 
-
-        Double lat = toPassIn.latitude;
-        Double lon = toPassIn.longitude;
-
-
-        intent.putExtra("Latitude", lat.toString());
-        intent.putExtra("Longitude", lon.toString());
+        intent.putExtra("MyLatitude", mylat);
+        intent.putExtra("MyLongitude", mylon);
         startActivity(intent);
     }
 
@@ -517,11 +560,12 @@ public class MapActivity extends AppCompatActivity implements
     }
 
     //database search
-    public void onMapSearch(View view) {
+    //public void onMapSearch(View view, String query)
+    public void onMapSearch(String query) {
 
         mMap.clear();
-        EditText locationSearch = (EditText) findViewById(R.id.editText4);
-        String location = locationSearch.getText().toString();
+        //EditText locationSearch = (EditText) findViewById(R.id.editText4);
+        //String location = locationSearch.getText().toString();
 
         System.out.println("Got to 1 ");
         readData(new FirestoreCallback() {
@@ -546,13 +590,14 @@ public class MapActivity extends AppCompatActivity implements
                     moveCamera(new LatLng(latitude, longtitude), 20);
                 }
                 else
-                    googleDatabase(location);
+                    googleDatabase(query);
 
             }
-        }, location);
+        }, query);
 
         locationList = new ArrayList<>();
     }
+
     public void googleDatabase(String location){
         List<Address>addressList = null;
 
@@ -582,8 +627,24 @@ public class MapActivity extends AppCompatActivity implements
         }
 
     }
+
     public void readData(final FirestoreCallback firestoreCallback, final String location) {
         System.out.println("Got to 3 ");
+
+
+        Task<QuerySnapshot> task =
+                FirebaseFirestore.getInstance().collection("locations").get();
+        task.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+            }
+        });
+        task.addOnFailureListener(new OnFailureListener() {
+            public void onFailure(Exception e) {
+                // handle any errors here
+            }
+        });
 
         mFirestore.collection("locations")
                 .get()
@@ -599,15 +660,15 @@ public class MapActivity extends AppCompatActivity implements
                             //List<DocumentSnapshot> list = task.getResult().getDocuments();
 
                             for (DocumentSnapshot doc : task.getResult()) {
-                                System.out.println("Got to 5.25 ");
+                                if(doc.exists()){
+                                    System.out.println("Got to 5.25 ");
+                                    Map<String, Object> e = doc.getData();
+                                    System.out.println("Got to 5.5 ");
 
-                                Map<String, Object> e = doc.getData();
-                                System.out.println("Got to 5.5 ");
-
-                                if (e.get("name").equals(location)) {
-                                    System.out.println("Got to 6 ");
-
-                                    eventList.add(e);
+                                    if (e.get("name").equals(location)) {
+                                        System.out.println("Got to 6 ");
+                                        eventList.add(e);
+                                    }
                                 }
                             }
                             System.out.println("Got to 7 ");
