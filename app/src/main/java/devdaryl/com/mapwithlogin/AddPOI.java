@@ -11,6 +11,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.RadioButton;
 import android.widget.Spinner;
 import android.widget.Toast;
 
@@ -31,21 +32,36 @@ public class AddPOI extends AppCompatActivity {
     FirebaseFirestore mFirestore;
     double latitude;
     double longitude;
+    double markerlat = 0.00;
+    double markerlon = 0.00;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        String lat = getIntent().getStringExtra("Latitude");
-        String lon = getIntent().getStringExtra("Longitude");
-
-        latitude = Double.parseDouble(lat);
-        longitude = Double.parseDouble(lon);
-
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_add_poi);
+
+        RadioButton currlocButton = (RadioButton) findViewById(R.id.currlocRadio);
+        RadioButton markerlocButton = (RadioButton) findViewById(R.id.markerlocRadio);
+
+        double mylat = getIntent().getDoubleExtra("MyLatitude", 0.00);
+        double mylon = getIntent().getDoubleExtra("MyLongitude", 0.00);
+
+        boolean pindropped = getIntent().getBooleanExtra("pindropped", true);
+
+        if(pindropped) {
+            markerlat = getIntent().getDoubleExtra("MarkerLatitude", 0.00);
+            markerlon = getIntent().getDoubleExtra("MarkerLongitude", 0.00);
+        } else{
+            markerlocButton.setClickable(false);
+            markerlocButton.setTextColor(R.color.color_grey);
+        }
+
+        System.out.println("LAT LONG: " + mylat + " " + mylon);
+        System.out.println("LAT LONG 2: " + markerlat + " " + markerlon);
 
         androidx.appcompat.widget.Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -73,10 +89,6 @@ public class AddPOI extends AppCompatActivity {
         spinnerDescriptionArray.add("Choose type");
         final int listsize = spinnerDescriptionArray.size() - 1;
 
-//        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
-//                android.R.layout.simple_spinner_item, spinnerArray);
-//        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-//        spinner.setAdapter(adapter);
 
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this,android.R.layout.simple_spinner_item, spinnerDescriptionArray) {
             @Override
@@ -120,6 +132,8 @@ public class AddPOI extends AppCompatActivity {
             }
         });
 
+        currlocButton.setChecked(true);
+
         // Submit button listener
         confirm.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,8 +143,18 @@ public class AddPOI extends AppCompatActivity {
                 String description = desc.getText().toString();
                 ArrayList<String> list = new ArrayList<String>();
                 list.add(keywords.getText().toString());
-                double lat = latitude;
-                double lng = longitude;
+                double lat;
+                double lng;
+
+                if(currlocButton.isChecked()){
+                    lat = mylat;
+                    lng = mylon;
+                }
+                else {
+                    lat = markerlat;
+                    lng = markerlon;
+                }
+
                 addLocation(name, description, "floor_description", list, lat, lng, 1);
                 //addLocation(name, description, "floor_description", list, latitude, longitude, 1);
                 finish();
@@ -172,10 +196,10 @@ public class AddPOI extends AppCompatActivity {
         System.out.println("ACTIVITY RESULT");
         super.onActivityResult(requestCode,resultCode,data);
         if (requestCode == 1 && resultCode == RESULT_OK) {
-            ImageView imageView = (ImageView)findViewById(R.id.imageView1);
+//            ImageView imageView = (ImageView)findViewById(R.id.imageView1);
             System.out.println("PHOTO TAKEN");
             Bitmap photo = (Bitmap) data.getExtras().get("data");
-            imageView.setImageBitmap(photo);
+//            imageView.setImageBitmap(photo);
         }
         else {
             System.out.println("PHOTO NOT TAKEN");
