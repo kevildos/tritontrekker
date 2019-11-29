@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.SearchView;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ import com.arlib.floatingsearchview.suggestions.model.SearchSuggestion;
 import com.arlib.floatingsearchview.util.view.SearchInputView;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
+import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -352,11 +354,21 @@ public class MapActivity extends AppCompatActivity implements
 
         getDeviceLocation();
 
+        ImageButton locationButton = (ImageButton)findViewById(R.id.myLocation);
+
+        locationButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(myLocation, 18);
+                mMap.animateCamera(cameraUpdate);
+            }
+        });
+
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
-        mMap.setPadding(0, height - 250, 0, 0);
+//        mMap.setPadding(0, height - 250, 0, 0);
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override

@@ -23,4 +23,23 @@
         app:floatingSearch_leftActionMode="showHamburger"
         app:floatingSearch_close_search_on_keyboard_dismiss="true"/>
 
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="bottom|right"
+        android:orientation="vertical"
+        android:paddingRight="10sp"
+        android:paddingBottom="20sp">
+
+        <ImageButton
+            android:id="@+id/myLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@mipmap/ic_mylocation"
+            android:backgroundTint="#2B2B2B"
+            android:hapticFeedbackEnabled="false"
+            app:srcCompat="@android:drawable/ic_menu_mylocation" />
+
+    </LinearLayout>
+
 </androidx.drawerlayout.widget.DrawerLayout>
