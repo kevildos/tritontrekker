@@ -13,17 +13,14 @@
               tools:context=".MapsActivity"
               android:name="com.google.android.gms.maps.SupportMapFragment" />
 
-<!--    <Button-->
-<!--        android:id="@+id/accountButton"-->
-<!--        android:layout_width="wrap_content"-->
-<!--        android:layout_height="wrap_content"-->
-<!--        android:text="Account" />-->
-
-    <com.google.android.material.navigation.NavigationView
-        android:layout_width="wrap_content"
+    <com.arlib.floatingsearchview.FloatingSearchView
+        android:id="@+id/floating_search_view"
+        android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/nav_view"
-        app:menu="@menu/nav_menu"
-        android:layout_gravity="start" />
+        app:floatingSearch_showSearchKey="true"
+        app:floatingSearch_searchHint="Search..."
+        app:floatingSearch_suggestionsListAnimDuration="250"
+        app:floatingSearch_leftActionMode="showHamburger"
+        app:floatingSearch_close_search_on_keyboard_dismiss="true" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
