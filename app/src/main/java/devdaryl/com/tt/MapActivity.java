@@ -262,7 +262,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
             @Override
             public void onSearchAction(String currentQuery) {
-                onMapSearch(currentQuery);
+                onMapSearch(currentQuery.toLowerCase());
             }
         });
 
