@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="devdaryl.com.mapwithlogin">
+    package="devdaryl.com.tt">
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
@@ -17,7 +17,7 @@
         android:networkSecurityConfig="@xml/networ_security_config"
         >
 
-        <activity android:name="devdaryl.com.mapwithlogin.AccountActivity"></activity>
+        <activity android:name="devdaryl.com.tt.AccountActivity"></activity>
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -29,40 +29,40 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <activity android:name="devdaryl.com.mapwithlogin.MainActivity">
+        <activity android:name="devdaryl.com.tt.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="devdaryl.com.mapwithlogin.MapActivity"
+        <activity android:name="devdaryl.com.tt.MapActivity"
                   android:launchMode="singleTop"
             />
 
         <activity
-            android:name=".AddPOI"
+            android:name="devdaryl.com.tt.AddPOI"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_add_poi"
-            android:parentActivityName=".MapActivity"
+            android:parentActivityName="devdaryl.com.tt.MapActivity"
             android:theme="@style/FullscreenThemeUpdated"
             >
 
         </activity>
         <activity
-            android:name=".FilterPOI"
+            android:name="devdaryl.com.tt.FilterPOI"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_filter_poi"
-            android:parentActivityName=".MapActivity"
+            android:parentActivityName="devdaryl.com.tt.MapActivity"
             android:theme="@style/FullscreenThemeUpdated"
             >
 
         </activity>
 
-        <activity android:name=".PoiPopUp"
+        <activity android:name="devdaryl.com.tt.PoiPopUp"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label = "title_activity_poi_pop_up"
-            android:parentActivityName=".MapActivity"
+            android:parentActivityName="devdaryl.com.tt.MapActivity"
             android:theme = "@style/AppTheme.PopUp"
             ></activity>
 

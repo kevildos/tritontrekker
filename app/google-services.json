@@ -1,119 +1,42 @@
 {
   "project_info": {
-    "project_number": "642216766383",
-    "firebase_url": "https://testdatabase-96336.firebaseio.com",
-    "project_id": "testdatabase-96336",
-    "storage_bucket": "testdatabase-96336.appspot.com"
+    "project_number": "644993243118",
+    "firebase_url": "https://tritontrekker-171b1.firebaseio.com",
+    "project_id": "tritontrekker-171b1",
+    "storage_bucket": "tritontrekker-171b1.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:642216766383:android:b87979eaea53d0a6c91d5a",
+        "mobilesdk_app_id": "1:644993243118:android:9ac77cfa109f87888b60ff",
         "android_client_info": {
-          "package_name": "com.example.firebasedata"
+          "package_name": "devdaryl.com.tt"
         }
       },
       "oauth_client": [
         {
-          "client_id": "642216766383-dhsjud781h1vvuomuoer2tuspocc5cc7.apps.googleusercontent.com",
+          "client_id": "644993243118-2h63rv651mgujbbivbpnkjnb7c7nt485.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
-            "package_name": "com.example.firebasedata",
-            "certificate_hash": "253f28966ef9155733616419e6dec316536a83e5"
-          }
-        },
-        {
-          "client_id": "642216766383-7004sscb8qsalknicceij3ms94epesp9.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.firebasedata",
-            "certificate_hash": "8a663b93d7b92cfc1a26e49eeff5122cb033291b"
-          }
-        },
-        {
-          "client_id": "642216766383-bce23r4n739blljjhq0vuuf1uahnfs9u.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.firebasedata",
-            "certificate_hash": "844741159e40d4a6b4450e33861455628b65386d"
-          }
-        },
-        {
-          "client_id": "642216766383-dco7ntmaouhs6k31fusbbm8sdkch6jis.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.example.firebasedata",
-            "certificate_hash": "d1d0472ff6c64ff757b9b146a4b261f02d151cc4"
-          }
-        },
-        {
-          "client_id": "642216766383-jj3rveqiom474efo89ockh52h571sqeq.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyBDw5uDXo3W-0qeDl5wbrgbp5HhiN_s_yQ"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "642216766383-jj3rveqiom474efo89ockh52h571sqeq.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:642216766383:android:67b53bec95a50731c91d5a",
-        "android_client_info": {
-          "package_name": "devdaryl.com.mapwithlogin"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "642216766383-vgrq7edqgjrgv2c690eb8q66p7d98htk.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "devdaryl.com.mapwithlogin",
-            "certificate_hash": "253f28966ef9155733616419e6dec316536a83e5"
-          }
-        },
-        {
-          "client_id": "642216766383-ee0mkn1lfjmmpoma91ool54l99gn620e.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "devdaryl.com.mapwithlogin",
-            "certificate_hash": "d1d0472ff6c64ff757b9b146a4b261f02d151cc4"
-          }
-        },
-        {
-          "client_id": "642216766383-pa7a1e1rd6utdpg7he7vq9f8ephjgpg9.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "devdaryl.com.mapwithlogin",
+            "package_name": "devdaryl.com.tt",
             "certificate_hash": "b0d4b64554a131b1661e009260ece115739099d4"
           }
         },
         {
-          "client_id": "642216766383-jj3rveqiom474efo89ockh52h571sqeq.apps.googleusercontent.com",
+          "client_id": "644993243118-oebvsd1l6hdm6b203u380das3amprot5.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyBDw5uDXo3W-0qeDl5wbrgbp5HhiN_s_yQ"
+          "current_key": "AIzaSyDGCcM9XuZdmreY_D-6oZTogM37y3Vfww8"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "642216766383-jj3rveqiom474efo89ockh52h571sqeq.apps.googleusercontent.com",
+              "client_id": "644993243118-oebvsd1l6hdm6b203u380das3amprot5.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
