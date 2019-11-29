@@ -37,6 +37,7 @@ import com.google.android.gms.location.LocationServices;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.UiSettings;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
@@ -88,9 +89,7 @@ import okhttp3.internal.http2.Header;
  * Created by User on 10/2/2017.
  */
 
-public class MapActivity extends AppCompatActivity implements
-        OnMapReadyCallback,
-        LocationListener {
+public class MapActivity extends AppCompatActivity implements OnMapReadyCallback, LocationListener {
 
     // nav menu vars
     private Drawer menu;
@@ -104,16 +103,17 @@ public class MapActivity extends AppCompatActivity implements
     private static final int filterItemID = 3;
     private static final int directionsItemID = 4;
 
+    // maps vars
+    private static final Boolean ENABLE_COMPASS = true;
+    private static final Boolean DISABLE_COMPASS = false;
+
 
     // Firebase vars
     private static final int ACC_REQ_CODE = 100;
     private static final String ACCOUNT_STATE = "account_state";
     private static final String TAG = "MapActivity";
     private GoogleMap mMap;
-    private DrawerLayout mDrawerLayout;
-    private NavigationView mNavigationView;
     FirebaseFirestore mFirestore;
-    private SharedPreferences sp;
     private FirebaseAuth mAuth;
     private FirebaseAuth.AuthStateListener mAuthListener;
     private Boolean isLoggedIn;
@@ -129,6 +129,7 @@ public class MapActivity extends AppCompatActivity implements
     private LatLng myLocation;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private GeoApiContext geoApiContext = null;
+    private static final String GEO_API_KEY = "AIzaSyBUNsVo7I1Yd4qJjkZNbgeFh-Q8hcGsn2Y";
 
     // Direction Vars
     private Polyline polylineG;
@@ -141,7 +142,7 @@ public class MapActivity extends AppCompatActivity implements
     // onActivityResult request codes
     private int POI_POP_UP = 1;
 
-    //search
+    // search bar vars
     FloatingSearchView searchBar;
 
     @Override
@@ -149,23 +150,24 @@ public class MapActivity extends AppCompatActivity implements
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mFirestore = FirebaseFirestore.getInstance();
         mFirestore.collection("locations");
         mAuth = FirebaseAuth.getInstance();
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
+
         mapFragment.getMapAsync((OnMapReadyCallback) this);
 
         if (geoApiContext == null) {
-            geoApiContext = new GeoApiContext.Builder().apiKey("AIzaSyBUNsVo7I1Yd4qJjkZNbgeFh-Q8hcGsn2Y").build();
+            geoApiContext = new GeoApiContext.Builder()
+                    .apiKey(GEO_API_KEY)
+                    .build();
         }
 
         // setup for menu
         buildMenuItems();
         buildMenuHeader();
-        // setup for menu done
 
         // build menu now
         buildMenu();
@@ -173,74 +175,69 @@ public class MapActivity extends AppCompatActivity implements
         //build search bar
         buildSearchBar();
 
-        mAuthListener = new FirebaseAuth.AuthStateListener() {
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-
-                // check if user is logged in
-                if(mAuth.getCurrentUser() != null){
-                    isLoggedIn = true;
-                }
-                else{
-                    isLoggedIn = false;
-                }
-
-                updateLoginButton(isLoggedIn);
-            }
-        };
-        mAuth.addAuthStateListener(mAuthListener);
-
-        updateNavMenu();
+        // create authentication listener for FirebaseUser
+        createAuthList();
     }
 
+    // build the menu items going into the menu
     private void buildMenuItems(){
         accountItem = new PrimaryDrawerItem()
                 .withIdentifier(accountItemID)
                 .withName("Log in")
-                .withIcon(R.drawable.ic_person_black_24dp);
+                .withIcon(R.drawable.ic_person_black_24dp)
+                .withSelectable(false);
         addPoiItem = new PrimaryDrawerItem().withIdentifier(addPoitItemID)
                 .withName("Add POI")
                 .withIdentifier(addPoitItemID)
-                .withIcon(R.drawable.ic_add_location_black_24dp);
+                .withIcon(R.drawable.ic_add_location_black_24dp)
+                .withSelectable(false);
         filterItem = new PrimaryDrawerItem().withIdentifier(accountItemID)
                 .withIdentifier(filterItemID)
                 .withName("Filter")
-                .withIcon(R.drawable.ic_filter_list_black_24dp);
+                .withIcon(R.drawable.ic_filter_list_black_24dp)
+                .withSelectable(false);
         directionsItem = new PrimaryDrawerItem().withIdentifier(accountItemID)
                 .withIdentifier(directionsItemID)
                 .withName("Directions")
-                .withIcon(R.drawable.ic_directions_black_24dp);
+                .withIcon(R.drawable.ic_directions_black_24dp)
+                .withSelectable(false);
     }
 
+    // build the header for the menu
     private void buildMenuHeader(){
         header = new AccountHeaderBuilder()
                 .withActivity(MapActivity.this)
                 .withAccountHeader(R.layout.material_drawer_layout)
-                .withHeaderBackground(R.drawable.logo)
-                .withHeaderBackgroundScaleType(ImageView.ScaleType.FIT_CENTER)
+                .withHeaderBackground(R.drawable.logo_2)
                 .withSelectionListEnabledForSingleProfile(false)
                 .withProfileImagesVisible(false)
                 .build();
     }
 
+    // updates the menu header as the user logs in and out
     private void updateMenuHeader(Boolean isLoggedIn){
         if(isLoggedIn){
             FirebaseUser user = mAuth.getCurrentUser();
 
             header.removeProfile(0);
             header.addProfiles(
-                        new ProfileDrawerItem().withName(user.getDisplayName()).withEmail(user.getEmail())
+                        new ProfileDrawerItem()
+                                .withName(user.getDisplayName())
+                                .withEmail(user.getEmail())
                     );
 
         }
         else{
             header.removeProfile(0);
             header.addProfiles(
-                    new ProfileDrawerItem().withName("Guest").withEmail("Log in to gain full access")
+                    new ProfileDrawerItem()
+                            .withName("Guest")
+                            .withEmail("Log in to gain full access")
             );
         }
     }
 
+    // builds the navigation menu
     private void buildMenu(){
         menu = new DrawerBuilder()
                 .withActivity(MapActivity.this)
@@ -254,36 +251,26 @@ public class MapActivity extends AppCompatActivity implements
                     public boolean onItemClick(View view, int position, IDrawerItem drawerItem) {
                         long id = drawerItem.getIdentifier();
 
-                        // account activity handler
-                        if(id == accountItemID){
-                            mDrawerLayout.closeDrawers();
-                            openAccountActivity();
-                        }
-
-                        // addpoi activity handler
-                        else if (id == addPoitItemID) {
-                            mDrawerLayout.closeDrawers();
-                            openAddPOIActivity();
-                        }
-
-                        // filterpoi activity handler
-                        else if (id == filterItemID) {
-                            mDrawerLayout.closeDrawers();
-                            openFilterPOIActivity();
-                        }
-
-                        else if (id == directionsItemID) {
-                            mDrawerLayout.closeDrawers();
-                            calculateDirections(pinDroppedLocation);
-                        }
-
-                        return true;
+                        return openMenuItem(id);
                     }
                 })
                 .withAccountHeader(header)
+                .withSelectedItem(-1)
+
                 .build();
     }
 
+    // close menu if back button is pressed
+    @Override
+    public void onBackPressed() {
+        if (menu.isDrawerOpen()) {
+            menu.closeDrawer();
+        } else {
+            super.onBackPressed();
+        }
+    }
+
+    // builds the search bar
     private void buildSearchBar(){
         searchBar = findViewById(R.id.floating_search_view);
 
@@ -313,11 +300,55 @@ public class MapActivity extends AppCompatActivity implements
         });
     }
 
-    // update the menu items according to the logged in state of the user
-    private void updateNavMenu(){
+    // creates and attaches an authentication listener to check for log in changes for Firebase user
+    private void createAuthList(){
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
 
+                // check if user is logged in
+                if(mAuth.getCurrentUser() != null){
+                    isLoggedIn = true;
+                }
+                else{
+                    isLoggedIn = false;
+                }
+
+                updateLoginButton(isLoggedIn);
+            }
+        };
+        mAuth.addAuthStateListener(mAuthListener);
     }
 
+    // helper method for menu on click listener. Decides which menu item to open based on id passed
+    private boolean openMenuItem(long itemID){
+
+        // account activity handler
+        if(itemID == accountItemID){
+            openAccountActivity();
+        }
+
+        // addpoi activity handler
+        else if (itemID == addPoitItemID) {
+            menu.closeDrawer();
+            openAddPOIActivity();
+        }
+
+        // filterpoi activity handler
+        else if (itemID == filterItemID) {
+            menu.closeDrawer();
+            openFilterPOIActivity();
+        }
+
+        else if (itemID == directionsItemID) {
+            menu.closeDrawer();
+            calculateDirections(pinDroppedLocation);
+        }
+
+        return true;
+    }
+
+    // update the state of the log in button as the user logs in and out
     private void updateLoginButton(Boolean isLoggedIn){
         if(isLoggedIn){
             accountItem.withName("Log out");
@@ -337,7 +368,8 @@ public class MapActivity extends AppCompatActivity implements
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
 
-        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        mMap.getUiSettings().setCompassEnabled(true);
 
         //Initialize Google Play Services
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
@@ -350,13 +382,14 @@ public class MapActivity extends AppCompatActivity implements
             mMap.setMyLocationEnabled(true);
         }
 
+
         getDeviceLocation();
 
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         int height = displayMetrics.heightPixels;
         int width = displayMetrics.widthPixels;
-        mMap.setPadding(0, height - 250, 0, 0);
+        //mMap.setPadding(0, height - 250, 0, 0);
 
         mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
             @Override

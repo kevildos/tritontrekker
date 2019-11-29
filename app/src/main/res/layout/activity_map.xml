@@ -21,6 +21,6 @@
         app:floatingSearch_searchHint="Search..."
         app:floatingSearch_suggestionsListAnimDuration="250"
         app:floatingSearch_leftActionMode="showHamburger"
-        app:floatingSearch_close_search_on_keyboard_dismiss="true"/>
+        app:floatingSearch_close_search_on_keyboard_dismiss="true" />
 
 </androidx.drawerlayout.widget.DrawerLayout>
