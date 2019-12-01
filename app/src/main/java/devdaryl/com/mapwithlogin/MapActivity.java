@@ -248,6 +248,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         .position(pos)
                         .title("Add POI Here")
                         .snippet("0;You can add a POI here if you are logged in and go to the menu; ;0;0");
+
+                //setting the icon
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.blankpin));
                 // add marker to map
                 mMap.addMarker(options);
                 pinDropped = true;
@@ -826,6 +829,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 position(latLng)
                 .title(name)
                 .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes);
+
+       //Setting the icon.
+       setIcon(options, type);
         mMap.addMarker(options);
     }
 
@@ -1040,6 +1046,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         return true;
+    }
+
+    //Helper function to set the marker icon before it is displayed on the map.
+    private void setIcon(MarkerOptions options, String type) {
+
+        if(type.equals("Lecture Hall"))
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.lecturehallpin));
+
+        else if(type.equals("Restroom"))
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.restroompin));
+
+        else if(type.equals("Printer"))
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.printerpin));
+
+        else if(type.equals("Trash Can"))
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.trashpin));
+
+        else if(type.equals("Water"))
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.waterpin));
+
+        else if(type.equals("Other"))
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.blankpin));
     }
 
     // update the state of the log in button as the user logs in and out
