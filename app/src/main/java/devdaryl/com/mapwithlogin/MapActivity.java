@@ -160,6 +160,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //user id stored
     private String userID;
 
+    String queryG;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -195,8 +197,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         checkUserInDB();
     }
-
-
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -472,6 +472,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //public void onMapSearch(View view, String query)
     public void onMapSearch(String query) {
 
+        queryG = query;
         mMap.clear();
         //EditText locationSearch = (EditText) findViewById(R.id.editText4);
         //String location = locationSearch.getText().toString();
@@ -919,6 +920,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             poi.add(favorited);
                             mFirestore.collection("users").document(userID).update(id, poi);
                         }
+                        Toast.makeText(getApplicationContext(), "Updated POI",
+                                Toast.LENGTH_SHORT).show();
                     }
                 }
             });
@@ -952,7 +955,53 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 filter(trash, printer, water, lectureHall, restroom);
             }
         }
-    }
+
+            mMap.clear();
+            //EditText locationSearch = (EditText) findViewById(R.id.editText4);
+            //String location = locationSearch.getText().toString();
+
+            System.out.println("Got to 1 ");
+            readData(new FirestoreCallback() {
+                @Override
+                public void onCallback(List<Map<String, Object>> list) {
+                    System.out.println("Got to 2 ");
+                    locationList = list;
+
+                    if(list != null) {
+                        System.out.println("List not null " + list.toString());
+                    }
+                    if(list == null) {
+                        System.out.println("List is null ");
+                    }
+                    else if (!list.isEmpty()) {
+                        Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
+                                " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
+                        GeoPoint geoPoint = (GeoPoint) list.get(0).get("location");
+                        double latitude = geoPoint.getLatitude();
+                        double longtitude = geoPoint.getLongitude();
+                        String name = (String) list.get(0).get("name");
+                        String description = (String)list.get(0).get("description");
+                        String type = (String)list.get(0).get("type");
+                        String id = (String) list.get(0).get("id");
+                        long likes = (long) list.get(0).get("likes");
+                        long dislikes = (long) list.get(0).get("dislikes");
+                        imageurl = (String)list.get(0).get("photoURL");
+
+                        Toast.makeText(MapActivity.this, "Id is " + list.get(0).get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+                        LatLng maloc = new LatLng(latitude, longtitude);
+                        placeMarker(maloc, name, description, id, likes, dislikes, type);
+//                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(maloc, 18);
+//                        mMap.animateCamera(cameraUpdate);
+                    }
+                    else
+                        googleDatabase(queryG);
+
+                }
+            }, queryG);
+
+            locationList = new ArrayList<>();
+        }
+
 
     // build the menu items going into the menu
     private void buildMenuItems(){

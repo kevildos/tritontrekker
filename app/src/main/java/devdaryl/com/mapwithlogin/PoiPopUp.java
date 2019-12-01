@@ -207,6 +207,7 @@ public class PoiPopUp extends AppCompatActivity {
                 liked = false;
                 likeBtn.setChecked(false);
                 //Update the text to reflect correct number of likes.
+
                 likeCounter.setText(Integer.toString(numLikes));
                 likeCounter.setTextColor(Color.parseColor("#FFFFFF"));
             }
