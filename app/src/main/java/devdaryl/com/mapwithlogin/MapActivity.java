@@ -55,6 +55,7 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
@@ -156,6 +157,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     // image url var
     String imageurl = null;
 
+    //user id stored
+    private String userID;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -188,6 +192,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // create authentication listener for FirebaseUser
         createAuthList();
+
+        checkUserInDB();
     }
 
 
@@ -255,7 +261,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 MarkerOptions options = new MarkerOptions()
                         .position(pos)
                         .title("Add POI Here")
-                        .snippet("0;You can add a POI here if you are logged in and go to the menu; ;0;0");
+                        .snippet("0;You can add a POI here if you are logged in and go to the menu; ;0;0;false;false;false");;
                 // add marker to map
                 mMap.addMarker(options);
                 pinDropped = true;
@@ -844,11 +850,42 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     private void placeMarker(LatLng latLng, String name, String description, String id, long likes, long dislikes, String type) {
-       MarkerOptions options = new MarkerOptions().
+
+        DocumentReference docIdRef = mFirestore.collection("users").document(userID);
+        docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        if (document.get(id) != null) {
+                            List<Boolean> poi = (List<Boolean>) document.get(id);
+                            boolean liked = poi.get(0);
+                            boolean disliked = poi.get(1);
+                            boolean favorited = poi.get(2);
+                            MarkerOptions options = new MarkerOptions().
+                                    position(latLng)
+                                    .title(name)
+                                    .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
+                                                + liked + ";" + disliked + ";" +favorited);
+                            mMap.addMarker(options);
+                        } else {
+                            MarkerOptions options = new MarkerOptions().
+                                    position(latLng)
+                                    .title(name)
+                                    .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
+                                            + false + ";" + false + ";" + false);
+                            mMap.addMarker(options);
+                        }
+                    }
+                }
+            }
+        });
+       /*MarkerOptions options = new MarkerOptions().
                 position(latLng)
                 .title(name)
                 .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes);
-        mMap.addMarker(options);
+        mMap.addMarker(options);*/
     }
 
     @Override
@@ -864,6 +901,28 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             String id = data.getStringExtra("id");
             mFirestore.collection("locations").document(id).update("likes", lik);
             mFirestore.collection("locations").document(id).update("dislikes", dis);
+
+            Boolean liked = data.getExtras().getBoolean("liked");
+            Boolean disliked = data.getExtras().getBoolean("disliked");
+            Boolean favorited = data.getExtras().getBoolean("favorited");
+
+            DocumentReference docIdRef = mFirestore.collection("users").document(userID);
+            docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            List<Boolean> poi = new ArrayList ();
+                            poi.add(liked);
+                            poi.add(disliked);
+                            poi.add(favorited);
+                            mFirestore.collection("users").document(userID).update(id, poi);
+                        }
+                    }
+                }
+            });
+
 
             if (resultCode == Activity.RESULT_OK) {
                 double lat = data.getExtras().getDouble("latit");
@@ -917,6 +976,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .withName("Directions")
                 .withIcon(R.drawable.ic_directions_black_24dp)
                 .withSelectable(false);
+
     }
 
     // build the header for the menu
@@ -1078,6 +1138,45 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         updateMenuHeader(isLoggedIn);
+    }
+
+    private void checkUserInDB() {
+
+        // check if user signed in
+        if(mAuth.getCurrentUser() != null) {
+            mFirestore
+                    .collection("users")
+                    .document(mAuth.getCurrentUser().getUid())
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.isSuccessful()){
+
+                                DocumentSnapshot user = task.getResult();
+
+                                // add user to DB if they do not exist
+                                if(!user.exists()){
+                                    System.out.println("Add user!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+
+                                    Map<String, Object> userMap = new HashMap<>();
+
+                                    mFirestore
+                                            .collection("users")
+                                            .document(mAuth.getCurrentUser().getUid())
+                                            .set(userMap);
+                                }
+                            }
+                            userID = mAuth.getCurrentUser().getUid();
+                            System.out.println("userID " + userID);
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MapActivity.this, "Problem with getting user from DB", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
 }
 
