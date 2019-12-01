@@ -54,9 +54,11 @@ import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.maps.DirectionsApiRequest;
@@ -79,7 +81,10 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -147,6 +152,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // search bar vars
     FloatingSearchView searchBar;
+
+    // image url var
+    String imageurl = null;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -305,7 +313,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 LatLng markLoc = marker.getPosition();
                 intent.putExtra("Latitude", markLoc.latitude);
                 intent.putExtra("Longitude", markLoc.longitude);
+                intent.putExtra("imageurl", imageurl);
                 startActivityForResult(intent, POI_POP_UP);
+
+//                intent.putExtra("imageurl", (String)doc.getData().get("photoURL"));
                 return true;
             }
         });
@@ -382,15 +393,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void openAddPOIActivity() {
         Intent intent = new Intent(this, AddPOI.class);
         LatLng toPassIn;
-        Double mylat = myLocation.latitude;
-        Double mylon = myLocation.longitude;
+        double mylat = myLocation.latitude;
+        double mylon = myLocation.longitude;
 
         if(pinDroppedLocation != null) {
-            Double markerlat = pinDroppedLocation.latitude;
-            Double markerlon = pinDroppedLocation.longitude;
+            double markerlat = pinDroppedLocation.latitude;
+            double markerlon = pinDroppedLocation.longitude;
             intent.putExtra("MarkerLatitude", markerlat);
             intent.putExtra("MarkerLongitude", markerlon);
             intent.putExtra("pindropped", true);
+
+            System.out.println("MapActivity: mlat " + intent
+                    .getDoubleExtra("MarkerLatitude", 0)+ ", mlong " + intent.getDoubleExtra("MarkerLongitude", 0));
         }
         else{
             intent.putExtra("pindropped", false);
@@ -398,6 +412,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         intent.putExtra("MyLatitude", mylat);
         intent.putExtra("MyLongitude", mylon);
+
+        System.out.println("MapActivity: lat " + intent
+                .getDoubleExtra("MyLatitude", 0)+ ", long " + intent.getDoubleExtra("MyLongitude", 0));
+
+        System.out.println("MapActivity: lat " + intent
+                .getDoubleExtra("MyLatitude", 0)+ ", long " + intent.getDoubleExtra("MyLongitude", 0));
+
         startActivity(intent);
     }
 
@@ -474,6 +495,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     String id = (String) list.get(0).get("id");
                     long likes = (long) list.get(0).get("likes");
                     long dislikes = (long) list.get(0).get("dislikes");
+                    imageurl = (String)list.get(0).get("photoURL");
 
                     Toast.makeText(MapActivity.this, "Id is " + list.get(0).get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
                     LatLng maloc = new LatLng(latitude, longtitude);
