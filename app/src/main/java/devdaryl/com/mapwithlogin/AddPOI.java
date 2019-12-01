@@ -7,6 +7,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -34,6 +35,7 @@ public class AddPOI extends AppCompatActivity {
     double longitude;
     double markerlat = 0.00;
     double markerlon = 0.00;
+    String type = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,6 +87,7 @@ public class AddPOI extends AppCompatActivity {
         spinnerDescriptionArray.add("Lecture Hall");
         spinnerDescriptionArray.add("Printer");
         spinnerDescriptionArray.add("Trash Cans");
+        spinnerDescriptionArray.add("Water Refill Station");
         spinnerDescriptionArray.add("Other");
         spinnerDescriptionArray.add("Choose type");
         final int listsize = spinnerDescriptionArray.size() - 1;
@@ -101,6 +104,30 @@ public class AddPOI extends AppCompatActivity {
         dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(dataAdapter);
         spinner.setSelection(listsize);
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                int index = parent.getSelectedItemPosition();
+                if(index == 0) {
+                    type = "Restroom";
+                } else if (index == 1) {
+                    type = "Lecture Hall";
+                }else if (index == 2) {
+                    type = "Printer";
+                }else if (index == 3) {
+                    type = "Trash Can";
+                }else if (index == 4) {
+                    type = "Water";
+                }else if (index == 5) {
+                    type = "Other";
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
 
 
         /*
@@ -155,9 +182,13 @@ public class AddPOI extends AppCompatActivity {
                     lng = markerlon;
                 }
 
-                addLocation(name, description, "floor_description", list, lat, lng, 1);
-                //addLocation(name, description, "floor_description", list, latitude, longitude, 1);
-                finish();
+                if(type == null) {
+                    Toast.makeText(AddPOI.this, "You must select a type for this POI before submitting", Toast.LENGTH_LONG).show();
+                } else {
+                    addLocation(name, description, "floor_description", list, lat, lng, 1);
+                    //addLocation(name, description, "floor_description", list, latitude, longitude, 1);
+                    finish();
+                }
             }
         });
 
@@ -172,11 +203,14 @@ public class AddPOI extends AppCompatActivity {
         GeoPoint location = new GeoPoint(latitude, longtitude);
         userMap.put("location", location);
         userMap.put("maps_icon", "icon");
-        userMap.put("rating", 1);
-
+        userMap.put("likes", 0);
+        userMap.put("dislikes", 0);
+        userMap.put("type", type);
 
         final String name2 = name;
         String id = mFirestore.collection("locations").document().getId();
+        userMap.put("id", id);
+
         mFirestore.collection("locations").document(id).set(userMap);
         Toast.makeText(AddPOI.this, "Location " + name + " added to firestore", Toast.LENGTH_LONG).show();
     }

@@ -19,7 +19,7 @@
                 android:id="@+id/poiTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Printer"
+                android:text="POI"
                 android:textSize="30sp" />
         </TableRow>
 
@@ -27,10 +27,10 @@
             android:paddingHorizontal="15dp">
 
             <TextView
-                android:id="@+id/poiLocation"
+                android:id="@+id/poiType"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Price Center, La Jolla, CA 92093"
+                android:text="UCSD"
                 android:textSize="20sp" />
         </TableRow>
 

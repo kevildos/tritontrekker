@@ -143,6 +143,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     // onActivityResult request codes
     private int POI_POP_UP = 1;
+    private int FILTER_POI = 2;
 
     // search bar vars
     FloatingSearchView searchBar;
@@ -179,6 +180,695 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // create authentication listener for FirebaseUser
         createAuthList();
+    }
+
+
+
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        mMap = googleMap;
+
+        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+        mMap.getUiSettings().setCompassEnabled(true);
+
+        //Initialize Google Play Services
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            if (ContextCompat.checkSelfPermission(this,
+                    Manifest.permission.ACCESS_FINE_LOCATION)
+                    == PackageManager.PERMISSION_GRANTED) {
+                mMap.setMyLocationEnabled(true);
+            }
+        } else {
+            mMap.setMyLocationEnabled(true);
+        }
+
+
+        getDeviceLocation();
+
+        ImageButton locationButton = (ImageButton)findViewById(R.id.myLocation);
+
+        locationButton.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v){
+                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(myLocation, 18);
+                mMap.animateCamera(cameraUpdate);
+            }
+        });
+
+        DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+        int height = displayMetrics.heightPixels;
+        int width = displayMetrics.widthPixels;
+        //mMap.setPadding(0, height - 250, 0, 0);
+
+        setUpMapClickListener();
+        setUpPolyLinClickListener();
+        setUpMarkerClickListener();
+    }
+
+    private void setUpMapClickListener() {
+        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
+            @Override
+            public void onMapClick(LatLng latLng) {
+                pinDropped = false;
+                pinDroppedLocation = null;
+                mMap.clear();
+            }
+        });
+
+        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
+            @Override
+            public void onMapLongClick(LatLng pos) {
+                // clear map
+                mMap.clear();
+
+                // set marker options:
+                // is draggable, can change title and snippet (text under title)
+                MarkerOptions options = new MarkerOptions()
+                        .position(pos)
+                        .title("Add POI Here")
+                        .snippet("0;You can add a POI here if you are logged in and go to the menu; ;0;0");
+                // add marker to map
+                mMap.addMarker(options);
+                pinDropped = true;
+                pinDroppedLocation = pos;
+
+                // zoom in camera on marker
+                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 14f));
+            }
+        });
+    }
+
+    private void setUpPolyLinClickListener() {
+        mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
+            @Override
+            public void onPolylineClick(Polyline polyline) {
+                for (Polyline polyline1 : mPolylines) {
+
+                    if (polyline1.getId().equals(polyline.getId())) {
+                        polyline1.setColor(
+                                ContextCompat.getColor(getApplicationContext(), R.color.color_blue));
+                        polyline1.setZIndex(1);
+
+                        for (Pair pair : durations) {
+                            if (pair.getPolyID().equals(polyline1.getId())) {
+                                currDuration = pair.getDuration();
+                                break;
+                            }
+                        }
+                        Marker marker = mMap.addMarker(new MarkerOptions()
+                                .position(myLocation)
+                                .title("Estimated Time: " + currDuration));
+                        System.out.println("CURRDURATION: " + currDuration);
+                        marker.showInfoWindow();
+                    } else {
+                        polyline1.setColor(
+                                ContextCompat.getColor(getApplicationContext(), R.color.color_grey));
+                        polyline1.setZIndex(0);
+                    }
+                }
+            }
+        });
+    }
+
+    private void setUpMarkerClickListener(){
+        // Click on the marker to display a pop up
+        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
+            @Override
+            public boolean onMarkerClick(Marker marker) {
+                mClickedMarker = marker;
+                Intent intent = new Intent(MapActivity.this, PoiPopUp.class);
+                String toInsert = marker.getTitle();
+                intent.putExtra("Name", toInsert);
+                String information = marker.getSnippet();
+                intent.putExtra("information", information);
+                LatLng markLoc = marker.getPosition();
+                intent.putExtra("Latitude", markLoc.latitude);
+                intent.putExtra("Longitude", markLoc.longitude);
+                startActivityForResult(intent, POI_POP_UP);
+                return true;
+            }
+        });
+    }
+
+    // Usage: pulls a list of the document id's under that key_word
+    private void locationKeyWord(final String key_word) {
+        mFirestore.collection("key_words").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                boolean bool = false;
+                if (task.isSuccessful()) {
+                    List<DocumentSnapshot> list = task.getResult().getDocuments();
+                    for (DocumentSnapshot document : list) {
+                        if (document.get(key_word) != null) {
+                            List<String> kw_list = (List<String>) document.get(key_word);
+                            printKeyWordLocations(kw_list);
+                            Toast.makeText(MapActivity.this, "KeyWord list retrieved from Firestore", Toast.LENGTH_LONG).show();
+                            bool = true;
+                            break;
+                        }
+                    }
+                    if (!bool) {
+                        Toast.makeText(MapActivity.this, "Not in Firestore", Toast.LENGTH_LONG).show();
+
+                    }
+                    //DocumentSnapshot snapshot = task.getResult();
+                    //String song = snapshot.getString("")
+                } else {
+                    Log.d("Firebase Error", "Error: " + task.getException().getMessage());
+
+                }
+            }
+        });
+    }
+
+    /*
+     * Usage: List contains strings, which are the document id's for locations in the "location" collection on Firestore
+     */
+    private void printKeyWordLocations(List<String> list) {
+        for (String document_id : list) {
+            mFirestore.collection("locations").document(document_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        //Map<String, Object> document = task.getResult().getData();
+                        if (document.exists()) {
+                            Map<String, Object> doc = task.getResult().getData();
+                            Toast.makeText(MapActivity.this, "Item in key_word is: " + doc.get("name"), Toast.LENGTH_LONG).show();
+                        } else {
+                            Log.d("No such document", "Error");
+                        }
+                        Toast.makeText(MapActivity.this, "KeyWord list retrieved from Firestore", Toast.LENGTH_LONG).show();
+
+                        //DocumentSnapshot snapshot = task.getResult();
+                        //String song = snapshot.getString("")
+                    } else {
+                        Log.d("Firebase Error", "Error: " + task.getException().getMessage());
+
+                    }
+                }
+            });
+        }
+    }
+
+    public void openAccountActivity() {
+        Intent intent = new Intent(this, AccountActivity.class);
+
+        intent.putExtra(ACCOUNT_STATE, isLoggedIn);
+        startActivityForResult(intent, ACC_REQ_CODE);
+    }
+
+    public void openAddPOIActivity() {
+        Intent intent = new Intent(this, AddPOI.class);
+        LatLng toPassIn;
+        Double mylat = myLocation.latitude;
+        Double mylon = myLocation.longitude;
+
+        if(pinDroppedLocation != null) {
+            Double markerlat = pinDroppedLocation.latitude;
+            Double markerlon = pinDroppedLocation.longitude;
+            intent.putExtra("MarkerLatitude", markerlat);
+            intent.putExtra("MarkerLongitude", markerlon);
+            intent.putExtra("pindropped", true);
+        }
+        else{
+            intent.putExtra("pindropped", false);
+        }
+
+        intent.putExtra("MyLatitude", mylat);
+        intent.putExtra("MyLongitude", mylon);
+        startActivity(intent);
+    }
+
+    public void openFilterPOIActivity() {
+        Intent intent = new Intent(this, FilterPOI.class);
+        startActivityForResult(intent, FILTER_POI);
+    }
+
+    @Override
+    public void onLocationChanged(Location location) {
+        mLastLocation = location;
+        if (mCurrLocationMarker != null) {
+            mCurrLocationMarker.remove();
+        }
+
+        //Place current location marker
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        MarkerOptions markerOptions = new MarkerOptions();
+        markerOptions.position(latLng);
+        markerOptions.title("Current Position");
+        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
+        mCurrLocationMarker = mMap.addMarker(markerOptions);
+
+        //move map camera
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
+    }
+
+    @Override
+    public void onStatusChanged(String provider, int status, Bundle extras) {
+
+    }
+
+    @Override
+    public void onProviderEnabled(String provider) {
+
+    }
+
+    @Override
+    public void onProviderDisabled(String provider) {
+
+    }
+
+    //database search
+    //public void onMapSearch(View view, String query)
+    public void onMapSearch(String query) {
+
+        mMap.clear();
+        //EditText locationSearch = (EditText) findViewById(R.id.editText4);
+        //String location = locationSearch.getText().toString();
+
+        System.out.println("Got to 1 ");
+        readData(new FirestoreCallback() {
+            @Override
+            public void onCallback(List<Map<String, Object>> list) {
+                System.out.println("Got to 2 ");
+                locationList = list;
+
+                if(list != null) {
+                    System.out.println("List not null " + list.toString());
+                }
+                if(list == null) {
+                    System.out.println("List is null ");
+                }
+                else if (!list.isEmpty()) {
+                    Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
+                            " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
+                    GeoPoint geoPoint = (GeoPoint) list.get(0).get("location");
+                    double latitude = geoPoint.getLatitude();
+                    double longtitude = geoPoint.getLongitude();
+                    String name = (String) list.get(0).get("name");
+                    String description = (String)list.get(0).get("description");
+                    String type = (String)list.get(0).get("type");
+                    String id = (String) list.get(0).get("id");
+                    long likes = (long) list.get(0).get("likes");
+                    long dislikes = (long) list.get(0).get("dislikes");
+
+                    Toast.makeText(MapActivity.this, "Id is " + list.get(0).get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+                    LatLng maloc = new LatLng(latitude, longtitude);
+                    placeMarker(maloc, name, description, id, likes, dislikes, type);
+                    CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(maloc, 18);
+                    mMap.animateCamera(cameraUpdate);
+                }
+                else
+                    googleDatabase(query);
+
+            }
+        }, query);
+
+        locationList = new ArrayList<>();
+    }
+
+    public void googleDatabase(String location){
+        List<Address>addressList = null;
+
+        if (location != null || !location.equals("")) {
+            Geocoder geocoder = new Geocoder(this);
+            try {
+                // while(addressList.size() == 0) {
+                addressList = geocoder.getFromLocationName(location, 1);
+                // }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            if(addressList.size() == 0){
+                Toast.makeText(MapActivity.this, "Address + " + location + " not found!", Toast.LENGTH_LONG).show();
+                return;
+            }
+            Address address = addressList.get(0);
+            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
+            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
+            CameraPosition cameraPosition = new CameraPosition.Builder()
+                    .target(latLng)      // Sets the center of the map to Mountain View
+                    .zoom(18)                   // Sets the zoom
+                    .bearing(0)                // Sets the orientation of the camera to east
+                    .build();                   // Creates a CameraPosition from the builder
+            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+        }
+
+    }
+
+    public void filter(final boolean tra, final boolean prin, final boolean wat,
+                       final boolean lh, final boolean rest) {
+
+        System.out.println("Got to 1 ");
+        filterData(new FirestoreCallback() {
+            @Override
+            public void onCallback(List<Map<String, Object>> list) {
+                System.out.println("Got to 2 ");
+                locationList = list;
+
+                if(list != null) {
+                    System.out.println("List not null " + list.toString());
+                }
+                if(list == null) {
+                    System.out.println("List is null ");
+                }
+                else if (!list.isEmpty()) {
+                    Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
+                            " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
+                    for(Map<String, Object> poi : list) {
+                        GeoPoint geoPoint = (GeoPoint) poi.get("location");
+                        double latitude = geoPoint.getLatitude();
+                        double longtitude = geoPoint.getLongitude();
+                        String name = (String) poi.get("name");
+                        String description = (String)poi.get("description");
+                        String type = (String)poi.get("type");
+                        String id = (String)poi.get("id");
+                        long likes = (long)poi.get("likes");
+                        long dislikes = (long)poi.get("dislikes");
+                        Toast.makeText(MapActivity.this, "Id is " + poi.get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+                        placeMarker(new LatLng(latitude, longtitude), name, description, id, likes, dislikes, type);
+                    }
+
+                }
+            }
+        }, tra, prin, wat, lh, rest);
+
+    }
+
+    public void filterData(final FirestoreCallback firestoreCallback, final boolean tra,
+                      final boolean prin, final boolean wat, final boolean lh,
+                      final boolean rest) {
+
+        Task<QuerySnapshot> task =
+                FirebaseFirestore.getInstance().collection("locations").get();
+        task.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+            }
+        });
+        task.addOnFailureListener(new OnFailureListener() {
+            public void onFailure(Exception e) {
+                // handle any errors here
+            }
+        });
+
+        List<String> filterChoices = new ArrayList<>();
+        if(tra) {
+            filterChoices.add("Trash Can");
+        }
+        if(prin) {
+            filterChoices.add("Printer");
+        }
+        if(rest) {
+            filterChoices.add("Restroom");
+        }
+        if(wat) {
+            filterChoices.add("Water");
+        }
+        if(lh) {
+            filterChoices.add("Lecture Hall");
+        }
+
+        mFirestore.collection("locations")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        System.out.println("Got to 4 ");
+
+                        if (task.isSuccessful()) {
+                            System.out.println("Got to 5 ");
+
+                            List<Map<String, Object>> eventList = new ArrayList<>();
+                            //List<DocumentSnapshot> list = task.getResult().getDocuments();
+
+                            for (DocumentSnapshot doc : task.getResult()) {
+                                if(doc.exists()){
+                                    System.out.println("Got to 5.25 ");
+                                    Map<String, Object> e = doc.getData();
+                                    System.out.println("Got to 5.5 ");
+
+                                    for(String type : filterChoices) {
+                                        if (e.get("type").equals(type)) {
+                                            System.out.println("Got to 6 ");
+                                            eventList.add(e);
+                                        }
+                                    }
+                                }
+                            }
+                            System.out.println("Got to 7 ");
+
+                            firestoreCallback.onCallback(eventList);
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+
+                });
+
+    }
+
+    public void filterSystem(final boolean tra, final boolean prin, final boolean wat,
+                             final boolean lh, final boolean rest) {
+
+    }
+
+    public void readData(final FirestoreCallback firestoreCallback, final String location) {
+        System.out.println("Got to 3 ");
+
+
+        Task<QuerySnapshot> task =
+                FirebaseFirestore.getInstance().collection("locations").get();
+        task.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+            @Override
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+
+            }
+        });
+        task.addOnFailureListener(new OnFailureListener() {
+            public void onFailure(Exception e) {
+                // handle any errors here
+            }
+        });
+
+        mFirestore.collection("locations")
+                .get()
+                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                        System.out.println("Got to 4 ");
+
+                        if (task.isSuccessful()) {
+                            System.out.println("Got to 5 ");
+
+                            List<Map<String, Object>> eventList = new ArrayList<>();
+                            //List<DocumentSnapshot> list = task.getResult().getDocuments();
+
+                            for (DocumentSnapshot doc : task.getResult()) {
+                                if(doc.exists()){
+                                    System.out.println("Got to 5.25 ");
+                                    Map<String, Object> e = doc.getData();
+                                    System.out.println("Got to 5.5 ");
+
+                                    if (e.get("name").equals(location)) {
+                                        System.out.println("Got to 6 ");
+                                        eventList.add(e);
+                                    }
+                                }
+                            }
+                            System.out.println("Got to 7 ");
+
+                            firestoreCallback.onCallback(eventList);
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }
+
+                });
+    }
+
+    public interface FirestoreCallback {
+        void onCallback(List<Map<String, Object>> list);
+    }
+
+    private void getDeviceLocation() {
+
+        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
+        Task location = mFusedLocationProviderClient.getLastLocation();
+        location.addOnCompleteListener(new OnCompleteListener() {
+            @Override
+            public void onComplete(@NonNull Task task) {
+                if (task.isSuccessful()) {
+                    Location currentLocation = (Location) task.getResult();
+                    myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
+                    CameraPosition cameraPosition = new CameraPosition.Builder()
+                            .target(myLocation)      // Sets the center of the map to Mountain View
+                            .zoom(18)                   // Sets the zoom
+                            .bearing(0)                // Sets the orientation of the camera to east
+                            .build();                   // Creates a CameraPosition from the builder
+                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
+                }
+            }
+        });
+
+    }
+
+    private void addPolyLinesToMap(final DirectionsResult result){
+        new Handler(Looper.getMainLooper()).post(new Runnable() {
+            @Override
+            public void run() {
+                Log.d(TAG, "run: result routes: " + result.routes.length);
+
+                if (mPolylines.size() > 0) {
+                    for (Polyline polyline : mPolylines) {
+                        polyline.remove();
+                    }
+                    mPolylines.clear();
+                    mPolylines = new ArrayList<>();
+                    durations.clear();
+                    durations = new ArrayList<>();
+                }
+
+                for (DirectionsRoute route : result.routes) {
+                    Log.d(TAG, "run: leg: " + route.legs[0].toString());
+                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
+
+                    List<LatLng> newDecodedPath = new ArrayList<>();
+
+                    for (com.google.maps.model.LatLng latLng : decodedPath) {
+
+                        newDecodedPath.add(new LatLng(
+                                latLng.lat, latLng.lng
+                        ));
+                    }
+
+                    polylineG = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
+                    polylineG.setColor(ContextCompat.getColor(getApplicationContext(), R.color.color_grey));
+                    polylineG.setClickable(true);
+                    polylineG.setWidth(15f);
+                    mPolylines.add(polylineG);
+                    System.out.println("POLYLINES ARRAY LENGTH: " + mPolylines.size());
+
+                    mPolylines.get(0).setColor
+                            (ContextCompat.getColor(getApplicationContext(), R.color.color_blue));
+                    mPolylines.get(0).setZIndex(1);
+
+                    Pair pair = new Pair(polylineG.getId(), route.legs[0].duration);
+                    durations.add(pair);
+                    System.out.println("ROUTE LEGS LENGTH: " + route.legs.length);
+
+                }
+
+                for (Polyline polyline : mPolylines) {
+                    System.err.println("POLYLINE ARRAY POLYLINEID: " + polyline.getId());
+                }
+
+                for (Pair pair : durations) {
+                    System.err.println("DURATIONS PAIR ARRAY: " + pair.getDuration() + " " + pair.polyID);
+                }
+
+
+                Marker marker = mMap.addMarker(new MarkerOptions()
+                        .position(myLocation)
+                        .title("Estimated Time: " + durations.get(0).duration));
+                marker.showInfoWindow();
+
+                int i = 1;
+                for (Pair pair : durations) {
+                    System.out.println
+                            ("Duration " + i + ": " + pair.polyID + " " + pair.duration);
+                }
+            }
+        });
+    }
+
+    private void calculateDirections(LatLng latlongDest) {
+        Log.d(TAG, "calculateDirections: calculating directions.");
+
+        com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
+                latlongDest.latitude, latlongDest.longitude);
+        DirectionsApiRequest directions = new DirectionsApiRequest(geoApiContext);
+        directions.mode(TravelMode.WALKING);
+
+        directions.alternatives(true);
+        directions.origin(
+                new com.google.maps.model.LatLng(myLocation.latitude, myLocation.longitude)
+        );
+        Log.d(TAG, "calculateDirections: destination: " + destination.toString());
+        directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
+            @Override
+            public void onResult(DirectionsResult result) {
+                Log.d(TAG, "onResult: routes: " + result.routes[0].toString());
+                Log.d(TAG, "onResult: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
+                addPolyLinesToMap(result);
+            }
+
+            @Override
+            public void onFailure(Throwable e) {
+                Log.e(TAG, "onFailure: " + e.getMessage());
+
+            }
+        });
+    }
+
+    public void openMenu(View view) {
+        //This function needs to open the menu/ drawer
+        menu.openDrawer();
+    }
+
+    private void placeMarker(LatLng latLng, String name, String description, String id, long likes, long dislikes, String type) {
+       MarkerOptions options = new MarkerOptions().
+                position(latLng)
+                .title(name)
+                .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes);
+        mMap.addMarker(options);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == POI_POP_UP) {
+            String id = data.getStringExtra("id");
+            Toast.makeText(MapActivity.this, id, Toast.LENGTH_LONG).show();
+            int lik = data.getExtras().getInt("likes");
+            int dis = data.getExtras().getInt("dislikes");
+            mFirestore.collection("locations").document(id).update("likes", lik);
+            mFirestore.collection("locations").document(id).update("dislikes", dis);
+
+            if (resultCode == Activity.RESULT_OK) {
+                double lat = data.getExtras().getDouble("latit");
+                double lon = data.getExtras().getDouble("longit");
+                calculateDirections(new LatLng(lat, lon));
+                // Get likes and dislikes from intent
+                //boolean like = data.getBooleanExtra("like", false);
+               // boolean dislike = data.getBooleanExtra("dislike", false);
+            }
+        } else if(requestCode == FILTER_POI) {
+            if(resultCode == Activity.RESULT_OK) {
+
+                boolean trash = data.getExtras().getBoolean("trash");
+                boolean restroom = data.getExtras().getBoolean("restroom");
+                boolean water = data.getExtras().getBoolean("water");
+                boolean printer = data.getExtras().getBoolean("printer");
+                boolean lectureHall = data.getExtras().getBoolean("lectureHall");
+                boolean fav = data.getExtras().getBoolean("favorite");
+                if(fav) {
+                    filterSystem(trash, printer, water, lectureHall, restroom);
+                }
+
+                //Toast.makeText(MapActivity.this, " trash is " + trash + " restroom is " + restroom +
+                //        " water is " + water + " printer is " + printer + " lectureHall is " + lectureHall
+                //        , Toast.LENGTH_LONG).show();
+
+                filter(trash, printer, water, lectureHall, restroom);
+            }
+        }
     }
 
     // build the menu items going into the menu
@@ -223,10 +913,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             header.removeProfile(0);
             header.addProfiles(
-                        new ProfileDrawerItem()
-                                .withName(user.getDisplayName())
-                                .withEmail(user.getEmail())
-                    );
+                    new ProfileDrawerItem()
+                            .withName(user.getDisplayName())
+                            .withEmail(user.getEmail())
+            );
 
         }
         else{
@@ -364,546 +1054,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         updateMenuHeader(isLoggedIn);
-    }
-
-    @Override
-    public void onMapReady(GoogleMap googleMap) {
-        mMap = googleMap;
-
-        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
-        mMap.getUiSettings().setCompassEnabled(true);
-
-        //Initialize Google Play Services
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            if (ContextCompat.checkSelfPermission(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)
-                    == PackageManager.PERMISSION_GRANTED) {
-                mMap.setMyLocationEnabled(true);
-            }
-        } else {
-            mMap.setMyLocationEnabled(true);
-        }
-
-
-        getDeviceLocation();
-
-        ImageButton locationButton = (ImageButton)findViewById(R.id.myLocation);
-
-        locationButton.setOnClickListener(new View.OnClickListener(){
-            @Override
-            public void onClick(View v){
-                CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(myLocation, 18);
-                mMap.animateCamera(cameraUpdate);
-            }
-        });
-
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        int height = displayMetrics.heightPixels;
-        int width = displayMetrics.widthPixels;
-//        mMap.setPadding(0, height - 250, 0, 0);
-
-        mMap.setOnMapClickListener(new GoogleMap.OnMapClickListener() {
-            @Override
-            public void onMapClick(LatLng latLng) {
-                pinDropped = false;
-                pinDroppedLocation = null;
-                mMap.clear();
-            }
-        });
-
-        mMap.setOnMapLongClickListener(new GoogleMap.OnMapLongClickListener() {
-            @Override
-            public void onMapLongClick(LatLng pos) {
-                // clear map
-                mMap.clear();
-
-                // set marker options:
-                // is draggable, can change title and snippet (text under title)
-                MarkerOptions options = new MarkerOptions().position(pos).title("Name").snippet("Type");
-
-                // add marker to map
-                mMap.addMarker(options);
-                pinDropped = true;
-                pinDroppedLocation = pos;
-
-                // zoom in camera on marker
-                //mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(pos, 14f));
-            }
-        });
-
-        mMap.setOnPolylineClickListener(new GoogleMap.OnPolylineClickListener() {
-            @Override
-            public void onPolylineClick(Polyline polyline) {
-                for (Polyline polyline1 : mPolylines) {
-
-                    if (polyline1.getId().equals(polyline.getId())) {
-                        polyline1.setColor(
-                                ContextCompat.getColor(getApplicationContext(), R.color.color_blue));
-                        polyline1.setZIndex(1);
-
-                        for (Pair pair : durations) {
-                            if (pair.getPolyID().equals(polyline1.getId())) {
-                                currDuration = pair.getDuration();
-                                break;
-                            }
-                        }
-                        Marker marker = mMap.addMarker(new MarkerOptions()
-                                .position(myLocation)
-                                .title("Estimated Time: " + currDuration));
-                        System.out.println("CURRDURATION: " + currDuration);
-                        marker.showInfoWindow();
-                    } else {
-                        polyline1.setColor(
-                                ContextCompat.getColor(getApplicationContext(), R.color.color_grey));
-                        polyline1.setZIndex(0);
-                    }
-                }
-            }
-        });
-
-        // Click on the marker to display a pop up
-        mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
-            @Override
-            public boolean onMarkerClick(Marker marker) {
-                mClickedMarker = marker;
-                Intent intent = new Intent(MapActivity.this, PoiPopUp.class);
-                startActivityForResult(intent, POI_POP_UP);
-                return true;
-            }
-        });
-    }
-
-    // Usage: pulls a list of the document id's under that key_word
-    private void locationKeyWord(final String key_word) {
-        mFirestore.collection("key_words").get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                boolean bool = false;
-                if (task.isSuccessful()) {
-                    List<DocumentSnapshot> list = task.getResult().getDocuments();
-                    for (DocumentSnapshot document : list) {
-                        if (document.get(key_word) != null) {
-                            List<String> kw_list = (List<String>) document.get(key_word);
-                            printKeyWordLocations(kw_list);
-                            Toast.makeText(MapActivity.this, "KeyWord list retrieved from Firestore", Toast.LENGTH_LONG).show();
-                            bool = true;
-                            break;
-                        }
-                    }
-                    if (!bool) {
-                        Toast.makeText(MapActivity.this, "Not in Firestore", Toast.LENGTH_LONG).show();
-
-                    }
-                    //DocumentSnapshot snapshot = task.getResult();
-                    //String song = snapshot.getString("")
-                } else {
-                    Log.d("Firebase Error", "Error: " + task.getException().getMessage());
-
-                }
-            }
-        });
-    }
-
-    /*
-     * Usage: List contains strings, which are the document id's for locations in the "location" collection on Firestore
-     */
-    private void printKeyWordLocations(List<String> list) {
-        for (String document_id : list) {
-            mFirestore.collection("locations").document(document_id).get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        //Map<String, Object> document = task.getResult().getData();
-                        if (document.exists()) {
-                            Map<String, Object> doc = task.getResult().getData();
-                            Toast.makeText(MapActivity.this, "Item in key_word is: " + doc.get("name"), Toast.LENGTH_LONG).show();
-                        } else {
-                            Log.d("No such document", "Error");
-                        }
-                        Toast.makeText(MapActivity.this, "KeyWord list retrieved from Firestore", Toast.LENGTH_LONG).show();
-
-                        //DocumentSnapshot snapshot = task.getResult();
-                        //String song = snapshot.getString("")
-                    } else {
-                        Log.d("Firebase Error", "Error: " + task.getException().getMessage());
-
-                    }
-                }
-            });
-        }
-    }
-
-    public void openAccountActivity() {
-        Intent intent = new Intent(this, AccountActivity.class);
-
-        intent.putExtra(ACCOUNT_STATE, isLoggedIn);
-        startActivityForResult(intent, ACC_REQ_CODE);
-    }
-
-    public void openAddPOIActivity() {
-        Intent intent = new Intent(this, AddPOI.class);
-        LatLng toPassIn;
-        Double mylat = myLocation.latitude;
-        Double mylon = myLocation.longitude;
-
-        if(pinDroppedLocation != null) {
-            Double markerlat = pinDroppedLocation.latitude;
-            Double markerlon = pinDroppedLocation.longitude;
-            intent.putExtra("MarkerLatitude", markerlat);
-            intent.putExtra("MakerLongitude", markerlon);
-            intent.putExtra("pindropped", true);
-        }
-        else{
-            intent.putExtra("pindropped", false);
-        }
-
-        intent.putExtra("MyLatitude", mylat);
-        intent.putExtra("MyLongitude", mylon);
-        startActivity(intent);
-    }
-
-    public void openFilterPOIActivity() {
-        Intent intent = new Intent(this, FilterPOI.class);
-        startActivity(intent);
-    }
-
-    @Override
-    public void onLocationChanged(Location location) {
-        mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
-
-        //Place current location marker
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        MarkerOptions markerOptions = new MarkerOptions();
-        markerOptions.position(latLng);
-        markerOptions.title("Current Position");
-        markerOptions.icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_MAGENTA));
-        mCurrLocationMarker = mMap.addMarker(markerOptions);
-
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(11));
-    }
-
-    @Override
-    public void onStatusChanged(String provider, int status, Bundle extras) {
-
-    }
-
-    @Override
-    public void onProviderEnabled(String provider) {
-
-    }
-
-    @Override
-    public void onProviderDisabled(String provider) {
-
-    }
-
-    //database search
-    //public void onMapSearch(View view, String query)
-    public void onMapSearch(String query) {
-
-        mMap.clear();
-        //EditText locationSearch = (EditText) findViewById(R.id.editText4);
-        //String location = locationSearch.getText().toString();
-
-        System.out.println("Got to 1 ");
-        readData(new FirestoreCallback() {
-            @Override
-            public void onCallback(List<Map<String, Object>> list) {
-                System.out.println("Got to 2 ");
-                locationList = list;
-
-                if(list != null) {
-                    System.out.println("List not null " + list.toString());
-                }
-                if(list == null) {
-                    System.out.println("List is null ");
-                }
-                else if (!list.isEmpty()) {
-                    Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
-                            " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
-                    GeoPoint geoPoint = (GeoPoint) list.get(0).get("location");
-                    double latitude = geoPoint.getLatitude();
-                    double longtitude = geoPoint.getLongitude();
-                    Toast.makeText(MapActivity.this, "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
-                    moveCamera(new LatLng(latitude, longtitude), 20);
-                }
-                else
-                    googleDatabase(query);
-
-            }
-        }, query);
-
-        locationList = new ArrayList<>();
-    }
-
-    public void googleDatabase(String location){
-        List<Address>addressList = null;
-
-        if (location != null || !location.equals("")) {
-            Geocoder geocoder = new Geocoder(this);
-            try {
-                // while(addressList.size() == 0) {
-                addressList = geocoder.getFromLocationName(location, 1);
-                // }
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            if(addressList.size() == 0){
-                Toast.makeText(MapActivity.this, "Address + " + location + " not found!", Toast.LENGTH_LONG).show();
-                return;
-            }
-            Address address = addressList.get(0);
-            LatLng latLng = new LatLng(address.getLatitude(), address.getLongitude());
-            mMap.addMarker(new MarkerOptions().position(latLng).title(location));
-            CameraPosition cameraPosition = new CameraPosition.Builder()
-                    .target(latLng)      // Sets the center of the map to Mountain View
-                    .zoom(18)                   // Sets the zoom
-                    .bearing(0)                // Sets the orientation of the camera to east
-                    .build();                   // Creates a CameraPosition from the builder
-            mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-        }
-
-    }
-
-    public void readData(final FirestoreCallback firestoreCallback, final String location) {
-        System.out.println("Got to 3 ");
-
-
-        Task<QuerySnapshot> task =
-                FirebaseFirestore.getInstance().collection("locations").get();
-        task.addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-            @Override
-            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-
-            }
-        });
-        task.addOnFailureListener(new OnFailureListener() {
-            public void onFailure(Exception e) {
-                // handle any errors here
-            }
-        });
-
-        mFirestore.collection("locations")
-                .get()
-                .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                    @Override
-                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                        System.out.println("Got to 4 ");
-
-                        if (task.isSuccessful()) {
-                            System.out.println("Got to 5 ");
-
-                            List<Map<String, Object>> eventList = new ArrayList<>();
-                            //List<DocumentSnapshot> list = task.getResult().getDocuments();
-
-                            for (DocumentSnapshot doc : task.getResult()) {
-                                if(doc.exists()){
-                                    System.out.println("Got to 5.25 ");
-                                    Map<String, Object> e = doc.getData();
-                                    System.out.println("Got to 5.5 ");
-
-                                    if (e.get("name").equals(location)) {
-                                        System.out.println("Got to 6 ");
-                                        eventList.add(e);
-                                    }
-                                }
-                            }
-                            System.out.println("Got to 7 ");
-
-                            firestoreCallback.onCallback(eventList);
-                        } else {
-                            Log.d(TAG, "Error getting documents: ", task.getException());
-                        }
-                    }
-
-                });
-    }
-
-    public interface FirestoreCallback {
-        void onCallback(List<Map<String, Object>> list);
-    }
-
-    private void getDeviceLocation() {
-
-        mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(this);
-        Task location = mFusedLocationProviderClient.getLastLocation();
-        location.addOnCompleteListener(new OnCompleteListener() {
-            @Override
-            public void onComplete(@NonNull Task task) {
-                if (task.isSuccessful()) {
-                    Location currentLocation = (Location) task.getResult();
-                    myLocation = new LatLng(currentLocation.getLatitude(), currentLocation.getLongitude());
-                    CameraPosition cameraPosition = new CameraPosition.Builder()
-                            .target(myLocation)      // Sets the center of the map to Mountain View
-                            .zoom(18)                   // Sets the zoom
-                            .bearing(0)                // Sets the orientation of the camera to east
-                            .build();                   // Creates a CameraPosition from the builder
-                    mMap.animateCamera(CameraUpdateFactory.newCameraPosition(cameraPosition));
-                }
-            }
-        });
-
-    }
-
-    private void filterList() {
-
-        //sample creating
-        POI first = new POI(32.8812, -117.2375, "geisel", "place to live life", "building");
-        POI second = new POI(32.8818, -117.2375, "close first", "life", "building");
-        POI third = new POI(32.8899, -117.2440, "north east", "place ", "building");
-        POI fourth = new POI(32.8800, -117.2350, "south west", "idk", "building");
-        List<POI> returnList = new ArrayList<>();
-        returnList.add(first);
-        returnList.add(second);
-        returnList.add(third);
-        returnList.add(fourth);
-        //putMarkerOnMap(returnList);
-    }
-/*
-    private void putMarkerOnMap(List<POI> poiList) {
-
-        for(POI cur : poiList) {
-            double lat = cur.getLatitude();
-            double lon = cur.getLongitude();
-            LatLng location = new LatLng(lat, lon);
-            mMap.addMarker(new MarkerOptions()
-                .position(location)
-                    .title(cur.getName())
-                    .snippet(cur.getDescription())
-            );
-        }
-    }*/
-    private void addPolyLinesToMap(final DirectionsResult result){
-        new Handler(Looper.getMainLooper()).post(new Runnable() {
-            @Override
-            public void run() {
-                Log.d(TAG, "run: result routes: " + result.routes.length);
-
-                if (mPolylines.size() > 0) {
-                    for (Polyline polyline : mPolylines) {
-                        polyline.remove();
-                    }
-                    mPolylines.clear();
-                    mPolylines = new ArrayList<>();
-                    durations.clear();
-                    durations = new ArrayList<>();
-                }
-
-                for (DirectionsRoute route : result.routes) {
-                    Log.d(TAG, "run: leg: " + route.legs[0].toString());
-                    List<com.google.maps.model.LatLng> decodedPath = PolylineEncoding.decode(route.overviewPolyline.getEncodedPath());
-
-                    List<LatLng> newDecodedPath = new ArrayList<>();
-
-                    for (com.google.maps.model.LatLng latLng : decodedPath) {
-
-                        newDecodedPath.add(new LatLng(
-                                latLng.lat, latLng.lng
-                        ));
-                    }
-
-                    polylineG = mMap.addPolyline(new PolylineOptions().addAll(newDecodedPath));
-                    polylineG.setColor(ContextCompat.getColor(getApplicationContext(), R.color.color_grey));
-                    polylineG.setClickable(true);
-                    polylineG.setWidth(15f);
-                    mPolylines.add(polylineG);
-                    System.out.println("POLYLINES ARRAY LENGTH: " + mPolylines.size());
-
-                    mPolylines.get(0).setColor
-                            (ContextCompat.getColor(getApplicationContext(), R.color.color_blue));
-                    mPolylines.get(0).setZIndex(1);
-
-                    Pair pair = new Pair(polylineG.getId(), route.legs[0].duration);
-                    durations.add(pair);
-                    System.out.println("ROUTE LEGS LENGTH: " + route.legs.length);
-
-                }
-
-                for (Polyline polyline : mPolylines) {
-                    System.err.println("POLYLINE ARRAY POLYLINEID: " + polyline.getId());
-                }
-
-                for (Pair pair : durations) {
-                    System.err.println("DURATIONS PAIR ARRAY: " + pair.getDuration() + " " + pair.polyID);
-                }
-
-
-                Marker marker = mMap.addMarker(new MarkerOptions()
-                        .position(myLocation)
-                        .title("Estimated Time: " + durations.get(0).duration));
-                marker.showInfoWindow();
-
-                int i = 1;
-                for (Pair pair : durations) {
-                    System.out.println
-                            ("Duration " + i + ": " + pair.polyID + " " + pair.duration);
-                }
-            }
-        });
-    }
-
-    private void calculateDirections(LatLng latlongDest) {
-        Log.d(TAG, "calculateDirections: calculating directions.");
-
-        com.google.maps.model.LatLng destination = new com.google.maps.model.LatLng(
-                latlongDest.latitude, latlongDest.longitude);
-        DirectionsApiRequest directions = new DirectionsApiRequest(geoApiContext);
-        directions.mode(TravelMode.WALKING);
-
-        directions.alternatives(true);
-        directions.origin(
-                new com.google.maps.model.LatLng(myLocation.latitude, myLocation.longitude)
-        );
-        Log.d(TAG, "calculateDirections: destination: " + destination.toString());
-        directions.destination(destination).setCallback(new PendingResult.Callback<DirectionsResult>() {
-            @Override
-            public void onResult(DirectionsResult result) {
-                Log.d(TAG, "onResult: routes: " + result.routes[0].toString());
-                Log.d(TAG, "onResult: geocodedWayPoints: " + result.geocodedWaypoints[0].toString());
-                addPolyLinesToMap(result);
-            }
-
-            @Override
-            public void onFailure(Throwable e) {
-                Log.e(TAG, "onFailure: " + e.getMessage());
-
-            }
-        });
-    }
-
-    public void openMenu(View view) {
-        //This function needs to open the menu/ drawer
-        menu.openDrawer();
-    }
-
-    private void moveCamera(LatLng latLng, float zoom) {
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, zoom));
-
-        MarkerOptions options = new MarkerOptions().
-                position(latLng)
-                .title("u a fag");
-        mMap.addMarker(options);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-
-        if (requestCode == POI_POP_UP) {
-            if (resultCode == Activity.RESULT_OK) {
-                // Get likes and dislikes from intent
-                boolean like = data.getBooleanExtra("like", false);
-                boolean dislike = data.getBooleanExtra("dislike", false);
-            }
-        }
     }
 }
 

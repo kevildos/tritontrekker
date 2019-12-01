@@ -1,5 +1,7 @@
 package devdaryl.com.mapwithlogin;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,6 +15,14 @@ import androidx.appcompat.widget.Toolbar;
 
 
 public class FilterPOI extends AppCompatActivity {
+
+    boolean favorite = false;
+    boolean trash = false;
+    boolean printer = false;
+    boolean restroom = false;
+    boolean water = false;
+    boolean lectureHall = false;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +55,10 @@ public class FilterPOI extends AppCompatActivity {
             public void onClick(View v) {
                 if(((CompoundButton) v).isChecked()){
                     System.out.println("Favorite Checked");
+                    favorite = true;
                 } else {
                     System.out.println("Favorite Un-Checked");
+                    favorite = false;
                 }
             }
         });
@@ -55,8 +67,10 @@ public class FilterPOI extends AppCompatActivity {
             public void onClick(View v) {
                 if(((CompoundButton) v).isChecked()){
                     System.out.println("Trash Checked");
+                    trash = true;
                 } else {
                     System.out.println("Trash Un-Checked");
+                    trash = false;
                 }
             }
         });
@@ -65,8 +79,10 @@ public class FilterPOI extends AppCompatActivity {
             public void onClick(View v) {
                 if(((CompoundButton) v).isChecked()){
                     System.out.println("Printer Checked");
+                    printer = true;
                 } else {
                     System.out.println("Printer Un-Checked");
+                    printer = false;
                 }
             }
         });
@@ -75,8 +91,10 @@ public class FilterPOI extends AppCompatActivity {
             public void onClick(View v) {
                 if(((CompoundButton) v).isChecked()){
                     System.out.println("Restroom Checked");
+                    restroom = true;
                 } else {
                     System.out.println("Restroom Un-Checked");
+                    restroom = false;
                 }
             }
         });
@@ -85,8 +103,10 @@ public class FilterPOI extends AppCompatActivity {
             public void onClick(View v) {
                 if(((CompoundButton) v).isChecked()){
                     System.out.println("Water Checked");
+                    water = true;
                 } else {
                     System.out.println("Water Un-Checked");
+                    restroom = false;
                 }
             }
         });
@@ -98,6 +118,14 @@ public class FilterPOI extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here
         if (item.getItemId() == android.R.id.home) {
+            Intent returnIntent = getIntent();
+            returnIntent.putExtra("favorite", favorite);
+            returnIntent.putExtra("trash", trash);
+            returnIntent.putExtra("restroom", restroom);
+            returnIntent.putExtra("water", water);
+            returnIntent.putExtra("lectureHall", lectureHall);
+            returnIntent.putExtra("printer", printer);
+            setResult(Activity.RESULT_OK,returnIntent);
             finish(); // close this activity and return to preview activity (if there is any)
         }
 
