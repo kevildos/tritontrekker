@@ -1,5 +1,6 @@
 package devdaryl.com.tt;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
@@ -23,12 +24,38 @@ public class PoiPopUp extends AppCompatActivity {
         setContentView(R.layout.custom_info_window);
 
         DisplayMetrics dm = new DisplayMetrics();
+
         getWindowManager().getDefaultDisplay().getMetrics(dm);
+        init();
 
         int width = dm.widthPixels;
         int height = dm.heightPixels;
 
         getWindow().setLayout((int)(width*.8),(int)(height*.7));
+    }
+
+    private void init(){
+
+        Intent callingIntent = getIntent();
+
+        if(callingIntent.getBooleanExtra("isPOI", false)) {
+
+            System.out.println("init good");
+
+            TextView name = findViewById(R.id.poiTitle);
+            TextView descrip = findViewById(R.id.poiDescription);
+            TextView likeCounter = findViewById(R.id.likeCounter);
+            TextView dislikeCounter = findViewById(R.id.dislikeCounter);
+
+            long numLikes = callingIntent.getLongExtra("likes", 0);
+            long numDislikes = callingIntent.getLongExtra("dislikes", 0);
+
+
+            name.setText(callingIntent.getStringExtra("name"));
+            descrip.setText(callingIntent.getStringExtra("description"));
+            likeCounter.setText(Long.toString(numLikes));
+            dislikeCounter.setText(Long.toString(numDislikes));
+        }
     }
 
     /**
@@ -47,6 +74,7 @@ public class PoiPopUp extends AppCompatActivity {
         if button is already "checked" add a like
         otherwise remove one
          */
+        //
         if(likeBtn.isChecked()) {
             if(dislikeBtn.isChecked()){
                 --numDislikes;

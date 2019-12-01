@@ -50,7 +50,14 @@ public class AddPOI extends AppCompatActivity {
         double mylat = getIntent().getDoubleExtra("MyLatitude", 0.00);
         double mylon = getIntent().getDoubleExtra("MyLongitude", 0.00);
 
-        boolean pindropped = getIntent().getBooleanExtra("pindropped", true);
+        System.out.println("AddPOIActivity: lat " + mylat + ", long " + mylon);
+        System.out.println("AddPOIActivity: lat " + getIntent()
+                .getDoubleExtra("MyLatitude", 0)+ ", long " + getIntent().getDoubleExtra("MyLongitude", 0));
+
+        System.out.println("AddPOIActivity: lat " + getIntent()
+                .getDoubleExtra("MyLatitude", 0)+ ", long " + getIntent().getDoubleExtra("MyLongitude", 0));
+
+        boolean pindropped = getIntent().getBooleanExtra("pindropped", false);
 
         if(pindropped) {
             markerlat = getIntent().getDoubleExtra("MarkerLatitude", 0.00);
@@ -139,7 +146,7 @@ public class AddPOI extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 System.out.println(nameInput.getText());
-                String name = nameInput.getText().toString().toLowerCase();
+                String name = nameInput.getText().toString();
                 String description = desc.getText().toString();
                 ArrayList<String> list = new ArrayList<String>();
                 list.add(keywords.getText().toString());
@@ -155,6 +162,7 @@ public class AddPOI extends AppCompatActivity {
                     lng = markerlon;
                 }
 
+                System.out.println("FINAL POS " + lat + " " + lng);
                 addLocation(name, description, "floor_description", list, lat, lng, 1);
                 //addLocation(name, description, "floor_description", list, latitude, longitude, 1);
                 finish();
@@ -173,6 +181,9 @@ public class AddPOI extends AppCompatActivity {
         userMap.put("location", location);
         userMap.put("maps_icon", "icon");
         userMap.put("rating", 1);
+        userMap.put("likes", (long) 0);
+        userMap.put("dislikes", (long) 0);
+        userMap.put("reports", (long) 0);
 
 
         final String name2 = name;
@@ -205,6 +216,4 @@ public class AddPOI extends AppCompatActivity {
             System.out.println("PHOTO NOT TAKEN");
         }
     }
-
-
 }

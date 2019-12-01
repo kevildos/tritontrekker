@@ -41,9 +41,11 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.maps.DirectionsApiRequest;
@@ -64,7 +66,10 @@ import com.mikepenz.materialdrawer.model.ProfileDrawerItem;
 import com.mikepenz.materialdrawer.model.interfaces.IDrawerItem;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -126,6 +131,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     // search bar vars
     FloatingSearchView searchBar;
 
+    // daryl database vars
+    private static final String USERS_COLLECTION = "users";
+    private final static String LOCATIONS_COLLECTION = "locations";
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -158,6 +167,48 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         // create authentication listener for FirebaseUser
         createAuthList();
+
+        checkUserInDB();
+    }
+
+    private void checkUserInDB() {
+
+        // check if user signed in
+        if(mAuth.getCurrentUser() != null) {
+            mFirestore
+                    .collection("users")
+                    .document(mAuth.getCurrentUser().getUid())
+                    .get()
+                    .addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                        @Override
+                        public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                            if(task.isSuccessful()){
+
+                                DocumentSnapshot user = task.getResult();
+
+                                // add user to DB if they do not exist
+                                if(!user.exists()){
+                                    System.out.println("Add user");
+
+                                    Map<String, Object> userMap = new HashMap<>();
+                                    userMap.put("likes", new ArrayList<String>());
+                                    userMap.put("dislikes", new ArrayList<String>());
+                                    userMap.put("reports", new ArrayList<String>());
+
+                                    mFirestore
+                                            .collection("users")
+                                            .document(mAuth.getCurrentUser().getUid())
+                                            .set(userMap);
+                                }
+                            }
+                        }
+                    }).addOnFailureListener(new OnFailureListener() {
+                @Override
+                public void onFailure(@NonNull Exception e) {
+                    Toast.makeText(MapActivity.this, "Problem with getting user from DB", Toast.LENGTH_LONG).show();
+                }
+            });
+        }
     }
 
     // build the menu items going into the menu
@@ -262,7 +313,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             }
             @Override
             public void onSearchAction(String currentQuery) {
-                onMapSearch(currentQuery.toLowerCase());
+                onMapSearch(currentQuery);
             }
         });
 
@@ -436,9 +487,46 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public boolean onMarkerClick(Marker marker) {
                 mClickedMarker = marker;
                 Intent intent = new Intent(MapActivity.this, PoiPopUp.class);
-                startActivityForResult(intent, POI_POP_UP);
+
+                // getting firestore instance
+                mFirestore = FirebaseFirestore.getInstance();
+                CollectionReference locsColl = mFirestore.collection(LOCATIONS_COLLECTION);
+                CollectionReference usersColl = mFirestore.collection(USERS_COLLECTION);
+                double lat = marker.getPosition().latitude;
+                double lng = marker.getPosition().longitude;
+                GeoPoint gp = new GeoPoint(lat, lng);
+
+                System.out.println("HEY" + gp);
+
+                locsColl.whereEqualTo("location", gp)
+                        .get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                        if(task.isSuccessful()){
+                            for(QueryDocumentSnapshot doc : task.getResult()) {
+                                intent.putExtra("isPOI", true);
+                                intent.putExtra("name", doc.getData().get("name").toString());
+                                intent.putExtra("description", doc.getData().get("description").toString());
+                                intent.putExtra("likes", (long) doc.getData().get("likes"));
+                                intent.putExtra("dislikes", (long) doc.getData().get("dislikes"));
+                                intent.putExtra("reports", (long) doc.getData().get("reports"));
+                            }
+                        }
+                        //usersColl.document(mAuth.getCurrentUser().getUid()).get
+                        startActivity(intent);
+                    }
+                }).addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        startActivity(intent);
+                        Toast.makeText(MapActivity.this, "Failed to get POI info", Toast.LENGTH_LONG).show();
+                    }
+                });
+
                 return true;
             }
+
         });
     }
 
@@ -513,15 +601,18 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void openAddPOIActivity() {
         Intent intent = new Intent(this, AddPOI.class);
         LatLng toPassIn;
-        Double mylat = myLocation.latitude;
-        Double mylon = myLocation.longitude;
+        double mylat = myLocation.latitude;
+        double mylon = myLocation.longitude;
 
         if(pinDroppedLocation != null) {
-            Double markerlat = pinDroppedLocation.latitude;
-            Double markerlon = pinDroppedLocation.longitude;
+            double markerlat = pinDroppedLocation.latitude;
+            double markerlon = pinDroppedLocation.longitude;
             intent.putExtra("MarkerLatitude", markerlat);
-            intent.putExtra("MakerLongitude", markerlon);
+            intent.putExtra("MarkerLongitude", markerlon);
             intent.putExtra("pindropped", true);
+
+            System.out.println("MapActivity: mlat " + intent
+                    .getDoubleExtra("MarkerLatitude", 0)+ ", mlong " + intent.getDoubleExtra("MarkerLongitude", 0));
         }
         else{
             intent.putExtra("pindropped", false);
@@ -529,6 +620,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         intent.putExtra("MyLatitude", mylat);
         intent.putExtra("MyLongitude", mylon);
+
+        System.out.println("MapActivity: lat " + intent
+                .getDoubleExtra("MyLatitude", 0)+ ", long " + intent.getDoubleExtra("MyLongitude", 0));
+
+        System.out.println("MapActivity: lat " + intent
+                .getDoubleExtra("MyLatitude", 0)+ ", long " + intent.getDoubleExtra("MyLongitude", 0));
+
         startActivity(intent);
     }
 
