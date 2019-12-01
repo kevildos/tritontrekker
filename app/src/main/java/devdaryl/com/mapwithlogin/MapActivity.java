@@ -834,10 +834,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == POI_POP_UP) {
-            String id = data.getStringExtra("id");
-            Toast.makeText(MapActivity.this, id, Toast.LENGTH_LONG).show();
+            System.out.println("daf'sjijfseai'fd;afaesjfiadsfnseifadnfifheiafdsnfsiafeninjfilefa''o;");
+
+            //Toast.makeText(MapActivity.this, id, Toast.LENGTH_LONG).show();
             int lik = data.getExtras().getInt("likes");
             int dis = data.getExtras().getInt("dislikes");
+            String id = data.getStringExtra("id");
             mFirestore.collection("locations").document(id).update("likes", lik);
             mFirestore.collection("locations").document(id).update("dislikes", dis);
 

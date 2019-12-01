@@ -77,6 +77,7 @@ public class PoiPopUp extends AppCompatActivity {
 
         Intent returnIntent = getIntent();
         returnIntent.putExtra("id", id);
+        setResult(Activity.RESULT_OK,returnIntent);
     }
 
     /**
