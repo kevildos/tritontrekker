@@ -6,13 +6,23 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
+
+import java.io.InputStream;
+import java.net.URL;
 
 import devdaryl.com.mapwithlogin.R;
 
@@ -74,6 +84,18 @@ public class PoiPopUp extends AppCompatActivity {
         int height = dm.heightPixels;
 
         getWindow().setLayout((int)(width*.8),(int)(height*.7));
+
+        ImageView image = findViewById(R.id.imageView);
+        System.out.println("Image url in poit pop up" +
+                (String)getIntent().getExtras().get("imageurl"));
+        String imageurl = (String)getIntent().getExtras().get("imageurl");
+
+        try {
+            Picasso.get().load(imageurl).rotate(90).into(image);
+        }catch (Exception e){
+            Toast.makeText(getApplicationContext(), "Coulndnt load image",
+                    Toast.LENGTH_SHORT).show();
+        }
 
         Intent returnIntent = getIntent();
         returnIntent.putExtra("id", id);
