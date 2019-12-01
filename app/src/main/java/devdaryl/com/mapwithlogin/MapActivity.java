@@ -993,9 +993,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 //                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(maloc, 18);
 //                        mMap.animateCamera(cameraUpdate);
                     }
-                    else
-                        googleDatabase(queryG);
-
                 }
             }, queryG);
 

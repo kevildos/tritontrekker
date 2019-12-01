@@ -286,27 +286,8 @@ public class AddPOI extends AppCompatActivity {
             System.out.println("PHOTO TAKEN");
             System.out.println("Uri image in addpoi: " + imageUri);
 
-
-//            Bitmap photo = (Bitmap) data.getExtras().get("data");
-
-//            Uri uri = imageUri;
-//            System.out.println("URI: " + uri.toString());
-//            System.out.println("URI: 3" + data.getExtras().get("outputFileUri").toString());
-
-//            BitmapFactory.Options options = new BitmapFactory.Options();
-//            options.inPreferredConfig = Bitmap.Config.ARGB_8888;
-//            Bitmap bitmap = BitmapFactory.decodeFile(capturedImageUri, options);
-
-//            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-//            photo.compress(Bitmap.CompressFormat.JPEG, 100, stream);
-//            byte[] bytedata = stream.toByteArray();
-
-//            System.out.println("URI: " + uri.toString());
-
-
             FirebaseStorage storage = FirebaseStorage.getInstance();
-//            StorageReference storageRef =
-//                    storage.getReference(UUID.randomUUID().toString());
+
 
             StorageReference filepath = storage.getReference(UUID.randomUUID().toString());
 
