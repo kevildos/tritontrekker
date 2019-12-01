@@ -5,11 +5,23 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
+
+import java.io.InputStream;
+import java.net.URL;
 
 import devdaryl.com.tt.R;
 
@@ -17,6 +29,7 @@ public class PoiPopUp extends AppCompatActivity {
 
     int numLikes = 0;
     int numDislikes = 0;
+    FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +68,18 @@ public class PoiPopUp extends AppCompatActivity {
             descrip.setText(callingIntent.getStringExtra("description"));
             likeCounter.setText(Long.toString(numLikes));
             dislikeCounter.setText(Long.toString(numDislikes));
+
+            ImageView image = findViewById(R.id.imageView);
+            System.out.println("Image url in poit pop up" +
+                    (String)callingIntent.getExtras().get("imageurl"));
+            String imageurl = (String)callingIntent.getExtras().get("imageurl");
+
+            try {
+                Picasso.get().load(imageurl).rotate(90).into(image);
+            }catch (Exception e){
+                Toast.makeText(getApplicationContext(), "Coulndnt load image",
+                        Toast.LENGTH_SHORT).show();
+            }
         }
     }
 
@@ -192,5 +217,6 @@ public class PoiPopUp extends AppCompatActivity {
         //Get the directions to the poi
         Toast.makeText(this, "Getting directions to POI", Toast.LENGTH_SHORT).show();
     }
+
 
 }

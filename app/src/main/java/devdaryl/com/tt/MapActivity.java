@@ -494,6 +494,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 CollectionReference usersColl = mFirestore.collection(USERS_COLLECTION);
                 double lat = marker.getPosition().latitude;
                 double lng = marker.getPosition().longitude;
+
+                // Temp geopoints im testing
+//                lat = 32.7326081;
+//                lng = -117.040233;
                 GeoPoint gp = new GeoPoint(lat, lng);
 
                 System.out.println("HEY" + gp);
@@ -511,6 +515,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                 intent.putExtra("likes", (long) doc.getData().get("likes"));
                                 intent.putExtra("dislikes", (long) doc.getData().get("dislikes"));
                                 intent.putExtra("reports", (long) doc.getData().get("reports"));
+                                intent.putExtra("imageurl", (String)doc.getData().get("photoURL"));
                             }
                         }
                         //usersColl.document(mAuth.getCurrentUser().getUid()).get
