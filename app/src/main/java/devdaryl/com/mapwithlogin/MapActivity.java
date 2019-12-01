@@ -90,7 +90,12 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     private Location mLastLocation;
     private LatLng pinDroppedLocation;
     private Marker mCurrLocationMarker;
-    private Marker mClickedMarker;
+    private Marker mMarker;
+    private int numLiked;
+    private int numDisliked;
+    private boolean mLiked;
+    private boolean mDisliked;
+    private boolean mFavorite;
     private String[] greetings;
     private int numGreetings;
 
@@ -263,8 +268,23 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                mClickedMarker = marker;
+                // Get numLiked and numDisliked from the marker object
+                mMarker = marker;
+                numLiked = 15;
+                numDisliked = 15;
+
+                // Get these values from the user's shared preferences
+                mLiked = false;
+                mDisliked = false;
+                mFavorite = false;
+
+                // Start new activity
                 Intent intent = new Intent(MapActivity.this, PoiPopUp.class);
+                intent.putExtra("numLiked", numLiked);
+                intent.putExtra("numDisliked", numDisliked);
+                intent.putExtra("mLiked", mLiked);
+                intent.putExtra("mDisliked", mDisliked);
+                intent.putExtra("mFavorite", mFavorite);
                 startActivityForResult(intent, POI_POP_UP);
                 return true;
             }
@@ -668,14 +688,18 @@ public class MapActivity extends AppCompatActivity implements NavigationView.OnN
     }
 
     @Override
-    protected void onActivityResult(int requestCode, int resultCode, @androidx.annotation.Nullable Intent data) {
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == POI_POP_UP) {
             if (resultCode == Activity.RESULT_OK) {
                 // Get likes and dislikes from intent
-                boolean like = data.getBooleanExtra("like", false);
-                boolean dislike = data.getBooleanExtra("dislike", false);
+                boolean like = data.getBooleanExtra("liked", false);
+                boolean dislike = data.getBooleanExtra("disliked", false);
+                boolean favorite = data.getBooleanExtra("favorite", false);
+                Toast.makeText(MapActivity.this, "Like: " + like + ", dislike: " + dislike + ", favorite: " + favorite, Toast.LENGTH_SHORT).show();
+
+                // Compare these values with mLiked, mDisliked, and mFavorite to see what needs to be updated in mMarker
             }
         }
     }
