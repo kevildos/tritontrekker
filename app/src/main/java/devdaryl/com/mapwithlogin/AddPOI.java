@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -24,6 +25,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.webkit.MimeTypeMap;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -290,82 +292,85 @@ public class AddPOI extends AppCompatActivity {
             System.out.println("PHOTO TAKEN");
             System.out.println("Uri image in addpoi: " + imageUri);
 
-            FirebaseStorage storage = FirebaseStorage.getInstance();
-
-
-            StorageReference filepath = storage.getReference(UUID.randomUUID().toString());
-
-            Toast.makeText(getApplicationContext(), "Please wait while the image is uploading",
-                    Toast.LENGTH_SHORT).show();
-
-//            UploadTask uploadTask = filepath.putFile(imageUri);
-
-            Display display = getWindowManager().getDefaultDisplay();
-            DisplayMetrics outMetrics = new DisplayMetrics();
-            float density  = getResources().getDisplayMetrics().density;
-            int dpHeight = (int) (145 * Resources.getSystem().getDisplayMetrics().density);
-
-            Bitmap bitmap = null;
-            try {
-                bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), imageUri);
-            }catch(Exception e){
-                System.out.println("ERROR READING FILE");
-            }
-
-//            bitmap = Bitmap.createBitmap(bitmap, 0,0, dpHeight, dpHeight);
-
-
-            BitmapFactory.Options bmOptions = new BitmapFactory.Options();
-            Bitmap bitmapScaled = BitmapFactory.decodeFile(imageUri.toString(),bmOptions);
-
-            //Part 1 :withcompression Sacle image 200 pixels x 700 pixels this size you can customize as per your requirement
-
-            Bitmap withCompressed = Bitmap.createScaledBitmap(bitmap,900,900,true);
-
-            ByteArrayOutputStream stream = new ByteArrayOutputStream();
-            withCompressed.compress(Bitmap.CompressFormat.PNG, 100, stream);
-            byte[] bytedata = stream.toByteArray();
-
-            UploadTask uploadTask = filepath.putBytes(bytedata);
-
-            uploadTask.addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-                    System.out.println("UPLOADING PICTURE FAILED");
-                }
-            }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                @Override
-                public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
-
-                    filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                        @Override
-                        public void onSuccess(Uri uri) {
-                            Uri downloadUrl = uri;
-                            System.out.println("Actual url i will put in firebase: " + uri);
-                            photoURL = uri.toString();
-                            Toast.makeText(getApplicationContext(), "Image has been uploaded",
-                                    Toast.LENGTH_SHORT).show();
-
-                        }
-                    });
-                    System.out.println("UPLOAD SUCCESSFUL");
-//                    System.out.println("URL: " + filepath.getDownloadUrl());
-//                    photoURL = filepath.getDownloadUrl().toString();
-//                    System.out.println(photoURL);
-
-                }
-            });
+            uploadPicture(imageUri);
 
 
 //            imageView.setImageBitmap(photo);
         }
-        else {
+        else if(requestCode == 1000 && resultCode == RESULT_OK){
+            Uri selectedImage = data.getData();
+            System.out.println("uri of gallery image: " + selectedImage.toString());
+//
+//            ContentResolver contentResolver = getContentResolver();
+//            MimeTypeMap mime = MimeTypeMap.getSingleton();
+//            String extension = mime.getExtensionFromMimeType(contentResolver.getType(selectedImage));
+
+            uploadPicture(selectedImage);
+
+        }else{
             System.out.println("PHOTO NOT TAKEN");
         }
     }
-
     public void getUri(Uri uri){
         imageUri = uri;
+    }
+
+    public void uploadPicture(Uri uri){
+        FirebaseStorage storage = FirebaseStorage.getInstance();
+        StorageReference filepath = storage.getReference(UUID.randomUUID().toString());
+
+        Toast.makeText(getApplicationContext(), "Please wait while the image is uploading",
+                Toast.LENGTH_SHORT).show();
+
+        Display display = getWindowManager().getDefaultDisplay();
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        float density  = getResources().getDisplayMetrics().density;
+        int dpHeight = (int) (145 * Resources.getSystem().getDisplayMetrics().density);
+
+        Bitmap bitmap = null;
+
+        try {
+            bitmap = MediaStore.Images.Media.getBitmap(this.getContentResolver(), uri);
+        }catch(Exception e){
+            System.out.println("ERROR READING FILE");
+        }
+
+        BitmapFactory.Options bmOptions = new BitmapFactory.Options();
+        Bitmap withCompressed = Bitmap.createScaledBitmap(bitmap,900,900,true);
+
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        withCompressed.compress(Bitmap.CompressFormat.PNG, 100, stream);
+        byte[] bytedata = stream.toByteArray();
+
+        UploadTask uploadTask = filepath.putBytes(bytedata);
+
+        uploadTask.addOnFailureListener(new OnFailureListener() {
+            @Override
+            public void onFailure(@NonNull Exception e) {
+                System.out.println("UPLOADING PICTURE FAILED");
+            }
+        }).addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
+            @Override
+            public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+
+                filepath.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
+                    @Override
+                    public void onSuccess(Uri uri) {
+                        Uri downloadUrl = uri;
+                        System.out.println("Actual url i will put in firebase: " + uri);
+                        photoURL = uri.toString();
+                        Toast.makeText(getApplicationContext(), "Image has been uploaded",
+                                Toast.LENGTH_SHORT).show();
+
+                    }
+                });
+                System.out.println("UPLOAD SUCCESSFUL");
+//                    System.out.println("URL: " + filepath.getDownloadUrl());
+//                    photoURL = filepath.getDownloadUrl().toString();
+//                    System.out.println(photoURL);
+
+            }
+        });
     }
 
 

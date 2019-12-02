@@ -38,7 +38,7 @@ public class mypois extends AppCompatActivity {
 
         androidx.appcompat.widget.Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setElevation(0);
+        toolbar.setElevation(1);
 
         // add back arrow to toolbar
         if (getSupportActionBar() != null){

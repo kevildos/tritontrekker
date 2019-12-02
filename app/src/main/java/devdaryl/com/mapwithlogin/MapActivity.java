@@ -9,6 +9,7 @@ import android.location.Address;
 import android.location.Geocoder;
 import android.location.Location;
 import android.location.LocationListener;
+import android.media.Image;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -228,6 +229,32 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             public void onClick(View v){
                 CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(myLocation, 18);
                 mMap.animateCamera(cameraUpdate);
+            }
+        });
+
+        ImageButton changeMapType = (ImageButton)findViewById(R.id.maptype);
+        changeMapType.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                int maptype = mMap.getMapType();
+                switch (maptype) {
+
+                    case 1:
+                        mMap.setMapType(GoogleMap.MAP_TYPE_SATELLITE);
+                        break;
+                    case 2:
+                        mMap.setMapType(GoogleMap.MAP_TYPE_TERRAIN);
+                        break;
+                    case 3:
+                        mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
+                        break;
+                    case 4:
+                        mMap.setMapType(GoogleMap.MAP_TYPE_NORMAL);
+                        break;
+                    default:
+                        break;
+
+                }
             }
         });
 
@@ -541,8 +568,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(maloc, 18);
                     mMap.animateCamera(cameraUpdate);
                 }
-                else
-                    googleDatabase(query);
+//                else
+//                    googleDatabase(query);
 
             }
         }, query);

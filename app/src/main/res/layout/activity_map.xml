@@ -32,6 +32,16 @@
         android:paddingBottom="20sp">
 
         <ImageButton
+            android:id="@+id/maptype"
+            style="@android:style/Widget.Material.ImageButton"
+            android:layout_width="35dp"
+            android:layout_height="39dp"
+            android:layout_marginBottom="5dp"
+            android:backgroundTint="#000000"
+            android:scaleType="centerCrop"
+            app:srcCompat="@android:drawable/ic_dialog_map" />
+
+        <ImageButton
             android:id="@+id/myLocation"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

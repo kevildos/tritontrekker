@@ -95,7 +95,7 @@ public class imageDialog extends DialogFragment {
                 else if (which == 1){
                     Intent pickPhoto = new Intent(Intent.ACTION_PICK,
                             android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-                    startActivityForResult(pickPhoto , 1);
+                    getActivity().startActivityForResult(pickPhoto , 1000);
                 }
                 else{
                     // this shouldnt be running so idk
