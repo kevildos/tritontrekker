@@ -262,6 +262,7 @@ public class AddPOI extends AppCompatActivity {
         final String name2 = name;
         String id = mFirestore.collection("locations").document().getId();
         userMap.put("id", id);
+        userMap.put("type", type);
 
         mFirestore.collection("locations").document(id).set(userMap);
         Toast.makeText(AddPOI.this, "Location " + name + " added to firestore", Toast.LENGTH_LONG).show();
