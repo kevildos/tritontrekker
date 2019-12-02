@@ -105,11 +105,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private PrimaryDrawerItem addPoiItem;
     private PrimaryDrawerItem filterItem;
     private PrimaryDrawerItem directionsItem;
+    private PrimaryDrawerItem myPoisItem;
     private AccountHeader header;
     private static final int accountItemID = 1;
     private static final int addPoitItemID = 2;
     private static final int filterItemID = 3;
     private static final int directionsItemID = 4;
+    private static final int mypoisID = 5;
 
     // maps vars
     private static final Boolean ENABLE_COMPASS = true;
@@ -408,6 +410,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             intent.putExtra("MarkerLatitude", markerlat);
             intent.putExtra("MarkerLongitude", markerlon);
             intent.putExtra("pindropped", true);
+            System.out.println("userid in map activity: " + userID);
 
             System.out.println("MapActivity: mlat " + intent
                     .getDoubleExtra("MarkerLatitude", 0)+ ", mlong " + intent.getDoubleExtra("MarkerLongitude", 0));
@@ -416,6 +419,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             intent.putExtra("pindropped", false);
         }
 
+        intent.putExtra("userid", userID);
         intent.putExtra("MyLatitude", mylat);
         intent.putExtra("MyLongitude", mylon);
 
@@ -431,6 +435,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void openFilterPOIActivity() {
         Intent intent = new Intent(this, FilterPOI.class);
         startActivityForResult(intent, FILTER_POI);
+    }
+
+    public void openMyPOIsActivity(){
+        Intent intent = new Intent(this, mypois.class);
+        ArrayList<String> idlist = new ArrayList<String>();
+        ArrayList<String> namelist = new ArrayList<String>();
+
+        CollectionReference locsCollection = mFirestore.collection("locations");
+        locsCollection.whereEqualTo("creatorid", userID).get().addOnCompleteListener(
+                new OnCompleteListener<QuerySnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                        if(task.isSuccessful()){
+                            for(QueryDocumentSnapshot doc : task.getResult()) {
+                                idlist.add(doc.getId());
+                                System.out.println("docid: " + doc.getId());
+                                namelist.add(doc.getData().get("name").toString());
+                            }
+                        }
+                        intent.putStringArrayListExtra("idlist", idlist);
+                        intent.putStringArrayListExtra("namelist", namelist);
+                        startActivity(intent);
+
+                    }
+                });
+
     }
 
     @Override
@@ -1022,6 +1053,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .withName("Directions")
                 .withIcon(R.drawable.ic_directions_black_24dp)
                 .withSelectable(false);
+        myPoisItem = new PrimaryDrawerItem().withIdentifier(mypoisID)
+                .withIdentifier(mypoisID)
+                .withName("My POIs")
+                .withIcon(R.drawable.ic_directions_black_24dp)
+                .withSelectable(false);
 
     }
 
@@ -1066,7 +1102,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .addDrawerItems(
                         accountItem,
                         filterItem,
-                        directionsItem
+                        directionsItem,
+                        myPoisItem
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -1165,6 +1202,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         else if (itemID == directionsItemID) {
             menu.closeDrawer();
             calculateDirections(pinDroppedLocation);
+        }
+
+        else if(itemID == mypoisID){
+            menu.closeDrawer();
+            openMyPOIsActivity();
         }
 
         return true;

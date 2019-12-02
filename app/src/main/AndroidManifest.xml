@@ -7,21 +7,25 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-feature android:name="android.hardware.camera" android:required="true" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
 
+    <uses-feature
+        android:name="android.hardware.camera"
+        android:required="true" />
 
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
 
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
+        android:networkSecurityConfig="@xml/networ_security_config"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:networkSecurityConfig="@xml/networ_security_config"
-        >
+        android:theme="@style/AppTheme">
+        <activity android:name=".mypois"
+            android:parentActivityName=".MapActivity">
+        </activity>
 
         <provider
             android:name=".GenericFileProvider"
@@ -30,10 +34,10 @@
             android:grantUriPermissions="true">
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
-                android:resource="@xml/provider_paths"/>
+                android:resource="@xml/provider_paths" />
         </provider>
 
-        <activity android:name=".AccountActivity"></activity>
+        <activity android:name=".AccountActivity" />
 
         <meta-data
             android:name="com.google.android.geo.API_KEY"
@@ -45,43 +49,34 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
 
-        <activity android:name="devdaryl.com.mapwithlogin.MainActivity">
+        <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name="devdaryl.com.mapwithlogin.MapActivity"
-                  android:launchMode="singleTop"
-            />
-
+        <activity
+            android:name=".MapActivity"
+            android:launchMode="singleTop" />
         <activity
             android:name=".AddPOI"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_add_poi"
             android:parentActivityName=".MapActivity"
-            android:theme="@style/FullscreenThemeUpdated"
-            >
-
-        </activity>
+            android:theme="@style/FullscreenThemeUpdated"></activity>
         <activity
             android:name=".FilterPOI"
             android:configChanges="orientation|keyboardHidden|screenSize"
             android:label="@string/title_activity_filter_poi"
             android:parentActivityName=".MapActivity"
-            android:theme="@style/FullscreenThemeUpdated"
-            >
-
-        </activity>
-
-        <activity android:name=".PoiPopUp"
+            android:theme="@style/FullscreenThemeUpdated"></activity>
+        <activity
+            android:name=".PoiPopUp"
             android:configChanges="orientation|keyboardHidden|screenSize"
-            android:label = "title_activity_poi_pop_up"
+            android:label="title_activity_poi_pop_up"
             android:parentActivityName=".MapActivity"
-            android:theme = "@style/AppTheme.PopUp"
-            ></activity>
-
+            android:theme="@style/AppTheme.PopUp" />
     </application>
 
 </manifest>

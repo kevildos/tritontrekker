@@ -257,14 +257,18 @@ public class AddPOI extends AppCompatActivity {
         userMap.put("dislikes", (long) 0);
         userMap.put("reports", (long) 0);
         userMap.put("photoURL", photoURL);
+        userMap.put("creatorid", (String) getIntent().getExtras().get("userid"));
 
 
         final String name2 = name;
         String id = mFirestore.collection("locations").document().getId();
         userMap.put("id", id);
+        userMap.put("type", type);
 
         mFirestore.collection("locations").document(id).set(userMap);
         Toast.makeText(AddPOI.this, "Location " + name + " added to firestore", Toast.LENGTH_LONG).show();
+
+
     }
 
     // Handles X button click
