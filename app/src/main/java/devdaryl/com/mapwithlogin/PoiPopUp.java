@@ -116,7 +116,7 @@ public class PoiPopUp extends AppCompatActivity {
         String imageurl = (String)getIntent().getExtras().get("imageurl");
 
         try {
-            Picasso.get().load(imageurl).rotate(90).into(image);
+            //Picasso.get().load(imageurl).rotate(90).into(image);
         }catch (Exception e){
             Toast.makeText(getApplicationContext(), "Coulndnt load image",
                     Toast.LENGTH_SHORT).show();

@@ -105,14 +105,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     private PrimaryDrawerItem accountItem;
     private PrimaryDrawerItem addPoiItem;
     private PrimaryDrawerItem filterItem;
-    private PrimaryDrawerItem directionsItem;
     private PrimaryDrawerItem myPoisItem;
     private AccountHeader header;
     private static final int accountItemID = 1;
     private static final int addPoitItemID = 2;
     private static final int filterItemID = 3;
-    private static final int directionsItemID = 4;
-    private static final int mypoisID = 5;
+    private static final int mypoisID = 4;
 
     // maps vars
     private static final Boolean ENABLE_COMPASS = true;
@@ -591,7 +589,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 e.printStackTrace();
             }
             if(addressList.size() == 0){
-                Toast.makeText(MapActivity.this, "Address + " + location + " not found!", Toast.LENGTH_LONG).show();
+                Toast.makeText(MapActivity.this, location + " was not found!", Toast.LENGTH_LONG).show();
                 return;
             }
             Address address = addressList.get(0);
@@ -762,7 +760,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                     Map<String, Object> e = doc.getData();
                                     System.out.println("Got to 5.5 ");
 
-                                    if (e.get("name").equals(location)) {
+                                    // case insensitive search
+                                    if (e.get("name").toString().toLowerCase().equals(location.toLowerCase())) {
                                         System.out.println("Got to 6 ");
                                         eventList.add(e);
                                     }
@@ -1075,11 +1074,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .withName("Filter")
                 .withIcon(R.drawable.ic_filter_list_black_24dp)
                 .withSelectable(false);
-        directionsItem = new PrimaryDrawerItem().withIdentifier(accountItemID)
-                .withIdentifier(directionsItemID)
-                .withName("Directions")
-                .withIcon(R.drawable.ic_directions_black_24dp)
-                .withSelectable(false);
         myPoisItem = new PrimaryDrawerItem().withIdentifier(mypoisID)
                 .withIdentifier(mypoisID)
                 .withName("My POIs")
@@ -1128,9 +1122,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 .withActivity(MapActivity.this)
                 .addDrawerItems(
                         accountItem,
-                        filterItem,
-                        directionsItem,
-                        myPoisItem
+                        filterItem
                 )
                 .withOnDrawerItemClickListener(new Drawer.OnDrawerItemClickListener() {
                     @Override
@@ -1226,11 +1218,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             openFilterPOIActivity();
         }
 
-        else if (itemID == directionsItemID) {
-            menu.closeDrawer();
-            calculateDirections(pinDroppedLocation);
-        }
-
         else if(itemID == mypoisID){
             menu.closeDrawer();
             openMyPOIsActivity();
@@ -1245,11 +1232,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             accountItem.withName("Log out");
             menu.updateItem(accountItem);
             menu.addItemAtPosition(addPoiItem, 2);
+            menu.addItemAtPosition(myPoisItem, 4);
         }
         else {
             accountItem.withName("Log in");
             menu.updateItem(accountItem);
             menu.removeItem(addPoitItemID);
+            menu.removeItem(mypoisID);
         }
 
         updateMenuHeader(isLoggedIn);
