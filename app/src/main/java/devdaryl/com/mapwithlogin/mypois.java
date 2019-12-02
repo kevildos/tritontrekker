@@ -103,7 +103,7 @@ public class mypois extends AppCompatActivity {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
                                                     Toast.makeText(getApplicationContext(),
-                                                            "POI \"" + (String)adapter.getItem(adapterindex) + "\" has been deleted",
+                                                            "POI deleted",
                                                             Toast.LENGTH_SHORT);
                                                 }
                                             });

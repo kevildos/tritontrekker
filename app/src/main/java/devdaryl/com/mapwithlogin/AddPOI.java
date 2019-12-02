@@ -182,9 +182,7 @@ public class AddPOI extends AppCompatActivity {
         final EditText nameInput = (EditText) findViewById(R.id.name);
         Button addPicture = (Button) findViewById(R.id.button);
         Button confirm = (Button) findViewById(R.id.button2);
-        final EditText keywords = (EditText) findViewById(R.id.keywords);
         final EditText desc = (EditText)findViewById(R.id.editText2);
-//        Button cancel = (Button) findViewById(R.id.button3);
 
 
         // Picture button Listener
@@ -218,7 +216,6 @@ public class AddPOI extends AppCompatActivity {
                 String name = nameInput.getText().toString();
                 String description = desc.getText().toString();
                 ArrayList<String> list = new ArrayList<String>();
-                list.add(keywords.getText().toString());
                 double lat;
                 double lng;
 
@@ -247,6 +244,7 @@ public class AddPOI extends AppCompatActivity {
                              double latitude, double longtitude, int maps_icon) {
         Map<String, Object> userMap = new HashMap<>();
         userMap.put("name", name);
+        //userMap.put("search_name", name.toLowerCase());
         userMap.put("description", description);
         userMap.put("key_words", key_words);
         GeoPoint location = new GeoPoint(latitude, longtitude);
