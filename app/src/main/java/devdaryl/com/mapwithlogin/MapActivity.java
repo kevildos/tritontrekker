@@ -289,6 +289,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         .position(pos)
                         .title("Add POI Here")
                         .snippet("0;You can add a POI here if you are logged in and go to the menu; ;0;0;false;false;false");;
+
+                //Setting pin icon.
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.blankpin));
                 // add marker to map
                 mMap.addMarker(options);
                 pinDropped = true;
@@ -576,7 +579,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
 
     public void googleDatabase(String location){
-        List<Address>addressList = null;
+        List<Address> addressList = null;
 
         if (location != null || !location.equals("")) {
             Geocoder geocoder = new Geocoder(this);
@@ -717,10 +720,133 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 });
 
     }
+    public void readUserData(final FirestoreCallback2 firestoreCallback2, final boolean like, final boolean dislike, final boolean favorite) {
+        System.out.println("Got to 3 ");
+        String id = null;
+        if(mAuth.getCurrentUser() == null) {
+            Toast.makeText(MapActivity.this, "Must be logged in!", Toast.LENGTH_LONG).show();
+            return;
+        }
+        else
+            id = mAuth.getCurrentUser().getUid();
 
+        DocumentReference docRef = mFirestore.collection("users").document(id);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Map<String, Object> userData = document.getData();
+                        firestoreCallback2.onCallback(userData);
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                }
+                else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+    //database search
+    //public void onMapSearch(View view, String query)
+    public void onFilter(boolean like, boolean dislike, boolean favorite) {
+
+        mMap.clear();
+        //EditText locationSearch = (EditText) findViewById(R.id.editText4);
+        //String location = locationSearch.getText().toString();
+
+        System.out.println("Got to 1 ");
+        readUserData(new FirestoreCallback2() {
+            @Override
+            public void onCallback(Map<String, Object> list) {
+                ArrayList<String> liked = new ArrayList<>();
+                ArrayList<String> disliked = new ArrayList<>();
+                ArrayList<String> favorites = new ArrayList<>();
+                for(Map.Entry<String, Object> entry : list.entrySet()) {
+                    String key = entry.getKey();
+                    List value = (List)list.get(key);
+                    if((boolean)value.get(0) == true)
+                        liked.add(key);
+                    if((boolean)value.get(1) == true)
+                        disliked.add(key);
+                    if((boolean)value.get(2) == true)
+                        favorites.add(key);
+
+
+                }
+                //DocumentReference poiRef = mFirestore.collection("locations").document(list.get();
+            }
+        }, like, dislike, favorite);
+    }
     public void filterSystem(final boolean tra, final boolean prin, final boolean wat,
                              final boolean lh, final boolean rest) {
+        readUserData(new FirestoreCallback2() {
+            @Override
+            public void onCallback(Map<String, Object> list) {
+                //ArrayList<String> liked = new ArrayList<>();
+                //ArrayList<String> disliked = new ArrayList<>();
+                final ArrayList<Map<String, Object>> favorites = new ArrayList<>();
+                for(Map.Entry<String, Object> entry : list.entrySet()) {
+                    String key = entry.getKey();
+                    List value = (List)list.get(key);
+                    //if((boolean)value.get(0) == true)
+                    //liked.add(key);
+                    //if((boolean)value.get(1) == true)
+                    //disliked.add(key);
+                    if((boolean)value.get(2) == true) {
+                        readDocumentData(new FirestoreCallback3() {
+                            @Override
+                            public void onCallback(Map<String, Object> document) {
+                                List l = (List)document.get("filters");
+                                if(tra == (boolean)l.get(0) == true || prin == (boolean)l.get(1) == true || wat == (boolean)l.get(2) == true
+                                        || lh == (boolean)l.get(3) == true || rest == (boolean)l.get(4) == true)
+                                {
+                                    favorites.add(document);
+                                }
 
+                            }
+                        }, key);
+                    }
+                }
+
+
+            }
+        }, false, false, true );
+
+
+    }
+    public interface FirestoreCallback2 {
+        void onCallback(Map<String, Object> userData);
+    }
+
+
+    public void readDocumentData(final FirestoreCallback3 firestoreCallback3, final String id) {
+        DocumentReference docRef = mFirestore.collection("locations").document(id);
+        docRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if(task.isSuccessful()){
+                    DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        Log.d(TAG, "DocumentSnapshot data: " + document.getData());
+                        Map<String, Object> userData = document.getData();
+                        firestoreCallback3.onCallback(userData);
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                }
+                else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            }
+        });
+    }
+
+    public interface FirestoreCallback3 {
+        void onCallback(Map<String, Object> document);
     }
 
     public void readData(final FirestoreCallback firestoreCallback, final String location) {
@@ -926,6 +1052,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                     .title(name)
                                     .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
                                                 + liked + ";" + disliked + ";" +favorited);
+
+                            setIcon(options, type, favorited);
                             mMap.addMarker(options);
                         } else {
                             MarkerOptions options = new MarkerOptions().
@@ -933,6 +1061,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                     .title(name)
                                     .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
                                             + false + ";" + false + ";" + false);
+                            setIcon(options, type, false);
                             mMap.addMarker(options);
                         }
                     }
@@ -1224,6 +1353,33 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         }
 
         return true;
+    }
+
+    //Helper function to set the marker icon before it is displayed on the map.
+    private void setIcon(MarkerOptions options, String type, boolean isFavorite) {
+
+        if(isFavorite)
+            options.icon(BitmapDescriptorFactory.fromResource(R.drawable.favoritepin));
+
+        else {
+            if (type.equals("Lecture Hall"))
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.lecturehallpin));
+
+            else if (type.equals("Restroom"))
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.restroompin));
+
+            else if (type.equals("Printer"))
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.printerpin));
+
+            else if (type.equals("Trash Can"))
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.trashpin));
+
+            else if (type.equals("Water"))
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.waterpin));
+
+            else if (type.equals("Other"))
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.blankpin));
+        }
     }
 
     // update the state of the log in button as the user logs in and out
