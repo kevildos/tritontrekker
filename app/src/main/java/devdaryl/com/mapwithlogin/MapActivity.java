@@ -458,7 +458,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         System.out.println("MapActivity: lat " + intent
                 .getDoubleExtra("MyLatitude", 0)+ ", long " + intent.getDoubleExtra("MyLongitude", 0));
 
-        this.startActivityForResult(intent, ADD_POI);
+        startActivity(intent);
     }
 
     public void openFilterPOIActivity() {
@@ -784,29 +784,53 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     }
     public void filterSystem(final boolean tra, final boolean prin, final boolean wat,
                              final boolean lh, final boolean rest) {
+
+        List<String> filterChoices = new ArrayList<>();
+        if(tra) {
+            filterChoices.add("Trash Can");
+        }
+        if(prin) {
+            filterChoices.add("Printer");
+        }
+        if(rest) {
+            filterChoices.add("Restroom");
+        }
+        if(wat) {
+            filterChoices.add("Water");
+        }
+        if(lh) {
+            filterChoices.add("Lecture Hall");
+        }
+
         readUserData(new FirestoreCallback2() {
             @Override
             public void onCallback(Map<String, Object> list) {
-                //ArrayList<String> liked = new ArrayList<>();
-                //ArrayList<String> disliked = new ArrayList<>();
                 final ArrayList<Map<String, Object>> favorites = new ArrayList<>();
                 for(Map.Entry<String, Object> entry : list.entrySet()) {
                     String key = entry.getKey();
                     List value = (List)list.get(key);
-                    //if((boolean)value.get(0) == true)
-                    //liked.add(key);
-                    //if((boolean)value.get(1) == true)
-                    //disliked.add(key);
+                    System.out.println("" + value + "!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     if((boolean)value.get(2) == true) {
                         readDocumentData(new FirestoreCallback3() {
                             @Override
-                            public void onCallback(Map<String, Object> document) {
-                                List l = (List)document.get("filters");
-                                if(tra == (boolean)l.get(0) == true || prin == (boolean)l.get(1) == true || wat == (boolean)l.get(2) == true
-                                        || lh == (boolean)l.get(3) == true || rest == (boolean)l.get(4) == true)
-                                {
-                                    favorites.add(document);
+                            public void onCallback(Map<String, Object> data) {
+
+                                for(String ty : filterChoices) {
+                                    if (data.get("type").equals(ty)) {
+                                        GeoPoint geoPoint = (GeoPoint) data.get("location");
+                                        double latitude = geoPoint.getLatitude();
+                                        double longtitude = geoPoint.getLongitude();
+                                        String name = (String) data.get("name");
+                                        String description = (String)data.get("description");
+                                        String type = (String)data.get("type");
+                                        String id = (String)data.get("id");
+                                        long likes = (long)data.get("likes");
+                                        long dislikes = (long)data.get("dislikes");
+                                        Toast.makeText(MapActivity.this, "Id is " + data.get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+                                        placeMarker(new LatLng(latitude, longtitude), name, description, id, likes, dislikes, type);
+                                    }
                                 }
+
 
                             }
                         }, key);
@@ -816,9 +840,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
             }
         }, false, false, true );
-
-
     }
+
     public interface FirestoreCallback2 {
         void onCallback(Map<String, Object> userData);
     }
@@ -1120,10 +1143,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 calculateDirections(new LatLng(lat, lon));
                 // Get likes and dislikes from intent
                 //boolean like = data.getBooleanExtra("like", false);
-               // boolean dislike = data.getBooleanExtra("dislike", false);
+                // boolean dislike = data.getBooleanExtra("dislike", false);
             }
-        }
-        else if(requestCode == FILTER_POI) {
+        } else if(requestCode == FILTER_POI) {
+            mMap.clear();
             if(resultCode == Activity.RESULT_OK) {
 
                 boolean trash = data.getExtras().getBoolean("trash");
@@ -1133,71 +1156,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 boolean lectureHall = data.getExtras().getBoolean("lectureHall");
                 boolean fav = data.getExtras().getBoolean("favorite");
                 if(fav) {
+                    System.out.println("Got to favorites!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     filterSystem(trash, printer, water, lectureHall, restroom);
+                } else {
+                    filter(trash, printer, water, lectureHall, restroom);
                 }
-
-                //Toast.makeText(MapActivity.this, " trash is " + trash + " restroom is " + restroom +
-                //        " water is " + water + " printer is " + printer + " lectureHall is " + lectureHall
-                //        , Toast.LENGTH_LONG).show();
-
-                filter(trash, printer, water, lectureHall, restroom);
             }
         }
-        else if(requestCode == ADD_POI){
-
-            if(resultCode == RESULT_CANCELED){
-                return;
-            }
-            else if(getIntent().getExtras() != null && resultCode == RESULT_OK) {
-                queryG = (String)data.getExtras().get("nameofpoi");
-                System.out.println("query string name: " + queryG );
-            }
-
-        }
-
-            mMap.clear();
-            //EditText locationSearch = (EditText) findViewById(R.id.editText4);
-            //String location = locationSearch.getText().toString();
-
-            System.out.println("Got to 1 ");
-            readData(new FirestoreCallback() {
-                @Override
-                public void onCallback(List<Map<String, Object>> list) {
-                    System.out.println("Got to 2 ");
-                    locationList = list;
-
-                    if(list != null) {
-                        System.out.println("List not null " + list.toString());
-                    }
-                    if(list == null) {
-                        System.out.println("List is null ");
-                    }
-                    else if (!list.isEmpty()) {
-                        Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
-                                " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
-                        GeoPoint geoPoint = (GeoPoint) list.get(0).get("location");
-                        double latitude = geoPoint.getLatitude();
-                        double longtitude = geoPoint.getLongitude();
-                        String name = (String) list.get(0).get("name");
-                        String description = (String)list.get(0).get("description");
-                        String type = (String)list.get(0).get("type");
-                        String id = (String) list.get(0).get("id");
-                        long likes = (long) list.get(0).get("likes");
-                        long dislikes = (long) list.get(0).get("dislikes");
-                        imageurl = (String)list.get(0).get("photoURL");
-
-                        Toast.makeText(MapActivity.this, "Id is " + list.get(0).get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
-                        LatLng maloc = new LatLng(latitude, longtitude);
-                        placeMarker(maloc, name, description, id, likes, dislikes, type);
-//                        CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(maloc, 18);
-//                        mMap.animateCamera(cameraUpdate);
-                    }
-                }
-            }, queryG);
-
-            locationList = new ArrayList<>();
-        }
-
+    }
 
     // build the menu items going into the menu
     private void buildMenuItems(){
