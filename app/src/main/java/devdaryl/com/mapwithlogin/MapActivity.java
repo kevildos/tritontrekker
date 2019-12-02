@@ -151,6 +151,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     // onActivityResult request codes
     private int POI_POP_UP = 1;
     private int FILTER_POI = 2;
+    private int ADD_POI = 3;
 
     // search bar vars
     FloatingSearchView searchBar;
@@ -457,7 +458,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         System.out.println("MapActivity: lat " + intent
                 .getDoubleExtra("MyLatitude", 0)+ ", long " + intent.getDoubleExtra("MyLongitude", 0));
 
-        startActivity(intent);
+        this.startActivityForResult(intent, ADD_POI);
     }
 
     public void openFilterPOIActivity() {
@@ -1121,7 +1122,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 //boolean like = data.getBooleanExtra("like", false);
                // boolean dislike = data.getBooleanExtra("dislike", false);
             }
-        } else if(requestCode == FILTER_POI) {
+        }
+        else if(requestCode == FILTER_POI) {
             if(resultCode == Activity.RESULT_OK) {
 
                 boolean trash = data.getExtras().getBoolean("trash");
@@ -1140,6 +1142,17 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                 filter(trash, printer, water, lectureHall, restroom);
             }
+        }
+        else if(requestCode == ADD_POI){
+
+            if(resultCode == RESULT_CANCELED){
+                return;
+            }
+            else if(getIntent().getExtras() != null && resultCode == RESULT_OK) {
+                queryG = (String)data.getExtras().get("nameofpoi");
+                System.out.println("query string name: " + queryG );
+            }
+
         }
 
             mMap.clear();

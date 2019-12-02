@@ -230,6 +230,11 @@ public class AddPOI extends AppCompatActivity {
                     lng = markerlon;
                 }
 
+//                System.out.println("Name of POI: " + name);
+//                Intent i = new Intent(getApplicationContext(), AddPOI.class);
+//                i.putExtra("nameofpoi", name);
+//                getIntent().setData()
+
                 if(type == null) {
                     Toast.makeText(AddPOI.this, "You must select a type for this POI before submitting", Toast.LENGTH_LONG).show();
                 } else {
@@ -237,6 +242,8 @@ public class AddPOI extends AppCompatActivity {
                     //addLocation(name, description, "floor_description", list, latitude, longitude, 1);
                     finish();
                 }
+
+
             }
         });
 
