@@ -170,6 +170,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     long likesar = 0;
     long dislikesar = 0;
 
+    // used in poipopup
+    long reports = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -366,9 +369,11 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
                                 for(QueryDocumentSnapshot doc: task.getResult()){
                                     imageurl = (String)doc.getData().get("photoURL");
+                                    reports = (long)doc.getData().get("reports");
                                     intent.putExtra("imageurl", imageurl);
-                                    startActivityForResult(intent, POI_POP_UP);
+                                    intent.putExtra("reports", reports);
                                 }
+                                startActivityForResult(intent, POI_POP_UP);
                             }
                         }
                 );
@@ -1129,14 +1134,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == POI_POP_UP) {
+
+            if((boolean)data.getExtras().get("deletedpoi")){
+                mMap.clear();
+                return;
+            }
             System.out.println("daf'sjijfseai'fd;afaesjfiadsfnseifadnfifheiafdsnfsiafeninjfilefa''o;");
 
             //Toast.makeText(MapActivity.this, id, Toast.LENGTH_LONG).show();
             int lik = data.getExtras().getInt("likes");
             int dis = data.getExtras().getInt("dislikes");
+            long reportsar = (long)data.getExtras().get("reports");
             String id = data.getStringExtra("id");
             mFirestore.collection("locations").document(id).update("likes", lik);
             mFirestore.collection("locations").document(id).update("dislikes", dis);
+            mFirestore.collection("locations").document(id).update("reports", reportsar);
+
 
             Boolean liked = data.getExtras().getBoolean("liked");
             Boolean disliked = data.getExtras().getBoolean("disliked");
