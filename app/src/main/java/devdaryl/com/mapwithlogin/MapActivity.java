@@ -161,8 +161,14 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     //user id stored
     private String userID;
-
     String queryG;
+
+    // onactivityresult vars
+    String typear = "";
+    String descar = "";
+    String idar = "";
+    long likesar = 0;
+    long dislikesar = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -473,7 +479,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         System.out.println("MapActivity: lat " + intent
                 .getDoubleExtra("MyLatitude", 0)+ ", long " + intent.getDoubleExtra("MyLongitude", 0));
 
-        startActivity(intent);
+        startActivityForResult(intent, ADD_POI);
     }
 
     public void openFilterPOIActivity() {
@@ -1187,6 +1193,37 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
         else if(requestCode == ACC_REQ_CODE){
             checkUserInDB();
+        }
+
+        else if(requestCode == ADD_POI){
+            if(resultCode == RESULT_OK) {
+                if((boolean)data.getExtras().get("frompin")) {
+                    double lat = (double)data.getExtras().get("lat");
+                    double lng = (double)data.getExtras().get("lng");
+                    GeoPoint geoPoint = new GeoPoint(lat,lng);
+                    mFirestore.collection("locations")
+                            .whereEqualTo("location", geoPoint)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    for(QueryDocumentSnapshot doc: task.getResult()){
+                                        typear = (String)doc.getData().get("type");
+                                        descar = (String)doc.getData().get("description");
+                                        idar = (String)doc.getData().get("id");
+                                        likesar = (long)doc.getData().get("likes");
+                                        dislikesar = (long)doc.getData().get("dislikes");
+                                    }
+                                    mMap.clear();
+                                    LatLng latLng = new LatLng(lat,lng);
+                                    String name = (String)data.getExtras().get("name");
+                                    placeMarker(latLng, name, descar, idar, likesar, dislikesar, typear);
+                                }
+                            });
+
+                }
+            }
+
         }
     }
 

@@ -74,6 +74,7 @@ public class AddPOI extends AppCompatActivity {
     imageDialog dialog;
     String photoURL = null;
     String type = null;
+    boolean usedPinLocation = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -224,10 +225,12 @@ public class AddPOI extends AppCompatActivity {
                 if(currlocButton.isChecked()){
                     lat = mylat;
                     lng = mylon;
+                    usedPinLocation = false;
                 }
                 else {
                     lat = markerlat;
                     lng = markerlon;
+                    usedPinLocation = true;
                 }
 
 //                System.out.println("Name of POI: " + name);
@@ -240,6 +243,15 @@ public class AddPOI extends AppCompatActivity {
                 } else {
                     addLocation(name, description, "floor_description", list, lat, lng, 1);
                     //addLocation(name, description, "floor_description", list, latitude, longitude, 1);
+
+                    Intent returnIntent = getIntent();
+                    returnIntent.putExtra("name", name);
+                    returnIntent.putExtra("frompin", usedPinLocation);
+                    returnIntent.putExtra("lat", lat);
+                    returnIntent.putExtra("lng", lng);
+
+                    setResult(Activity.RESULT_OK,returnIntent);
+
                     finish();
                 }
 
@@ -274,6 +286,7 @@ public class AddPOI extends AppCompatActivity {
 
         mFirestore.collection("locations").document(id).set(userMap);
         Toast.makeText(AddPOI.this, "Location " + name + " added to firestore", Toast.LENGTH_LONG).show();
+
 
 
     }
