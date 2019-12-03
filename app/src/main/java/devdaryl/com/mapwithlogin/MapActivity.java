@@ -471,6 +471,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         ArrayList<String> idlist = new ArrayList<String>();
         ArrayList<String> namelist = new ArrayList<String>();
 
+        System.out.println("User Id before calling activity: " + userID);
+
+        checkUserInDB();
+
         CollectionReference locsCollection = mFirestore.collection("locations");
         locsCollection.whereEqualTo("creatorid", userID).get().addOnCompleteListener(
                 new OnCompleteListener<QuerySnapshot>() {
@@ -1145,7 +1149,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 //boolean like = data.getBooleanExtra("like", false);
                 // boolean dislike = data.getBooleanExtra("dislike", false);
             }
-        } else if(requestCode == FILTER_POI) {
+        }
+
+        else if(requestCode == FILTER_POI) {
             mMap.clear();
             if(resultCode == Activity.RESULT_OK) {
 
@@ -1162,6 +1168,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     filter(trash, printer, water, lectureHall, restroom);
                 }
             }
+        }
+
+        else if(requestCode == ACC_REQ_CODE){
+            checkUserInDB();
         }
     }
 
