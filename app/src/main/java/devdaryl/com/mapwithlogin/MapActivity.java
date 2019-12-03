@@ -350,8 +350,23 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 LatLng markLoc = marker.getPosition();
                 intent.putExtra("Latitude", markLoc.latitude);
                 intent.putExtra("Longitude", markLoc.longitude);
-                intent.putExtra("imageurl", imageurl);
-                startActivityForResult(intent, POI_POP_UP);
+                GeoPoint point = new GeoPoint(markLoc.latitude, markLoc.longitude);
+
+                mFirestore.collection("locations")
+                        .whereEqualTo("location", point).get().addOnCompleteListener(
+                        new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                for(QueryDocumentSnapshot doc: task.getResult()){
+                                    imageurl = (String)doc.getData().get("photoURL");
+                                    intent.putExtra("imageurl", imageurl);
+                                    startActivityForResult(intent, POI_POP_UP);
+                                }
+                            }
+                        }
+                );
+
 
 //                intent.putExtra("imageurl", (String)doc.getData().get("photoURL"));
                 return true;
