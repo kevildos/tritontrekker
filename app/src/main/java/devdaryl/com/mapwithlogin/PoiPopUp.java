@@ -291,6 +291,7 @@ public class PoiPopUp extends AppCompatActivity {
 
             if (reports + 1 == REPORT_THRESHOLD) {
                 AlertDialog.Builder builder = new AlertDialog.Builder(PoiPopUp.this);
+                builder.setCancelable(false);
                 builder.setMessage("Reporting this POI will delete it for all users because " +
                         "it will exceed the report count. Are you sure you want to report?");
                 builder.setPositiveButton("YES - DELETE POI", new DialogInterface.OnClickListener() {
