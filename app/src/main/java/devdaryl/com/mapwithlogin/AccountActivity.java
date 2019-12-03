@@ -101,7 +101,7 @@ public class AccountActivity extends AppCompatActivity {
                             Log.d(TAG, "signInWithCredential:success");
                             FirebaseUser user = mAuth.getCurrentUser();
 
-                            if(user.getEmail().contains("@ucsd.edu") || user.getEmail().contains("gmail.com")){
+                            if(user.getEmail().contains("@ucsd.edu")){
                                 updateUI(user);
                             }
                             else {
