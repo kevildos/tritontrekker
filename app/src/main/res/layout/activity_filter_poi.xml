@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="#0099cc">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="#ffffff"
+        android:backgroundTint="#ffffff"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme"
+            app:title="Filter" />
+
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="match_parent"
+            android:layout_height="35dp"
+            android:layout_margin="20sp"
+            android:fontFamily="@font/roboto_thin"
+            android:text="Choose which types of POIs you want to see on the map." />
+
+
+        <CheckBox
+            android:id="@+id/checkBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:button="@null"
+            android:drawableLeft="@drawable/ic_favorite_black_24dp"
+            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:fontFamily="@font/roboto"
+            android:text="  Favorites"
+            android:textSize="20sp" />
+
+        <CheckBox
+            android:id="@+id/checkBox2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:button="@null"
+            android:drawableLeft="@drawable/ic_delete_black_24dp"
+            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:fontFamily="@font/roboto"
+            android:text="  Trash Cans"
+            android:textSize="20sp" />
+
+        <CheckBox
+            android:id="@+id/checkBox3"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:button="@null"
+            android:drawableLeft="@drawable/ic_print_black_24dp"
+            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:fontFamily="@font/roboto"
+            android:text="  Printers"
+            android:textSize="20sp" />
+
+        <CheckBox
+            android:id="@+id/checkBox4"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:button="@null"
+            android:drawableLeft="@drawable/ic_wc_black_24dp"
+            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:fontFamily="@font/roboto"
+            android:text="  Restrooms"
+            android:textSize="20sp" />
+
+        <CheckBox
+            android:id="@+id/checkBox5"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10sp"
+            android:button="@null"
+            android:drawableLeft="@drawable/ic_local_drink_black_24dp"
+            android:drawableRight="?android:attr/listChoiceIndicatorMultiple"
+            android:fontFamily="@font/roboto"
+            android:text="  Water Refill Station"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+
+</FrameLayout>
