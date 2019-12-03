@@ -1195,7 +1195,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         myPoisItem = new PrimaryDrawerItem().withIdentifier(mypoisID)
                 .withIdentifier(mypoisID)
                 .withName("My POIs")
-                .withIcon(R.drawable.ic_directions_black_24dp)
+                .withIcon(R.drawable.blankpin)
                 .withSelectable(false);
 
     }
