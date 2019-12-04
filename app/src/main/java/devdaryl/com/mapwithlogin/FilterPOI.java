@@ -21,7 +21,7 @@ public class FilterPOI extends AppCompatActivity {
     boolean printer = false;
     boolean restroom = false;
     boolean water = false;
-    boolean lectureHall = false;
+    boolean attractions = false;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -49,6 +49,8 @@ public class FilterPOI extends AppCompatActivity {
         CompoundButton printerSelected = findViewById(R.id.checkBox3);
         CompoundButton restroomSelected = findViewById(R.id.checkBox4);
         CompoundButton waterSelected = findViewById(R.id.checkBox5);
+        CompoundButton attractionSelected = findViewById(R.id.checkBox6);
+
 
         favoriteSelected.setOnClickListener(new View.OnClickListener(){
             @Override
@@ -110,7 +112,19 @@ public class FilterPOI extends AppCompatActivity {
                 }
             }
         });
-
+        attractionSelected.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View v) {
+                if(((CompoundButton) v).isChecked()){
+                    System.out.println("Water Checked");
+                    attractions = true;
+                } else {
+                    System.out.println("Water Un-Checked");
+                    attractions = false;
+                }
+            }
+        });
+        
     }
 
     // Handles X button click
@@ -123,7 +137,7 @@ public class FilterPOI extends AppCompatActivity {
             returnIntent.putExtra("trash", trash);
             returnIntent.putExtra("restroom", restroom);
             returnIntent.putExtra("water", water);
-            returnIntent.putExtra("lectureHall", lectureHall);
+            returnIntent.putExtra("lectureHall", attractions);
             returnIntent.putExtra("printer", printer);
             setResult(Activity.RESULT_OK,returnIntent);
             finish(); // close this activity and return to preview activity (if there is any)
