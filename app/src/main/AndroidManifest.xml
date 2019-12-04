@@ -58,7 +58,8 @@
         </activity>
         <activity
             android:name=".MapActivity"
-            android:launchMode="singleTop" />
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"/>
         <activity
             android:name=".AddPOI"
             android:configChanges="orientation|keyboardHidden|screenSize"

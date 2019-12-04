@@ -181,6 +181,21 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     // used in poipopup
     long reports = 0;
 
+    //checks for directions within search
+    boolean directionCalled = false;
+    double direcLat;
+    double direcLong;
+
+    //boolean for return methods
+    boolean favor;
+    boolean sear;
+    boolean t;
+    boolean r;
+    boolean w;
+    boolean f;
+    boolean a;
+    boolean p;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -573,6 +588,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //public void onMapSearch(View view, String query)
     public void onMapSearch(String query) {
 
+        sear = true;
+
         queryG = query;
         mMap.clear();
         //EditText locationSearch = (EditText) findViewById(R.id.editText4);
@@ -613,6 +630,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     placeMarker(maloc, name, description, id, likes, dislikes, type);
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(maloc, 18);
                     mMap.animateCamera(cameraUpdate);
+                    if(directionCalled)
+                        calculateDirections(new LatLng(direcLat, direcLong));
                 }
 //                else
 //                    googleDatabase(query);
@@ -1187,8 +1206,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             mMap.clear();
 
                             System.out.println("HEY " + data.getStringExtra("Name"));
-                            if (!id.equals("-1") && mAuth.getCurrentUser() != null)
-                                onMapSearch(data.getStringExtra("Name"));
+
+                            if(sear) {
+
+                                if (!id.equals("-1") && mAuth.getCurrentUser() != null) {
+                                    if (resultCode == Activity.RESULT_OK) {
+                                        directionCalled = true;
+                                        direcLat = data.getExtras().getDouble("latit");
+                                        direcLong = data.getExtras().getDouble("longit");
+                                    }
+                                    onMapSearch(data.getStringExtra("Name"));
+                                }
+                            } else {
+                                if(f) {
+                                    filterSystem(t,p,w,a,r);
+                                    filter(t,p,w,a,r);
+                                } else {
+                                    filter(t,p,w,a,r);
+                                }
+                            }
                         }
                     }
                 });
@@ -1196,31 +1232,35 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
 
             if (resultCode == Activity.RESULT_OK) {
-                double lat = data.getExtras().getDouble("latit");
-                double lon = data.getExtras().getDouble("longit");
-                calculateDirections(new LatLng(lat, lon));
-                // Get likes and dislikes from intent
-                //boolean like = data.getBooleanExtra("like", false);
-                // boolean dislike = data.getBooleanExtra("dislike", false);
+                if(directionCalled == true) {
+                    directionCalled = false;
+                } else {
+                    double lat = data.getExtras().getDouble("latit");
+                    double lon = data.getExtras().getDouble("longit");
+                    calculateDirections(new LatLng(lat, lon));
+                    // Get likes and dislikes from intent
+                    //boolean like = data.getBooleanExtra("like", false);
+                    // boolean dislike = data.getBooleanExtra("dislike", false);
+                }
             }
         }
 
         else if(requestCode == FILTER_POI) {
+            sear = false;
             mMap.clear();
             if(resultCode == Activity.RESULT_OK) {
 
-                boolean trash = data.getExtras().getBoolean("trash");
-                boolean restroom = data.getExtras().getBoolean("restroom");
-                boolean water = data.getExtras().getBoolean("water");
-                boolean printer = data.getExtras().getBoolean("printer");
-                boolean lectureHall = data.getExtras().getBoolean("lectureHall");
-                boolean fav = data.getExtras().getBoolean("favorite");
-                if(fav) {
-                    System.out.println("Got to favorites!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
-                    filterSystem(trash, printer, water, lectureHall, restroom);
-                    filter(trash, printer, water, lectureHall, restroom);
+                t = data.getExtras().getBoolean("trash");
+                r = data.getExtras().getBoolean("restroom");
+                w = data.getExtras().getBoolean("water");
+                p = data.getExtras().getBoolean("printer");
+                a = data.getExtras().getBoolean("lectureHall");
+                f = data.getExtras().getBoolean("favorite");
+                if(f) {
+                    filterSystem(t,p,w,a,r);
+                    filter(t,p,w,a,r);
                 } else {
-                    filter(trash, printer, water, lectureHall, restroom);
+                    filter(t,p,w,a,r);
                 }
             }
         }
