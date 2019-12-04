@@ -320,7 +320,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 // is draggable, can change title and snippet (text under title)
                 MarkerOptions options = new MarkerOptions()
                         .position(pos)
-                        .title("Add POI Here")
+                        .title("ABCDEFG")
                         .snippet("-1;You can add a POI here if you are logged in and go to the menu; ;0;0;false;false;false;false");
 
                 //Setting pin icon.
@@ -373,35 +373,35 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         mMap.setOnMarkerClickListener(new GoogleMap.OnMarkerClickListener() {
             @Override
             public boolean onMarkerClick(Marker marker) {
-                mClickedMarker = marker;
-                Intent intent = new Intent(MapActivity.this, PoiPopUp.class);
-                String toInsert = marker.getTitle();
-                intent.putExtra("Name", toInsert);
-                String information = marker.getSnippet();
-                intent.putExtra("information", information);
-                LatLng markLoc = marker.getPosition();
-                intent.putExtra("Latitude", markLoc.latitude);
-                intent.putExtra("Longitude", markLoc.longitude);
-                GeoPoint point = new GeoPoint(markLoc.latitude, markLoc.longitude);
+                if(!marker.getTitle().equals("ABCDEFG")) {
+                    mClickedMarker = marker;
+                    Intent intent = new Intent(MapActivity.this, PoiPopUp.class);
+                    String toInsert = marker.getTitle();
+                    intent.putExtra("Name", toInsert);
+                    String information = marker.getSnippet();
+                    intent.putExtra("information", information);
+                    LatLng markLoc = marker.getPosition();
+                    intent.putExtra("Latitude", markLoc.latitude);
+                    intent.putExtra("Longitude", markLoc.longitude);
+                    GeoPoint point = new GeoPoint(markLoc.latitude, markLoc.longitude);
 
-                mFirestore.collection("locations")
-                        .whereEqualTo("location", point).get().addOnCompleteListener(
-                        new OnCompleteListener<QuerySnapshot>() {
-                            @Override
-                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                    mFirestore.collection("locations")
+                            .whereEqualTo("location", point).get().addOnCompleteListener(
+                            new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
-                                for(QueryDocumentSnapshot doc: task.getResult()){
-                                    imageurl = (String)doc.getData().get("photoURL");
-                                    reports = (long)doc.getData().get("reports");
-                                    intent.putExtra("imageurl", imageurl);
-                                    intent.putExtra("reports", reports);
+                                    for (QueryDocumentSnapshot doc : task.getResult()) {
+                                        imageurl = (String) doc.getData().get("photoURL");
+                                        reports = (long) doc.getData().get("reports");
+                                        intent.putExtra("imageurl", imageurl);
+                                        intent.putExtra("reports", reports);
+                                    }
+                                    startActivityForResult(intent, POI_POP_UP);
                                 }
-                                startActivityForResult(intent, POI_POP_UP);
                             }
-                        }
-                );
-
-
+                    );
+                }
 //                intent.putExtra("imageurl", (String)doc.getData().get("photoURL"));
                 return true;
             }
