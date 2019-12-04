@@ -833,23 +833,6 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     public void filterSystem(final boolean tra, final boolean prin, final boolean wat,
                              final boolean lh, final boolean rest) {
 
-        List<String> filterChoices = new ArrayList<>();
-        if(tra) {
-            filterChoices.add("Trash Can");
-        }
-        if(prin) {
-            filterChoices.add("Printer");
-        }
-        if(rest) {
-            filterChoices.add("Restroom");
-        }
-        if(wat) {
-            filterChoices.add("Water");
-        }
-        if(lh) {
-            filterChoices.add("Lecture Hall");
-        }
-
         readUserData(new FirestoreCallback2() {
             @Override
             public void onCallback(Map<String, Object> list) {
@@ -863,25 +846,19 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             @Override
                             public void onCallback(Map<String, Object> data) {
 
-                                for(String ty : filterChoices) {
-                                    if (data.get("type").equals(ty)) {
-                                        GeoPoint geoPoint = (GeoPoint) data.get("location");
-                                        double latitude = geoPoint.getLatitude();
-                                        double longtitude = geoPoint.getLongitude();
-                                        String name = (String) data.get("name");
-                                        String description = (String)data.get("description");
-                                        String type = (String)data.get("type");
-                                        String id = (String)data.get("id");
-                                        long likes = (long)data.get("likes");
-                                        long dislikes = (long)data.get("dislikes");
+                                GeoPoint geoPoint = (GeoPoint) data.get("location");
+                                double latitude = geoPoint.getLatitude();
+                                double longtitude = geoPoint.getLongitude();
+                                String name = (String) data.get("name");
+                                String description = (String)data.get("description");
+                                String type = (String)data.get("type");
+                                String id = (String)data.get("id");
+                                long likes = (long)data.get("likes");
+                                long dislikes = (long)data.get("dislikes");
 
-                                        if(dev)
-                                            Toast.makeText(MapActivity.this, "Id is " + data.get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
-                                        placeMarker(new LatLng(latitude, longtitude), name, description, id, likes, dislikes, type);
-                                    }
-                                }
-
-
+                                if(dev)
+                                    Toast.makeText(MapActivity.this, "Id is " + data.get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+                                    placeMarker(new LatLng(latitude, longtitude), name, description, id, likes, dislikes, type);
                             }
                         }, key);
                     }
@@ -1178,43 +1155,44 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             int dis = data.getExtras().getInt("dislikes");
             long reportsar = (long)data.getExtras().get("reports");
             String id = data.getStringExtra("id");
-            mFirestore.collection("locations").document(id).update("likes", lik);
-            mFirestore.collection("locations").document(id).update("dislikes", dis);
-            mFirestore.collection("locations").document(id).update("reports", reportsar);
+            if(userID != null) {
+                mFirestore.collection("locations").document(id).update("likes", lik);
+                mFirestore.collection("locations").document(id).update("dislikes", dis);
+                mFirestore.collection("locations").document(id).update("reports", reportsar);
 
 
-            Boolean liked = data.getExtras().getBoolean("liked");
-            Boolean disliked = data.getExtras().getBoolean("disliked");
-            Boolean favorited = data.getExtras().getBoolean("favorited");
-            Boolean reported = data.getExtras().getBoolean("reported");
+                Boolean liked = data.getExtras().getBoolean("liked");
+                Boolean disliked = data.getExtras().getBoolean("disliked");
+                Boolean favorited = data.getExtras().getBoolean("favorited");
+                Boolean reported = data.getExtras().getBoolean("reported");
+                DocumentReference docIdRef = mFirestore.collection("users").document(userID);
+                docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                    @Override
+                    public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                        if (task.isSuccessful()) {
+                            DocumentSnapshot document = task.getResult();
+                            if (document.exists() && !id.equals("-1") && mAuth.getCurrentUser() != null) {
+                                List<Boolean> poi = new ArrayList();
+                                poi.add(liked);
+                                poi.add(disliked);
+                                poi.add(favorited);
+                                poi.add(reported);
+                                mFirestore.collection("users").document(userID).update(id, poi);
+                            }
 
-            DocumentReference docIdRef = mFirestore.collection("users").document(userID);
-            docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-                @Override
-                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-                        if (document.exists() && !id.equals("-1") && mAuth.getCurrentUser() != null) {
-                            List<Boolean> poi = new ArrayList ();
-                            poi.add(liked);
-                            poi.add(disliked);
-                            poi.add(favorited);
-                            poi.add(reported);
-                            mFirestore.collection("users").document(userID).update(id, poi);
+                            if (dev)
+                                Toast.makeText(getApplicationContext(), "Updated POI",
+                                        Toast.LENGTH_SHORT).show();
+
+                            mMap.clear();
+
+                            System.out.println("HEY " + data.getStringExtra("Name"));
+                            if (!id.equals("-1") && mAuth.getCurrentUser() != null)
+                                onMapSearch(data.getStringExtra("Name"));
                         }
-
-                        if(dev)
-                            Toast.makeText(getApplicationContext(), "Updated POI",
-                                Toast.LENGTH_SHORT).show();
-
-                        mMap.clear();
-
-                        System.out.println("HEY " + data.getStringExtra("Name"));
-                        if(!id.equals("-1") && mAuth.getCurrentUser() != null)
-                            onMapSearch(data.getStringExtra("Name"));
                     }
-                }
-            });
+                });
+            }
 
 
             if (resultCode == Activity.RESULT_OK) {
@@ -1240,6 +1218,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 if(fav) {
                     System.out.println("Got to favorites!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
                     filterSystem(trash, printer, water, lectureHall, restroom);
+                    filter(trash, printer, water, lectureHall, restroom);
                 } else {
                     filter(trash, printer, water, lectureHall, restroom);
                 }
