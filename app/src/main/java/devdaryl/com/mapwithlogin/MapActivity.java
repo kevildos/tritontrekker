@@ -1078,40 +1078,51 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     private void placeMarker(LatLng latLng, String name, String description, String id, long likes, long dislikes, String type) {
 
-        DocumentReference docIdRef = mFirestore.collection("users").document(userID);
-        docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        if (document.get(id) != null) {
-                            List<Boolean> poi = (List<Boolean>) document.get(id);
-                            boolean liked = poi.get(0);
-                            boolean disliked = poi.get(1);
-                            boolean favorited = poi.get(2);
-                            boolean reported = poi.get(3);
-                            MarkerOptions options = new MarkerOptions().
-                                    position(latLng)
-                                    .title(name)
-                                    .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
+        if(userID == null){
+            MarkerOptions options = new MarkerOptions().
+                    position(latLng)
+                    .title(name)
+                    .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
+                            + false + ";" + false + ";" + false + ";" + false);
+            setIcon(options, type, false);
+            mMap.addMarker(options);
+        } else {
+            DocumentReference docIdRef = mFirestore.collection("users").document(userID);
+            docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+                @Override
+                public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+                        if (document.exists()) {
+                            if (document.get(id) != null) {
+                                List<Boolean> poi = (List<Boolean>) document.get(id);
+                                boolean liked = poi.get(0);
+                                boolean disliked = poi.get(1);
+                                boolean favorited = poi.get(2);
+                                boolean reported = poi.get(3);
+                                MarkerOptions options = new MarkerOptions().
+                                        position(latLng)
+                                        .title(name)
+                                        .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
                                                 + liked + ";" + disliked + ";" +favorited + ";" + reported);
 
-                            setIcon(options, type, favorited);
-                            mMap.addMarker(options);
-                        } else {
-                            MarkerOptions options = new MarkerOptions().
-                                    position(latLng)
-                                    .title(name)
-                                    .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
-                                            + false + ";" + false + ";" + false + ";" + false);
-                            setIcon(options, type, false);
-                            mMap.addMarker(options);
+                                setIcon(options, type, favorited);
+                                mMap.addMarker(options);
+                            } else {
+                                MarkerOptions options = new MarkerOptions().
+                                        position(latLng)
+                                        .title(name)
+                                        .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
+                                                + false + ";" + false + ";" + false + ";" + false);
+                                setIcon(options, type, false);
+                                mMap.addMarker(options);
+                            }
                         }
                     }
                 }
-            }
-        });
+            });
+        }
+
        /*MarkerOptions options = new MarkerOptions().
                 position(latLng)
                 .title(name)

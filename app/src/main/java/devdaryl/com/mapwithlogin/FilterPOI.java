@@ -106,7 +106,7 @@ public class FilterPOI extends AppCompatActivity {
                     water = true;
                 } else {
                     System.out.println("Water Un-Checked");
-                    restroom = false;
+                    water = false;
                 }
             }
         });
