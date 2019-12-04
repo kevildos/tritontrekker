@@ -130,7 +130,7 @@ public class AddPOI extends AppCompatActivity {
 
         final List<String> spinnerDescriptionArray =  new ArrayList<String>();
         spinnerDescriptionArray.add("Bathroom");
-        spinnerDescriptionArray.add("Lecture Hall");
+        spinnerDescriptionArray.add("Attraction");
         spinnerDescriptionArray.add("Printer");
         spinnerDescriptionArray.add("Trash Cans");
         spinnerDescriptionArray.add("Water Refill Station");
@@ -157,7 +157,7 @@ public class AddPOI extends AppCompatActivity {
                 if(index == 0) {
                     type = "Restroom";
                 } else if (index == 1) {
-                    type = "Lecture Hall";
+                    type = "Attraction";
                 }else if (index == 2) {
                     type = "Printer";
                 }else if (index == 3) {

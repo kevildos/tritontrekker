@@ -1260,7 +1260,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         myPoisItem = new PrimaryDrawerItem().withIdentifier(mypoisID)
                 .withIdentifier(mypoisID)
                 .withName("My POIs")
-                .withIcon(R.drawable.blankpin)
+                .withIcon(R.drawable.blankpin2)
                 .withSelectable(false);
 
     }
@@ -1416,8 +1416,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.favoritepin));
 
         else {
-            if (type.equals("Lecture Hall"))
-                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.lecturehallpin));
+            if (type.equals("Attraction"))
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.attractionpin));
 
             else if (type.equals("Restroom"))
                 options.icon(BitmapDescriptorFactory.fromResource(R.drawable.restroompin));
