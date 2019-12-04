@@ -7,15 +7,14 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="3c977c02-68da-47a3-8fd1-e58b5ed07554" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/executionHistory/executionHistory.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/fileHashes/fileHashes.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/classAnalysis.bin" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/5.4.1/javaCompile/javaCompile.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" beforeDir="false" afterPath="$PROJECT_DIR$/.gradle/buildOutputCleanup/buildOutputCleanup.lock" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/FilterPOI.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/FilterPOI.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/attractionpin.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/app/src/main/res/drawable/blankpin.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/app/.gitignore" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/AddPOI.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/AddPOI.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/PoiPopUp.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/PoiPopUp.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/mypois.java" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/mypois.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/src/main/res/drawable-v24/blankpin.png" beforeDir="false" afterPath="$PROJECT_DIR$/app/src/main/res/drawable-xxhdpi/blankpin2.png" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -39,12 +38,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="1101" selection-start-line="1101" selection-end-line="1101" />
+            <state relative-caret-position="-845">
+              <caret line="1138" selection-start-line="1138" selection-end-line="1138" />
               <folding>
                 <element signature="e#5647#5657#0" expanded="true" />
-                <element signature="e#18434#18442#0" expanded="true" />
-                <element signature="e#18496#18504#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -71,8 +68,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/mypois.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="45" column="42" selection-start-line="45" selection-start-column="42" selection-end-line="45" selection-end-column="42" />
+            <state relative-caret-position="270">
+              <caret line="43" column="42" selection-start-line="43" selection-start-column="42" selection-end-line="43" selection-end-column="42" />
             </state>
           </provider>
         </entry>
@@ -99,7 +96,7 @@
         <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/FilterPOI.java">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="458">
-              <caret line="108" column="34" lean-forward="true" selection-start-line="108" selection-start-column="34" selection-end-line="108" selection-end-column="34" />
+              <caret line="108" column="34" selection-start-line="108" selection-start-column="34" selection-end-line="108" selection-end-column="34" />
             </state>
           </provider>
         </entry>
@@ -107,8 +104,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/AddPOI.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="2235">
-              <caret line="212" column="25" selection-start-line="212" selection-start-column="20" selection-end-line="212" selection-end-column="25" />
+            <state relative-caret-position="2280">
+              <caret line="213" column="25" selection-start-line="213" selection-start-column="25" selection-end-line="213" selection-end-column="25" />
             </state>
           </provider>
         </entry>
@@ -125,8 +122,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/PoiPopUp.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="900">
-              <caret line="86" column="69" selection-start-line="86" selection-start-column="69" selection-end-line="86" selection-end-column="69" />
+            <state relative-caret-position="1215">
+              <caret line="100" column="69" selection-start-line="100" selection-start-column="69" selection-end-line="100" selection-end-column="69" />
             </state>
           </provider>
         </entry>
@@ -164,9 +161,9 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/PoiPopUp.java" />
-        <option value="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java" />
         <option value="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/FilterPOI.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java" />
+        <option value="$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/PoiPopUp.java" />
       </list>
     </option>
   </component>
@@ -332,14 +329,21 @@
       <option name="project" value="LOCAL" />
       <updated>1575424880884</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="Stop default POI from getting added, report feature and stuff, Daryl backup">
+      <created>1575426203848</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1575426203848</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="ToolWindowManager">
     <frame x="42" y="23" width="1638" height="947" extended-state="0" />
     <layout>
       <window_info id="Captures" order="0" side_tool="true" weight="0.25" />
-      <window_info active="true" content_ui="combo" id="Project" order="1" visible="true" weight="0.27944863" />
+      <window_info content_ui="combo" id="Project" order="1" visible="true" weight="0.27944863" />
       <window_info id="Structure" order="2" side_tool="true" />
       <window_info id="Favorites" order="3" side_tool="true" />
       <window_info id="Build Variants" order="4" side_tool="true" />
@@ -353,7 +357,7 @@
       <window_info anchor="bottom" id="Debug" order="3" />
       <window_info anchor="bottom" id="Terminal" order="4" sideWeight="0.49937344" weight="0.32982457" />
       <window_info anchor="bottom" id="Event Log" order="5" sideWeight="0.50062656" side_tool="true" weight="0.32982457" />
-      <window_info anchor="bottom" id="Version Control" order="6" weight="0.32982457" />
+      <window_info active="true" anchor="bottom" id="Version Control" order="6" visible="true" weight="0.32982457" />
       <window_info anchor="bottom" id="Build" order="7" weight="0.32982457" />
       <window_info anchor="bottom" id="Android Profiler" order="8" />
       <window_info anchor="right" id="Device File Explorer" order="0" side_tool="true" />
@@ -397,8 +401,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/mypois.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="45" column="42" selection-start-line="45" selection-start-column="42" selection-end-line="45" selection-end-column="42" />
+        <state relative-caret-position="270">
+          <caret line="43" column="42" selection-start-line="43" selection-start-column="42" selection-end-line="43" selection-end-column="42" />
         </state>
       </provider>
     </entry>
@@ -418,8 +422,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/AddPOI.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="2235">
-          <caret line="212" column="25" selection-start-line="212" selection-start-column="20" selection-end-line="212" selection-end-column="25" />
+        <state relative-caret-position="2280">
+          <caret line="213" column="25" selection-start-line="213" selection-start-column="25" selection-end-line="213" selection-end-column="25" />
         </state>
       </provider>
     </entry>
@@ -432,26 +436,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/PoiPopUp.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="900">
-          <caret line="86" column="69" selection-start-line="86" selection-start-column="69" selection-end-line="86" selection-end-column="69" />
+        <state relative-caret-position="1215">
+          <caret line="100" column="69" selection-start-line="100" selection-start-column="69" selection-end-line="100" selection-end-column="69" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/FilterPOI.java">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="458">
-          <caret line="108" column="34" lean-forward="true" selection-start-line="108" selection-start-column="34" selection-end-line="108" selection-end-column="34" />
+          <caret line="108" column="34" selection-start-line="108" selection-start-column="34" selection-end-line="108" selection-end-column="34" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/src/main/java/devdaryl/com/mapwithlogin/MapActivity.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="1101" selection-start-line="1101" selection-end-line="1101" />
+        <state relative-caret-position="-845">
+          <caret line="1138" selection-start-line="1138" selection-end-line="1138" />
           <folding>
             <element signature="e#5647#5657#0" expanded="true" />
-            <element signature="e#18434#18442#0" expanded="true" />
-            <element signature="e#18496#18504#0" expanded="true" />
           </folding>
         </state>
       </provider>

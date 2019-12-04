@@ -171,6 +171,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
 
     String queryG;
 
+    // onactivityresult vars
+    String typear = "";
+    String descar = "";
+    String idar = "";
+    long likesar = 0;
+    long dislikesar = 0;
+
+    // used in poipopup
+    long reports = 0;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -357,8 +367,25 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 LatLng markLoc = marker.getPosition();
                 intent.putExtra("Latitude", markLoc.latitude);
                 intent.putExtra("Longitude", markLoc.longitude);
-                intent.putExtra("imageurl", imageurl);
-                startActivityForResult(intent, POI_POP_UP);
+                GeoPoint point = new GeoPoint(markLoc.latitude, markLoc.longitude);
+
+                mFirestore.collection("locations")
+                        .whereEqualTo("location", point).get().addOnCompleteListener(
+                        new OnCompleteListener<QuerySnapshot>() {
+                            @Override
+                            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+                                for(QueryDocumentSnapshot doc: task.getResult()){
+                                    imageurl = (String)doc.getData().get("photoURL");
+                                    reports = (long)doc.getData().get("reports");
+                                    intent.putExtra("imageurl", imageurl);
+                                    intent.putExtra("reports", reports);
+                                }
+                                startActivityForResult(intent, POI_POP_UP);
+                            }
+                        }
+                );
+
 
 //                intent.putExtra("imageurl", (String)doc.getData().get("photoURL"));
                 return true;
@@ -468,7 +495,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         System.out.println("MapActivity: lat " + intent
                 .getDoubleExtra("MyLatitude", 0)+ ", long " + intent.getDoubleExtra("MyLongitude", 0));
 
-        startActivity(intent);
+        startActivityForResult(intent, ADD_POI);
     }
 
     public void openFilterPOIActivity() {
@@ -480,6 +507,10 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         Intent intent = new Intent(this, mypois.class);
         ArrayList<String> idlist = new ArrayList<String>();
         ArrayList<String> namelist = new ArrayList<String>();
+
+        System.out.println("User Id before calling activity: " + userID);
+
+        checkUserInDB();
 
         CollectionReference locsCollection = mFirestore.collection("locations");
         locsCollection.whereEqualTo("creatorid", userID).get().addOnCompleteListener(
@@ -1135,14 +1166,22 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == POI_POP_UP) {
+
+            if((boolean)data.getExtras().get("deletedpoi")){
+                mMap.clear();
+                return;
+            }
             System.out.println("daf'sjijfseai'fd;afaesjfiadsfnseifadnfifheiafdsnfsiafeninjfilefa''o;");
 
             //Toast.makeText(MapActivity.this, id, Toast.LENGTH_LONG).show();
             int lik = data.getExtras().getInt("likes");
             int dis = data.getExtras().getInt("dislikes");
+            long reportsar = (long)data.getExtras().get("reports");
             String id = data.getStringExtra("id");
             mFirestore.collection("locations").document(id).update("likes", lik);
             mFirestore.collection("locations").document(id).update("dislikes", dis);
+            mFirestore.collection("locations").document(id).update("reports", reportsar);
+
 
             Boolean liked = data.getExtras().getBoolean("liked");
             Boolean disliked = data.getExtras().getBoolean("disliked");
@@ -1186,7 +1225,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 //boolean like = data.getBooleanExtra("like", false);
                 // boolean dislike = data.getBooleanExtra("dislike", false);
             }
-        } else if(requestCode == FILTER_POI) {
+        }
+
+        else if(requestCode == FILTER_POI) {
             mMap.clear();
             if(resultCode == Activity.RESULT_OK) {
 
@@ -1203,6 +1244,41 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     filter(trash, printer, water, lectureHall, restroom);
                 }
             }
+        }
+
+        else if(requestCode == ACC_REQ_CODE){
+            checkUserInDB();
+        }
+
+        else if(requestCode == ADD_POI){
+            if(resultCode == RESULT_OK) {
+                if((boolean)data.getExtras().get("frompin")) {
+                    double lat = (double)data.getExtras().get("lat");
+                    double lng = (double)data.getExtras().get("lng");
+                    GeoPoint geoPoint = new GeoPoint(lat,lng);
+                    mFirestore.collection("locations")
+                            .whereEqualTo("location", geoPoint)
+                            .get()
+                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                @Override
+                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                    for(QueryDocumentSnapshot doc: task.getResult()){
+                                        typear = (String)doc.getData().get("type");
+                                        descar = (String)doc.getData().get("description");
+                                        idar = (String)doc.getData().get("id");
+                                        likesar = (long)doc.getData().get("likes");
+                                        dislikesar = (long)doc.getData().get("dislikes");
+                                    }
+                                    mMap.clear();
+                                    LatLng latLng = new LatLng(lat,lng);
+                                    String name = (String)data.getExtras().get("name");
+                                    placeMarker(latLng, name, descar, idar, likesar, dislikesar, typear);
+                                }
+                            });
+
+                }
+            }
+
         }
     }
 
@@ -1226,7 +1302,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
         myPoisItem = new PrimaryDrawerItem().withIdentifier(mypoisID)
                 .withIdentifier(mypoisID)
                 .withName("My POIs")
-                .withIcon(R.drawable.ic_directions_black_24dp)
+                .withIcon(R.drawable.blankpin2)
                 .withSelectable(false);
 
     }
@@ -1382,8 +1458,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             options.icon(BitmapDescriptorFactory.fromResource(R.drawable.favoritepin));
 
         else {
-            if (type.equals("Lecture Hall"))
-                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.lecturehallpin));
+            if (type.equals("Attraction"))
+                options.icon(BitmapDescriptorFactory.fromResource(R.drawable.attractionpin));
 
             else if (type.equals("Restroom"))
                 options.icon(BitmapDescriptorFactory.fromResource(R.drawable.restroompin));

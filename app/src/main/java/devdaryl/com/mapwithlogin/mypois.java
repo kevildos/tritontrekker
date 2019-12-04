@@ -29,8 +29,6 @@ import java.util.List;
 
 public class mypois extends AppCompatActivity {
 
-    boolean isPOIDeleted = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,13 +65,6 @@ public class mypois extends AppCompatActivity {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         System.out.println("deleted D:");
-//                        int index = 0;
-//                        for(int j = 0; j < namelist.size(); j++){
-//                            if(namelist.get(j).equals((String)adapter.getItem(adapterindex))){
-//                                index = j;
-//                                break;
-//                            }
-//                        }
 
                         FirebaseFirestore mFirestore = FirebaseFirestore.getInstance();
                         CollectionReference locsCollection = mFirestore.collection("locations");
@@ -102,18 +93,25 @@ public class mypois extends AppCompatActivity {
                                             .addOnCompleteListener(new OnCompleteListener<Void>() {
                                                 @Override
                                                 public void onComplete(@NonNull Task<Void> task) {
+
                                                     Toast.makeText(getApplicationContext(),
                                                             "POI deleted",
-                                                            Toast.LENGTH_SHORT);
+                                                            Toast.LENGTH_SHORT).show();
+
+                                                    adapter.remove(adapterindex);
+                                                    namelist.remove(adapterindex);
+                                                    idlist.remove(adapterindex);
+                                                    listView.invalidateViews();
+                                                    adapter.notifyDataSetChanged();
                                                 }
                                             });
+
+
                                 }
                             }
                         });
 
-                        adapter.remove(adapter.getItem(adapterindex));
-                        listView.invalidateViews();
-                        adapter.notifyDataSetChanged();
+
                     }
                 })
                 .setNegativeButton("CANCEL", new DialogInterface.OnClickListener() {

@@ -1,6 +1,8 @@
 package devdaryl.com.mapwithlogin;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -17,8 +19,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.storage.FirebaseStorage;
+import com.google.firebase.storage.StorageReference;
 import com.squareup.picasso.Picasso;
 
 import java.io.InputStream;
@@ -32,6 +38,7 @@ public class PoiPopUp extends AppCompatActivity {
 
     int numLikes = 0;
     int numDislikes = 0;
+    long reports = 0;
     String name;
     String id;
     boolean favorite;
@@ -49,6 +56,11 @@ public class PoiPopUp extends AppCompatActivity {
 
     //dev
     boolean dev = false;
+
+    final long REPORT_THRESHOLD = 5;
+
+    FirebaseFirestore mFirebase = FirebaseFirestore.getInstance();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -73,6 +85,8 @@ public class PoiPopUp extends AppCompatActivity {
         numLikes = Integer.parseInt(separated[3]);
         numDislikes = Integer.parseInt(separated[4]);
         liked = Boolean.parseBoolean(separated[5]);
+        reports = (long)getIntent().getExtras().get("reports");
+
         if(liked) {
             ToggleButton likeBtn = findViewById(R.id.likeButton);
             TextView likeCounter = findViewById(R.id.likeCounter);
@@ -140,6 +154,7 @@ public class PoiPopUp extends AppCompatActivity {
         returnIntent.putExtra("disliked", disliked);
         returnIntent.putExtra("favorited", favorited);
         returnIntent.putExtra("reported", reported);
+        returnIntent.putExtra("deletedpoi", false);
         setResult(Activity.RESULT_OK,returnIntent);
     }
 
@@ -244,6 +259,7 @@ public class PoiPopUp extends AppCompatActivity {
         returnIntent.putExtra("dislikes", numDislikes);
         returnIntent.putExtra("liked", liked);
         returnIntent.putExtra("disliked", disliked);
+        returnIntent.putExtra("deletedpoi", false);
     }
 
     public void onFavoriteToggleClick(View view) {
@@ -273,25 +289,61 @@ public class PoiPopUp extends AppCompatActivity {
     public void onReportToggleClick(View view) {
 
         ToggleButton reportBtn = findViewById(R.id.reportButton);
-
+        System.out.println("Reports for poi: " + reports);
         /*
         Works in reverse because function called after you click/"check" the button.
         if button is already "checked" save to favorites
         otherwise remove it from favorites
          */
-        if(reportBtn.isChecked()) {
+        if (reportBtn.isChecked()) {
             //Save the POI as a favorite
             reported = true;
             Toast.makeText(this, "Reported bogus POI", Toast.LENGTH_SHORT).show();
+
+            if (reports + 1 == REPORT_THRESHOLD) {
+                AlertDialog.Builder builder = new AlertDialog.Builder(PoiPopUp.this);
+                builder.setCancelable(false);
+                builder.setMessage("Reporting this POI will delete it for all users because " +
+                        "it will exceed the report count. Are you sure you want to report?");
+                builder.setPositiveButton("YES - DELETE POI", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+
+                        mFirebase.collection("locations").document(id).delete()
+                                .addOnCompleteListener(new OnCompleteListener<Void>() {
+                                    @Override
+                                    public void onComplete(@NonNull Task<Void> task) {
+                                        Toast.makeText(getApplicationContext(), "POI Deleted",
+                                                Toast.LENGTH_SHORT);
+
+                                        Intent returnIntent = getIntent();
+                                        returnIntent.putExtra("deletedpoi", true);
+                                        finish();
+                                    }
+                                });
+                    }
+                });
+                builder.setNegativeButton("NO - UNDO REPORT", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        reportBtn.setChecked(false);
+                    }
+                });
+                builder.create().show();
+            } else {
+                reports = reports++;
+            }
         } else {
             reported = false;
             //Remove the POI from favorites
             Toast.makeText(this, "Removed report", Toast.LENGTH_SHORT).show();
+            reports = reports--;
         }
 
         Intent returnIntent = getIntent();
         returnIntent.putExtra("reported", reported);
     }
+
 
     public void onDirectionClick(View view) {
 
@@ -299,6 +351,9 @@ public class PoiPopUp extends AppCompatActivity {
 
         returnIntent.putExtra("latit", latitude);
         returnIntent.putExtra("longit", longitude);
+        returnIntent.putExtra("reports", reports);
+        returnIntent.putExtra("deletedpoi", false);
+
 
         setResult(Activity.RESULT_OK,returnIntent);
         finish();
