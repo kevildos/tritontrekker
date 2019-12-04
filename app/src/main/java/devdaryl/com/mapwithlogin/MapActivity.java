@@ -747,7 +747,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             filterChoices.add("Water");
         }
         if(lh) {
-            filterChoices.add("Lecture Hall");
+            filterChoices.add("Attraction");
         }
 
         mFirestore.collection("locations")
@@ -1254,7 +1254,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 r = data.getExtras().getBoolean("restroom");
                 w = data.getExtras().getBoolean("water");
                 p = data.getExtras().getBoolean("printer");
-                a = data.getExtras().getBoolean("lectureHall");
+                a = data.getExtras().getBoolean("attractions");
                 f = data.getExtras().getBoolean("favorite");
                 if(f) {
                     filterSystem(t,p,w,a,r);

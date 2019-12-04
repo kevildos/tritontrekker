@@ -137,7 +137,7 @@ public class FilterPOI extends AppCompatActivity {
             returnIntent.putExtra("trash", trash);
             returnIntent.putExtra("restroom", restroom);
             returnIntent.putExtra("water", water);
-            returnIntent.putExtra("lectureHall", attractions);
+            returnIntent.putExtra("attractions", attractions);
             returnIntent.putExtra("printer", printer);
             setResult(Activity.RESULT_OK,returnIntent);
             finish(); // close this activity and return to preview activity (if there is any)
