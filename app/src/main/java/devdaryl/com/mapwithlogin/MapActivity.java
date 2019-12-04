@@ -162,6 +162,13 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
     //user id stored
     private String userID;
 
+    // debug
+    boolean dev = false;
+
+    // testing stuff
+    String currMarkName;
+    String currMarkDescr;
+
     String queryG;
 
     @Override
@@ -289,7 +296,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 MarkerOptions options = new MarkerOptions()
                         .position(pos)
                         .title("Add POI Here")
-                        .snippet("0;You can add a POI here if you are logged in and go to the menu; ;0;0;false;false;false");;
+                        .snippet("-1;You can add a POI here if you are logged in and go to the menu; ;0;0;false;false;false;false");
 
                 //Setting pin icon.
                 options.icon(BitmapDescriptorFactory.fromResource(R.drawable.blankpin));
@@ -371,13 +378,16 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         if (document.get(key_word) != null) {
                             List<String> kw_list = (List<String>) document.get(key_word);
                             printKeyWordLocations(kw_list);
-                            Toast.makeText(MapActivity.this, "KeyWord list retrieved from Firestore", Toast.LENGTH_LONG).show();
+
+                            if(dev)
+                                Toast.makeText(MapActivity.this, "KeyWord list retrieved from Firestore", Toast.LENGTH_LONG).show();
                             bool = true;
                             break;
                         }
                     }
                     if (!bool) {
-                        Toast.makeText(MapActivity.this, "Not in Firestore", Toast.LENGTH_LONG).show();
+                        if(dev)
+                            Toast.makeText(MapActivity.this, "Not in Firestore", Toast.LENGTH_LONG).show();
 
                     }
                     //DocumentSnapshot snapshot = task.getResult();
@@ -551,7 +561,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     System.out.println("List is null ");
                 }
                 else if (!list.isEmpty()) {
-                    Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
+
+                    if(dev)
+                        Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
                             " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
                     GeoPoint geoPoint = (GeoPoint) list.get(0).get("location");
                     double latitude = geoPoint.getLatitude();
@@ -564,7 +576,8 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     long dislikes = (long) list.get(0).get("dislikes");
                     imageurl = (String)list.get(0).get("photoURL");
 
-                    Toast.makeText(MapActivity.this, "Id is " + list.get(0).get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+                    if(dev)
+                        Toast.makeText(MapActivity.this, "Id is " + list.get(0).get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
                     LatLng maloc = new LatLng(latitude, longtitude);
                     placeMarker(maloc, name, description, id, likes, dislikes, type);
                     CameraUpdate cameraUpdate = CameraUpdateFactory.newLatLngZoom(maloc, 18);
@@ -626,7 +639,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                     System.out.println("List is null ");
                 }
                 else if (!list.isEmpty()) {
-                    Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
+
+                    if(dev)
+                        Toast.makeText(MapActivity.this, "locationList is neither EMPTY NOR NULL" +
                             " with description " + list.get(0).get("description"), Toast.LENGTH_LONG).show();
                     for(Map<String, Object> poi : list) {
                         GeoPoint geoPoint = (GeoPoint) poi.get("location");
@@ -638,7 +653,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                         String id = (String)poi.get("id");
                         long likes = (long)poi.get("likes");
                         long dislikes = (long)poi.get("dislikes");
-                        Toast.makeText(MapActivity.this, "Id is " + poi.get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+
+                        if(dev)
+                            Toast.makeText(MapActivity.this, "Id is " + poi.get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
                         placeMarker(new LatLng(latitude, longtitude), name, description, id, likes, dislikes, type);
                     }
 
@@ -826,7 +843,9 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                         String id = (String)data.get("id");
                                         long likes = (long)data.get("likes");
                                         long dislikes = (long)data.get("dislikes");
-                                        Toast.makeText(MapActivity.this, "Id is " + data.get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
+
+                                        if(dev)
+                                            Toast.makeText(MapActivity.this, "Id is " + data.get("id") + "Latitude: " + latitude + "  Longtitude: " + longtitude, Toast.LENGTH_LONG).show();
                                         placeMarker(new LatLng(latitude, longtitude), name, description, id, likes, dislikes, type);
                                     }
                                 }
@@ -1071,11 +1090,12 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                             boolean liked = poi.get(0);
                             boolean disliked = poi.get(1);
                             boolean favorited = poi.get(2);
+                            boolean reported = poi.get(3);
                             MarkerOptions options = new MarkerOptions().
                                     position(latLng)
                                     .title(name)
                                     .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
-                                                + liked + ";" + disliked + ";" +favorited);
+                                                + liked + ";" + disliked + ";" +favorited + ";" + reported);
 
                             setIcon(options, type, favorited);
                             mMap.addMarker(options);
@@ -1084,7 +1104,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                                     position(latLng)
                                     .title(name)
                                     .snippet(id + ";" + description + ";" + type + ";" + likes + ";" + dislikes + ";"
-                                            + false + ";" + false + ";" + false);
+                                            + false + ";" + false + ";" + false + ";" + false);
                             setIcon(options, type, false);
                             mMap.addMarker(options);
                         }
@@ -1116,6 +1136,7 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
             Boolean liked = data.getExtras().getBoolean("liked");
             Boolean disliked = data.getExtras().getBoolean("disliked");
             Boolean favorited = data.getExtras().getBoolean("favorited");
+            Boolean reported = data.getExtras().getBoolean("reported");
 
             DocumentReference docIdRef = mFirestore.collection("users").document(userID);
             docIdRef.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -1123,15 +1144,24 @@ public class MapActivity extends AppCompatActivity implements OnMapReadyCallback
                 public void onComplete(@NonNull Task<DocumentSnapshot> task) {
                     if (task.isSuccessful()) {
                         DocumentSnapshot document = task.getResult();
-                        if (document.exists()) {
+                        if (document.exists() && !id.equals("-1") && mAuth.getCurrentUser() != null) {
                             List<Boolean> poi = new ArrayList ();
                             poi.add(liked);
                             poi.add(disliked);
                             poi.add(favorited);
+                            poi.add(reported);
                             mFirestore.collection("users").document(userID).update(id, poi);
                         }
-                        Toast.makeText(getApplicationContext(), "Updated POI",
+
+                        if(dev)
+                            Toast.makeText(getApplicationContext(), "Updated POI",
                                 Toast.LENGTH_SHORT).show();
+
+                        mMap.clear();
+
+                        System.out.println("HEY " + data.getStringExtra("Name"));
+                        if(!id.equals("-1") && mAuth.getCurrentUser() != null)
+                            onMapSearch(data.getStringExtra("Name"));
                     }
                 }
             });

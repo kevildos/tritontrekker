@@ -45,6 +45,10 @@ public class PoiPopUp extends AppCompatActivity {
     boolean liked = false;
     boolean disliked = false;
     boolean favorited = false;
+    boolean reported = false;
+
+    //dev
+    boolean dev = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -88,8 +92,14 @@ public class PoiPopUp extends AppCompatActivity {
             ToggleButton favB = findViewById(R.id.favoriteButton);
             favB.setChecked(true);
         }
+        reported = Boolean.parseBoolean(separated[8]);
+        if(reported){
+            ToggleButton reportB = findViewById(R.id.reportButton);
+            reportB.setChecked(true);
+        }
 
-        Toast.makeText(this, liked + "liked" + disliked + "disliked" + favorited + "favorited", Toast.LENGTH_LONG).show();
+        if(dev)
+            Toast.makeText(this, liked + "liked" + disliked + "disliked" + favorited + "favorited", Toast.LENGTH_LONG).show();
 
         TextView desc = findViewById(R.id.poiDescription);
         desc.setText(description);
@@ -129,6 +139,7 @@ public class PoiPopUp extends AppCompatActivity {
         returnIntent.putExtra("liked", liked);
         returnIntent.putExtra("disliked", disliked);
         returnIntent.putExtra("favorited", favorited);
+        returnIntent.putExtra("reported", reported);
         setResult(Activity.RESULT_OK,returnIntent);
     }
 
@@ -270,14 +281,16 @@ public class PoiPopUp extends AppCompatActivity {
          */
         if(reportBtn.isChecked()) {
             //Save the POI as a favorite
-
+            reported = true;
             Toast.makeText(this, "Reported bogus POI", Toast.LENGTH_SHORT).show();
         } else {
-
+            reported = false;
             //Remove the POI from favorites
             Toast.makeText(this, "Removed report", Toast.LENGTH_SHORT).show();
         }
 
+        Intent returnIntent = getIntent();
+        returnIntent.putExtra("reported", reported);
     }
 
     public void onDirectionClick(View view) {
